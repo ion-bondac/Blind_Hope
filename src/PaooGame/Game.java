@@ -48,6 +48,7 @@ public class Game implements Runnable
     private boolean         runState;   /*!< Flag ce starea firului de executie.*/
     private Thread          gameThread; /*!< Referinta catre thread-ul de update si draw al ferestrei*/
     private BufferStrategy  bs;         /*!< Referinta catre un mecanism cu care se organizeaza memoria complexa pentru un canvas.*/
+    private boolean isMenuShowing = true; // Inițial meniul este afișat
     /// Sunt cateva tipuri de "complex buffer strategies", scopul fiind acela de a elimina fenomenul de
     /// flickering (palpaire) a ferestrei.
     /// Modul in care va fi implementata aceasta strategie in cadrul proiectului curent va fi triplu buffer-at
@@ -127,13 +128,16 @@ public class Game implements Runnable
                 /// Daca diferenta de timp dintre curentTime si oldTime mai mare decat 16.6 ms
             if((curentTime - oldTime) > timeFrame)
             {
-                /// Actualizeaza pozitiile elementelor
-                Update();
-                /// Deseneaza elementele grafica in fereastra.
-                try {
-                    Draw();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                if(!isMenuShowing)
+                {
+                    /// Actualizeaza pozitiile elementelor
+                    Update();
+                    /// Deseneaza elementele grafica in fereastra.
+                    try {
+                        Draw();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
                 oldTime = curentTime;
             }

@@ -52,6 +52,7 @@ public class GameWindow
     {
             /// Daca fereastra a mai fost construita intr-un apel anterior
             /// se renunta la apel
+
         if(wndFrame != null)
         {
             return;
