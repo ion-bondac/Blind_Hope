@@ -2,6 +2,8 @@ package PaooGame.GameWindow;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /*! \class GameWindow
     \brief Implementeaza notiunea de fereastra a jocului.
@@ -13,6 +15,7 @@ import java.awt.*;
 public class GameWindow
 {
     private JFrame  wndFrame;       /*!< fereastra principala a jocului*/
+    private JFrame menuFrame;
     private String  wndTitle;       /*!< titlul ferestrei*/
     private int     wndWidth;       /*!< latimea ferestrei in pixeli*/
     private int     wndHeight;      /*!< inaltimea ferestrei in pixeli*/
@@ -36,6 +39,7 @@ public class GameWindow
         wndWidth    = width;    /*!< Retine latimea ferestrei.*/
         wndHeight   = height;   /*!< Retine inaltimea ferestrei.*/
         wndFrame    = null;     /*!< Fereastra nu este construita.*/
+        menuFrame   = null;
     }
 
     /*! \fn private void BuildGameWindow()
@@ -95,6 +99,38 @@ public class GameWindow
             /// Urmatorul apel de functie are ca scop eventuala redimensionare a ferestrei
             /// ca tot ce contine sa poate fi afisat complet
         wndFrame.pack();
+    }
+
+
+
+    public void showMenu()
+    {
+        // Creează fereastra pentru meniul principal
+        menuFrame = new JFrame("Meniu Principal");
+        menuFrame.setSize(800, 480);
+        menuFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        menuFrame.setLocationRelativeTo(null); // Centrat pe ecran
+
+        // Creează un buton pentru a începe jocul
+        JButton startButton = new JButton("Începe jocul");
+        startButton.setFont(new Font("Arial", Font.PLAIN, 20));
+        startButton.setPreferredSize(new Dimension(200, 50));
+
+        // La apăsarea butonului, jocul începe
+        startButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                menuFrame.setVisible(false);  // Închide meniul
+                BuildGameWindow();            // Construiește fereastra jocului
+            }
+        });
+
+        // Adaugă butonul în fereastra de meniu
+        menuFrame.setLayout(new FlowLayout());
+        menuFrame.add(startButton);
+
+        // Afișează meniul
+        menuFrame.setVisible(true);
     }
 
     /*! \fn public int GetWndWidth()
