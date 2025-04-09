@@ -96,7 +96,7 @@ public class Game implements Runnable
     {
 //        wnd = new GameWindow(title, width, height);
             /// Este construita fereastra grafica.
-        wnd.BuildGameWindow();
+        wnd.showMenu();
             /// Se incarca toate elementele grafice (dale)
         Assets.Init();
     }
@@ -247,8 +247,6 @@ public class Game implements Runnable
         TileFactory tileFactory = new TileFactory();
         GameMap gameMap = new GameMap("src/PaooGame/map.txt", tileFactory);
         gameMap.render(g);
-
-
 
         // end operatie de desenare
             /// Se afiseaza pe ecran
