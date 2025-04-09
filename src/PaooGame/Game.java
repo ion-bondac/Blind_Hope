@@ -94,7 +94,7 @@ public class Game implements Runnable
      */
     private void InitGame()
     {
-        wnd = new GameWindow("Schelet Proiect PAOO", 800, 600);
+//        wnd = new GameWindow(title, width, height);
             /// Este construita fereastra grafica.
         wnd.BuildGameWindow();
             /// Se incarca toate elementele grafice (dale)
