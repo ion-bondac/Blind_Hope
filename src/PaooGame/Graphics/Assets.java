@@ -1,6 +1,8 @@
 package PaooGame.Graphics;
 
 import java.awt.image.BufferedImage;
+import java.util.HashMap;
+import java.util.Map;
 
 /*! \class public class Assets
     \brief Clasa incarca fiecare element grafic necesar jocului.
@@ -9,7 +11,10 @@ import java.awt.image.BufferedImage;
  */
 public class Assets
 {
-        /// Referinte catre elementele grafice (dale) utilizate in joc.
+
+    public static Map<String, BufferedImage> tileMap = new HashMap<>();
+
+    /// Referinte catre elementele grafice (dale) utilizate in joc.
     public static BufferedImage playerLeft;
     public static BufferedImage playerRight;
     public static BufferedImage soil;
@@ -51,5 +56,20 @@ public class Assets
         rockDown = sheet.crop(3, 2);
         rockLeft = sheet.crop(0, 3);
         rockRight = sheet.crop(1, 3);
+
+        tileMap.put("grass", grass);
+        tileMap.put("soil", soil);
+        tileMap.put("water", water);
+        tileMap.put("mountain", mountain);
+        tileMap.put("townGrass", townGrass);
+        tileMap.put("townGrassDestroyed", townGrassDestroyed);
+        tileMap.put("townSoil", townSoil);
+        tileMap.put("tree", tree);
+        tileMap.put("playerLeft", playerLeft);
+        tileMap.put("playerRight", playerRight);
+        tileMap.put("rockUp", rockUp);
+        tileMap.put("rockDown", rockDown);
+        tileMap.put("rockLeft", rockLeft);
+        tileMap.put("rockRight", rockRight);
     }
 }

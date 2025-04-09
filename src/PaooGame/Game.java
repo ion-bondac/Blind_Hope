@@ -3,9 +3,11 @@ package PaooGame;
 import PaooGame.GameWindow.GameWindow;
 import PaooGame.Graphics.Assets;
 import PaooGame.Tiles.Tile;
+import PaooGame.Tiles.TileFactory;
 
 import java.awt.*;
 import java.awt.image.BufferStrategy;
+import java.io.IOException;
 
 /*! \class Game
     \brief Clasa principala a intregului proiect. Implementeaza Game - Loop (Update -> Draw)
@@ -128,7 +130,11 @@ public class Game implements Runnable
                 /// Actualizeaza pozitiile elementelor
                 Update();
                 /// Deseneaza elementele grafica in fereastra.
-                Draw();
+                try {
+                    Draw();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
                 oldTime = curentTime;
             }
         }
@@ -205,8 +211,7 @@ public class Game implements Runnable
 
         Metoda este declarata privat deoarece trebuie apelata doar in metoda run()
      */
-    private void Draw()
-    {
+    private void Draw() throws IOException {
             /// Returnez bufferStrategy pentru canvasul existent
         bs = wnd.GetCanvas().getBufferStrategy();
             /// Verific daca buffer strategy a fost construit sau nu
@@ -232,16 +237,20 @@ public class Game implements Runnable
 
             /// operatie de desenare
             // ...............
-            Tile.grassTile.Draw(g, 0 * Tile.TILE_WIDTH, 0);
-            Tile.soilTile.Draw(g, 1 * Tile.TILE_WIDTH, 0);
-            Tile.waterTile.Draw(g, 2 * Tile.TILE_WIDTH, 0);
-            Tile.mountainTile.Draw(g, 3 * Tile.TILE_WIDTH, 0);
-            Tile.treeTile.Draw(g, 4 * Tile.TILE_WIDTH, 0);
+//            Tile.grassTile.Draw(g, 0 * Tile.TILE_WIDTH, 0);
+//            Tile.soilTile.Draw(g, 1 * Tile.TILE_WIDTH, 0);
+//            Tile.waterTile.Draw(g, 2 * Tile.TILE_WIDTH, 0);
+//            Tile.mountainTile.Draw(g, 3 * Tile.TILE_WIDTH, 0);
+//            Tile.treeTile.Draw(g, 4 * Tile.TILE_WIDTH, 0);
+//
+//            g.drawRect(1 * Tile.TILE_WIDTH, 1 * Tile.TILE_HEIGHT, Tile.TILE_WIDTH, Tile.TILE_HEIGHT);
+        TileFactory tileFactory = new TileFactory();
+        GameMap gameMap = new GameMap("src/PaooGame/map.txt", tileFactory);
+        gameMap.render(g);
 
-            g.drawRect(1 * Tile.TILE_WIDTH, 1 * Tile.TILE_HEIGHT, Tile.TILE_WIDTH, Tile.TILE_HEIGHT);
 
 
-            // end operatie de desenare
+        // end operatie de desenare
             /// Se afiseaza pe ecran
         bs.show();
 
