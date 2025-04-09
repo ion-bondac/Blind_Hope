@@ -1,0 +1,3 @@
+grass,grass,soil,soil,grass
+grass,water,water,soil,grass
+grass,grass,grass,grass,grass
