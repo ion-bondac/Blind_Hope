@@ -141,9 +141,9 @@ public class Game implements Runnable
     private void InitGame()
     {
 //        wnd = new GameWindow(title, width, height);
-        wnd.BuildGameWindow();
-        /// Este construita fereastra grafica.
-        wnd.showMenu();
+//        wnd.BuildGameWindow();
+//        /// Este construita fereastra grafica.
+//        wnd.showMenu();
         /// Se incarca toate elementele grafice (dale)
         Assets.Init();
     }
