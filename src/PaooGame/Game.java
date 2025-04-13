@@ -5,6 +5,7 @@ import PaooGame.Graphics.Assets;
 import PaooGame.Tiles.Tile;
 import PaooGame.Tiles.TileFactory;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferStrategy;
 import java.io.IOException;
@@ -146,6 +147,35 @@ public class Game implements Runnable
 //        wnd.showMenu();
         /// Se incarca toate elementele grafice (dale)
         Assets.Init();
+        setupMenuButtons();
+    }
+
+    private void setupMenuButtons()
+    {
+        for(Component comp : wnd.getMenuPanel().getComponents())
+        {
+            if(comp instanceof JButton)
+            {
+                JButton button = (JButton) comp;
+                button.addActionListener(e -> handleButtonAction(button.getText()));
+            }
+        }
+    }
+
+    private void handleButtonAction(String buttonText)
+    {
+        switch (buttonText)
+        {
+            case "New Game":
+                wnd.hideMenu();
+                break;
+            case "Load Game":
+                System.out.println("Urmeaza de implimentat load-ul");
+                break;
+            case "Exit":
+                System.exit(0);
+                break;
+        }
     }
 
     /*! \fn public synchronized void start()

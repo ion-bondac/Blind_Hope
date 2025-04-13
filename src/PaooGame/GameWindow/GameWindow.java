@@ -4,6 +4,7 @@ import PaooGame.Game;
 import PaooGame.Graphics.Assets;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -60,25 +61,43 @@ public class GameWindow
         wndFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         wndFrame.setResizable(false);
         wndFrame.setLocationRelativeTo(null);
+        wndFrame.setLayout(new BorderLayout());
 
 
         menuPanel = new JPanel();
-        menuPanel.setLayout(new FlowLayout());
+        menuPanel.setLayout(new GridBagLayout());
+        menuPanel.setBackground(Color.BLACK);
 
-        JButton startButton = new JButton("Începe jocul");
-        startButton.setFont(new Font("Arial", Font.PLAIN, 20));
-        startButton.setPreferredSize(new Dimension(200, 50));
+        JButton NewGameButton = createMenuButton("New Game");
+        JButton LoadGameButton = createMenuButton("Load Game");
+        JButton ExitButton = createMenuButton("Exit");
 
-        startButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                hideMenu();
-            }
-        });
+        GridBagConstraints gbc = new GridBagConstraints();
 
-        menuPanel.add(startButton);
-        wndFrame.add(menuPanel);
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(10,50,10,50);
+
+        menuPanel.add(NewGameButton, gbc);
+        menuPanel.add(LoadGameButton, gbc);
+        menuPanel.add(ExitButton, gbc);
+
+        wndFrame.add(menuPanel , BorderLayout.CENTER);
         wndFrame.setVisible(true);
+
+//        startButton.setFont(new Font("Arial", Font.PLAIN, 20));
+//        startButton.setPreferredSize(new Dimension(200, 50));
+//
+//        startButton.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                hideMenu();
+//            }
+//        });
+//
+//        menuPanel.add(startButton);
+//        wndFrame.add(menuPanel);
+//        wndFrame.setVisible(true);
 
 //            /// Daca fereastra a mai fost construita intr-un apel anterior
 //            /// se renunta la apel
@@ -132,6 +151,17 @@ public class GameWindow
 //        wndFrame.pack();
     }
 
+    private JButton createMenuButton(String text)
+    {
+        JButton Button = new JButton(text);
+        Button.setFont(new Font("Arial",Font.PLAIN,24));
+        Button.setBackground(Color.DARK_GRAY);
+        Button.setForeground(Color.WHITE);
+        Button.setFocusPainted(false);
+        Button.setBorder(BorderFactory.createLineBorder(Color.WHITE,2));
+        return Button;
+    }
+
     public void hideMenu() {
         menuVisible = false;
         wndFrame.remove(menuPanel);
@@ -142,7 +172,7 @@ public class GameWindow
         canvas.setMaximumSize(new Dimension(wndWidth, wndHeight));
         canvas.setMinimumSize(new Dimension(wndWidth, wndHeight));
         wndFrame.add(canvas);
-        wndFrame.pack();
+        //wndFrame.pack();
         wndFrame.revalidate();
         wndFrame.repaint();
     }
@@ -207,4 +237,10 @@ public class GameWindow
     public Canvas GetCanvas() {
         return canvas;
     }
+
+    public JPanel getMenuPanel()
+    {
+        return menuPanel;
+    }
 }
+
