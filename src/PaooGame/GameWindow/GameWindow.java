@@ -1,5 +1,8 @@
 package PaooGame.GameWindow;
 
+import PaooGame.Game;
+import PaooGame.Graphics.Assets;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -15,11 +18,12 @@ import java.awt.event.ActionListener;
 public class GameWindow
 {
     private JFrame  wndFrame;       /*!< fereastra principala a jocului*/
-    private JFrame menuFrame;
+    //private JFrame menuFrame;
+    private JPanel menuPanel;
     private String  wndTitle;       /*!< titlul ferestrei*/
     private int     wndWidth;       /*!< latimea ferestrei in pixeli*/
     private int     wndHeight;      /*!< inaltimea ferestrei in pixeli*/
-
+    private boolean menuVisible;
     private Canvas  canvas;         /*!< "panza/tablou" in care se poate desena*/
 
     /*! \fn GameWindow(String title, int width, int height)
@@ -38,8 +42,9 @@ public class GameWindow
         wndTitle    = title;    /*!< Retine titlul ferestrei.*/
         wndWidth    = width;    /*!< Retine latimea ferestrei.*/
         wndHeight   = height;   /*!< Retine inaltimea ferestrei.*/
-        wndFrame    = null;     /*!< Fereastra nu este construita.*/
-        menuFrame   = null;
+        //wndFrame    = null;     /*!< Fereastra nu este construita.*/
+        menuVisible = true;
+        BuildGameWindow();
     }
 
     /*! \fn private void BuildGameWindow()
@@ -50,87 +55,134 @@ public class GameWindow
      */
     public void BuildGameWindow()
     {
-            /// Daca fereastra a mai fost construita intr-un apel anterior
-            /// se renunta la apel
-        if(wndFrame != null)
-        {
-            return;
-        }
-            /// Aloca memorie pentru obiectul de tip fereastra si seteaza denumirea
-            /// ce apare in bara de titlu
         wndFrame = new JFrame(wndTitle);
-            /// Seteaza dimensiunile ferestrei in pixeli
         wndFrame.setSize(wndWidth, wndHeight);
-            /// Operatia de inchidere (fereastra sa poata fi inchisa atunci cand
-            /// este apasat butonul x din dreapta sus al ferestrei). Totodata acest
-            /// lucru garanteaza ca nu doar fereastra va fi inchisa ci intregul
-            /// program
         wndFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            /// Avand in vedere ca dimensiunea ferestrei poate fi modificata
-            /// si corespunzator continutul actualizat (aici ma refer la dalele
-            /// randate) va recomand sa constrangeti deocamdata jucatorul
-            /// sa se joace in fereastra stabilitata de voi. Puteti reveni asupra
-            /// urmatorului apel ulterior.
         wndFrame.setResizable(false);
-            /// Recomand ca fereastra sa apara in centrul ecranului. Pentru orice
-            /// alte pozitie se va apela "wndFrame.setLocation(x, y)" etc.
         wndFrame.setLocationRelativeTo(null);
-            /// Implicit o fereastra cand este creata nu este vizibila motiv pentru
-            /// care trebuie setata aceasta proprietate
-        wndFrame.setVisible(true);
-
-            /// Creaza obiectul de tip canvas (panza) pe care se poate desena.
-        canvas = new Canvas();
-            /// In aceeasi maniera trebuiesc setate proprietatile pentru acest obiect
-            /// canvas (panza): dimensiuni preferabile, minime, maxime etc.
-            /// Urmotorul apel de functie seteaza dimensiunea "preferata"/implicita
-            /// a obiectului de tip canvas.
-            /// Functia primeste ca parametru un obiect de tip Dimension ca incapsuleaza
-            /// doua proprietati: latime si inaltime. Cum acest obiect nu exista
-            /// a fost creat unul si dat ca parametru.
-        canvas.setPreferredSize(new Dimension(wndWidth, wndHeight));
-            /// Avand in vedere ca elementele unei ferestre pot fi scalate atunci cand
-            /// fereastra este redimensionata
-        canvas.setMaximumSize(new Dimension(wndWidth, wndHeight));
-        canvas.setMinimumSize(new Dimension(wndWidth, wndHeight));
-            /// Avand in vedere ca obiectul de tip canvas, proaspat creat, nu este automat
-            /// adaugat in fereastra trebuie apelata metoda add a obiectul wndFrame
-        wndFrame.add(canvas);
-            /// Urmatorul apel de functie are ca scop eventuala redimensionare a ferestrei
-            /// ca tot ce contine sa poate fi afisat complet
-        wndFrame.pack();
-    }
 
 
+        menuPanel = new JPanel();
+        menuPanel.setLayout(new FlowLayout());
 
-    public void showMenu()
-    {
-        // Creează fereastra pentru meniul principal
-        menuFrame = new JFrame("Meniu Principal");
-        menuFrame.setSize(800, 480);
-        menuFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        menuFrame.setLocationRelativeTo(null); // Centrat pe ecran
-
-        // Creează un buton pentru a începe jocul
         JButton startButton = new JButton("Începe jocul");
         startButton.setFont(new Font("Arial", Font.PLAIN, 20));
         startButton.setPreferredSize(new Dimension(200, 50));
 
-        // La apăsarea butonului, jocul începe
         startButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                menuFrame.setVisible(false);  // Închide meniul
-                BuildGameWindow();            // Construiește fereastra jocului
+                hideMenu();
             }
         });
 
-        // Adaugă butonul în fereastra de meniu
-        menuFrame.setLayout(new FlowLayout());
-        menuFrame.add(startButton);
+        menuPanel.add(startButton);
+        wndFrame.add(menuPanel);
+        wndFrame.setVisible(true);
 
-        // Afișează meniul
-        menuFrame.setVisible(true);
+//            /// Daca fereastra a mai fost construita intr-un apel anterior
+//            /// se renunta la apel
+//
+//        if(wndFrame != null)
+//        {
+//            return;
+//        }
+//            /// Aloca memorie pentru obiectul de tip fereastra si seteaza denumirea
+//            /// ce apare in bara de titlu
+//        wndFrame = new JFrame(wndTitle);
+//            /// Seteaza dimensiunile ferestrei in pixeli
+//        wndFrame.setSize(wndWidth, wndHeight);
+//            /// Operatia de inchidere (fereastra sa poata fi inchisa atunci cand
+//            /// este apasat butonul x din dreapta sus al ferestrei). Totodata acest
+//            /// lucru garanteaza ca nu doar fereastra va fi inchisa ci intregul
+//            /// program
+//        wndFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//            /// Avand in vedere ca dimensiunea ferestrei poate fi modificata
+//            /// si corespunzator continutul actualizat (aici ma refer la dalele
+//            /// randate) va recomand sa constrangeti deocamdata jucatorul
+//            /// sa se joace in fereastra stabilitata de voi. Puteti reveni asupra
+//            /// urmatorului apel ulterior.
+//        wndFrame.setResizable(false);
+//            /// Recomand ca fereastra sa apara in centrul ecranului. Pentru orice
+//            /// alte pozitie se va apela "wndFrame.setLocation(x, y)" etc.
+//        wndFrame.setLocationRelativeTo(null);
+//            /// Implicit o fereastra cand este creata nu este vizibila motiv pentru
+//            /// care trebuie setata aceasta proprietate
+//        wndFrame.setVisible(true);
+//
+//            /// Creaza obiectul de tip canvas (panza) pe care se poate desena.
+//        canvas = new Canvas();
+//            /// In aceeasi maniera trebuiesc setate proprietatile pentru acest obiect
+//            /// canvas (panza): dimensiuni preferabile, minime, maxime etc.
+//            /// Urmotorul apel de functie seteaza dimensiunea "preferata"/implicita
+//            /// a obiectului de tip canvas.
+//            /// Functia primeste ca parametru un obiect de tip Dimension ca incapsuleaza
+//            /// doua proprietati: latime si inaltime. Cum acest obiect nu exista
+//            /// a fost creat unul si dat ca parametru.
+//        canvas.setPreferredSize(new Dimension(wndWidth, wndHeight));
+//            /// Avand in vedere ca elementele unei ferestre pot fi scalate atunci cand
+//            /// fereastra este redimensionata
+//        canvas.setMaximumSize(new Dimension(wndWidth, wndHeight));
+//        canvas.setMinimumSize(new Dimension(wndWidth, wndHeight));
+//            /// Avand in vedere ca obiectul de tip canvas, proaspat creat, nu este automat
+//            /// adaugat in fereastra trebuie apelata metoda add a obiectul wndFrame
+//        wndFrame.add(canvas);
+//            /// Urmatorul apel de functie are ca scop eventuala redimensionare a ferestrei
+//            /// ca tot ce contine sa poate fi afisat complet
+//        wndFrame.pack();
+    }
+
+    public void hideMenu() {
+        menuVisible = false;
+        wndFrame.remove(menuPanel);
+
+        // Initialize game canvas
+        canvas = new Canvas();
+        canvas.setPreferredSize(new Dimension(wndWidth, wndHeight));
+        canvas.setMaximumSize(new Dimension(wndWidth, wndHeight));
+        canvas.setMinimumSize(new Dimension(wndWidth, wndHeight));
+        wndFrame.add(canvas);
+        wndFrame.pack();
+        wndFrame.revalidate();
+        wndFrame.repaint();
+    }
+
+//    public void showMenu()
+//    {
+//        menuVisible = true;
+//        if(menuFrame == null) {
+//            // Creează fereastra pentru meniul principal
+//            menuFrame = new JFrame("Meniu Principal");
+//            menuFrame.setSize(800, 480);
+//            menuFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//            menuFrame.setLocationRelativeTo(null); // Centrat pe ecran
+//
+//            // Creează un buton pentru a începe jocul
+//            JButton startButton = new JButton("Începe jocul");
+//            startButton.setFont(new Font("Arial", Font.PLAIN, 20));
+//            startButton.setPreferredSize(new Dimension(200, 50));
+//
+//            // La apăsarea butonului, jocul începe
+//            startButton.addActionListener(new ActionListener() {
+//                @Override
+//                public void actionPerformed(ActionEvent e) {
+//                    menuFrame.setVisible(false);  // Închide meniul
+//                    menuVisible = false;
+//                    BuildGameWindow();            // Construiește fereastra jocului
+//                }
+//            });
+//
+//            // Adaugă butonul în fereastra de meniu
+//            menuFrame.setLayout(new FlowLayout());
+//            menuFrame.add(startButton);
+//        }
+//        // Afișează meniul
+//        menuFrame.setVisible(true);
+//    }
+
+    public boolean isMenuShowing()
+    {
+        return menuVisible;
     }
 
     /*! \fn public int GetWndWidth()

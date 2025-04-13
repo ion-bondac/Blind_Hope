@@ -48,6 +48,7 @@ public class Game implements Runnable
     private boolean         runState;   /*!< Flag ce starea firului de executie.*/
     private Thread          gameThread; /*!< Referinta catre thread-ul de update si draw al ferestrei*/
     private BufferStrategy  bs;         /*!< Referinta catre un mecanism cu care se organizeaza memoria complexa pentru un canvas.*/
+//    private boolean isMenuShowing = true; // Inițial meniul este afișat
     /// Sunt cateva tipuri de "complex buffer strategies", scopul fiind acela de a elimina fenomenul de
     /// flickering (palpaire) a ferestrei.
     /// Modul in care va fi implementata aceasta strategie in cadrul proiectului curent va fi triplu buffer-at
@@ -85,21 +86,6 @@ public class Game implements Runnable
         runState = false;
     }
 
-    /*! \fn private void init()
-        \brief  Metoda construieste fereastra jocului, initializeaza aseturile, listenerul de tastatura etc.
-
-        Fereastra jocului va fi construita prin apelul functiei BuildGameWindow();
-        Sunt construite elementele grafice (assets): dale, player, elemente active si pasive.
-
-     */
-    private void InitGame()
-    {
-//        wnd = new GameWindow(title, width, height);
-            /// Este construita fereastra grafica.
-        wnd.showMenu();
-            /// Se incarca toate elementele grafice (dale)
-        Assets.Init();
-    }
 
     /*! \fn public void run()
         \brief Functia ce va rula in thread-ul creat.
@@ -127,18 +113,39 @@ public class Game implements Runnable
                 /// Daca diferenta de timp dintre curentTime si oldTime mai mare decat 16.6 ms
             if((curentTime - oldTime) > timeFrame)
             {
-                /// Actualizeaza pozitiile elementelor
-                Update();
-                /// Deseneaza elementele grafica in fereastra.
-                try {
-                    Draw();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                if(!wnd.isMenuShowing())
+                {
+                    /// Actualizeaza pozitiile elementelor
+                    Update();
+                    /// Deseneaza elementele grafica in fereastra.
+                    try {
+                        Draw();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
                 oldTime = curentTime;
             }
         }
 
+    }
+
+
+    /*! \fn private void init()
+    \brief  Metoda construieste fereastra jocului, initializeaza aseturile, listenerul de tastatura etc.
+
+    Fereastra jocului va fi construita prin apelul functiei BuildGameWindow();
+    Sunt construite elementele grafice (assets): dale, player, elemente active si pasive.
+
+ */
+    private void InitGame()
+    {
+//        wnd = new GameWindow(title, width, height);
+//        wnd.BuildGameWindow();
+//        /// Este construita fereastra grafica.
+//        wnd.showMenu();
+        /// Se incarca toate elementele grafice (dale)
+        Assets.Init();
     }
 
     /*! \fn public synchronized void start()
@@ -246,6 +253,8 @@ public class Game implements Runnable
 //            g.drawRect(1 * Tile.TILE_WIDTH, 1 * Tile.TILE_HEIGHT, Tile.TILE_WIDTH, Tile.TILE_HEIGHT);
         TileFactory tileFactory = new TileFactory();
         GameMap gameMap = new GameMap("src/PaooGame/map.txt", tileFactory);
+
+
         gameMap.render(g);
 
         // end operatie de desenare
