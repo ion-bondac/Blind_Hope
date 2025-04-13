@@ -166,13 +166,13 @@ public class GameWindow
         menuVisible = false;
         wndFrame.remove(menuPanel);
 
+
         // Initialize game canvas
         canvas = new Canvas();
         canvas.setPreferredSize(new Dimension(wndWidth, wndHeight));
         canvas.setMaximumSize(new Dimension(wndWidth, wndHeight));
         canvas.setMinimumSize(new Dimension(wndWidth, wndHeight));
         wndFrame.add(canvas);
-        //wndFrame.pack();
         wndFrame.revalidate();
         wndFrame.repaint();
     }
