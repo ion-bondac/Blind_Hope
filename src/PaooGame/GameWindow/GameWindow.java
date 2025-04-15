@@ -21,6 +21,7 @@ public class GameWindow
     private JFrame  wndFrame;       /*!< fereastra principala a jocului*/
     //private JFrame menuFrame;
     private JPanel menuPanel;
+    private JPanel settingsIcon;
     private String  wndTitle;       /*!< titlul ferestrei*/
     private int     wndWidth;       /*!< latimea ferestrei in pixeli*/
     private int     wndHeight;      /*!< inaltimea ferestrei in pixeli*/
@@ -63,7 +64,6 @@ public class GameWindow
         wndFrame.setLocationRelativeTo(null);
         wndFrame.setLayout(new BorderLayout());
 
-
         menuPanel = new JPanel();
         menuPanel.setLayout(new GridBagLayout());
         menuPanel.setBackground(Color.BLACK);
@@ -101,6 +101,21 @@ public class GameWindow
         gbc.gridy = 4;
         menuPanel.add(Box.createVerticalGlue(), gbc);
 
+
+        settingsIcon = new JPanel();
+        settingsIcon.setLayout(new GridBagLayout());
+        settingsIcon.setBackground(null);
+        JButton SettingsBtn = createMenuButton("*");
+
+        GridBagConstraints gbc2 = new GridBagConstraints();
+
+        gbc2.gridwidth = GridBagConstraints.SOUTHEAST;
+        gbc2.fill = GridBagConstraints.HORIZONTAL;
+        gbc2.insets = new Insets(0,100,0,0);
+
+        settingsIcon.add(SettingsBtn, gbc2);
+
+        menuPanel.add(settingsIcon, gbc);
         wndFrame.add(menuPanel , BorderLayout.CENTER);
         wndFrame.setVisible(true);
 
