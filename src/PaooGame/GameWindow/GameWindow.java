@@ -82,6 +82,25 @@ public class GameWindow
         menuPanel.add(LoadGameButton, gbc);
         menuPanel.add(ExitButton, gbc);
 
+        // Adaugă spațiu flexibil deasupra butoanelor pentru a le împinge în jos
+        gbc.weighty = 1.0; // Acordă prioritate spațiului vertical
+        gbc.gridy = 0;     // Prima poziție în GridBagLayout
+        menuPanel.add(Box.createVerticalGlue(), gbc); // Spațiu elastic
+
+        // Resetează weighty pentru butoane
+        gbc.weighty = 0.0;
+        gbc.gridy = 1;
+        menuPanel.add(NewGameButton, gbc);
+        gbc.gridy = 2;
+        menuPanel.add(LoadGameButton, gbc);
+        gbc.gridy = 3;
+        menuPanel.add(ExitButton, gbc);
+
+        // Adaugă spațiu sub butoane (opțional)
+        gbc.weighty = 0.2; // Spațiu mai mic sub butoane față de cel de deasupra
+        gbc.gridy = 4;
+        menuPanel.add(Box.createVerticalGlue(), gbc);
+
         wndFrame.add(menuPanel , BorderLayout.CENTER);
         wndFrame.setVisible(true);
 
