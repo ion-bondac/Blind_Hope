@@ -245,7 +245,7 @@ public class Game implements Runnable
 //
 //            g.drawRect(1 * Tile.TILE_WIDTH, 1 * Tile.TILE_HEIGHT, Tile.TILE_WIDTH, Tile.TILE_HEIGHT);
         TileFactory tileFactory = new TileFactory();
-        GameMap gameMap = new GameMap("src/PaooGame/map.txt", tileFactory);
+        GameMap gameMap = new GameMap("src/PaooGame/Level1.txt", tileFactory);
         gameMap.render(g);
 
 
