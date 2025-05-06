@@ -7,9 +7,9 @@ import PaooGame.Tiles.TileFactory;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferStrategy;
 import java.io.IOException;
-
 /*! \class Game
     \brief Clasa principala a intregului proiect. Implementeaza Game - Loop (Update -> Draw)
 
@@ -49,6 +49,10 @@ public class Game implements Runnable
     private boolean         runState;   /*!< Flag ce starea firului de executie.*/
     private Thread          gameThread; /*!< Referinta catre thread-ul de update si draw al ferestrei*/
     private BufferStrategy  bs;         /*!< Referinta catre un mecanism cu care se organizeaza memoria complexa pentru un canvas.*/
+    GameMap gameMap;
+
+    Player Mihai = new Player(1,1);
+
 
     /// Sunt cateva tipuri de "complex buffer strategies", scopul fiind acela de a elimina fenomenul de
     /// flickering (palpaire) a ferestrei.
@@ -58,7 +62,7 @@ public class Game implements Runnable
     ///                         |                                                 |
     ///                 ****************          *****************        ***************
     ///                 *              *   Show   *               *        *             *
-    /// [ Ecran ] <---- * Front Buffer *  <------ * Middle Buffer * <----- * Back Buffer * <---- Draw()
+    /// [  ] <---- * Front Buffer *  <------ * Middle Buffer * <----- * Back Buffer * <---- Draw()
     ///                 *              *          *               *        *             *
     ///                 ****************          *****************        ***************
 
@@ -77,8 +81,7 @@ public class Game implements Runnable
         \param width Latimea ferestrei in pixeli.
         \param height Inaltimea ferestrei in pixeli.
      */
-    public Game(String title, int width, int height)
-    {
+    public Game(String title, int width, int height) throws IOException {
             /// Obiectul GameWindow este creat insa fereastra nu este construita
             /// Acest lucru va fi realizat in metoda init() prin apelul
             /// functiei BuildGameWindow();
@@ -240,6 +243,16 @@ public class Game implements Runnable
      */
     private void Update()
     {
+        switch (wnd.key){
+            case 1: Mihai.move(1, 0, gameMap);
+            break;
+            case 2: Mihai.move(-1, 0, gameMap);
+            break;
+            case 3: Mihai.move(0, -1, gameMap);
+            break;
+            case 4: Mihai.move(0, 1, gameMap);
+            break;
+        }
 
     }
 
@@ -285,11 +298,18 @@ public class Game implements Runnable
 //            Tile.treeTile.Draw(g, 4 * Tile.TILE_WIDTH, 0);
 //
 //            g.drawRect(1 * Tile.TILE_WIDTH, 1 * Tile.TILE_HEIGHT, Tile.TILE_WIDTH, Tile.TILE_HEIGHT);
+
+//        Mihai.addNativeKeyListener();
+//        if (keyPressed == KeyEvent.VK_RIGHT) {
+////            if (gameMap.isWalkable(M.getX() + 1, player.getY())) {
+//                Mihai.move(1, 0,gameMap);
+////            }
+//        }
+
         TileFactory tileFactory = new TileFactory();
-        GameMap gameMap = new GameMap("src/PaooGame/Level1.txt", tileFactory);
-
-
+        gameMap = new GameMap("src/PaooGame/Level1.txt", tileFactory);
         gameMap.render(g);
+        Mihai.draw(g);
 
         // end operatie de desenare
             /// Se afiseaza pe ecran
