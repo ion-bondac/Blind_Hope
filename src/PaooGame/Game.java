@@ -49,9 +49,8 @@ public class Game implements Runnable
     private boolean         runState;   /*!< Flag ce starea firului de executie.*/
     private Thread          gameThread; /*!< Referinta catre thread-ul de update si draw al ferestrei*/
     private BufferStrategy  bs;         /*!< Referinta catre un mecanism cu care se organizeaza memoria complexa pentru un canvas.*/
+    GameMap gameMap;
 
-    TileFactory tileFactory = new TileFactory();
-    GameMap gameMap = new GameMap("src/PaooGame/Level1.txt", tileFactory);
     Player Mihai = new Player(1,1);
 
 
@@ -63,7 +62,7 @@ public class Game implements Runnable
     ///                         |                                                 |
     ///                 ****************          *****************        ***************
     ///                 *              *   Show   *               *        *             *
-    /// [ Ecran ] <---- * Front Buffer *  <------ * Middle Buffer * <----- * Back Buffer * <---- Draw()
+    /// [  ] <---- * Front Buffer *  <------ * Middle Buffer * <----- * Back Buffer * <---- Draw()
     ///                 *              *          *               *        *             *
     ///                 ****************          *****************        ***************
 
@@ -244,9 +243,15 @@ public class Game implements Runnable
      */
     private void Update()
     {
-        if(wnd.key == 1){
-            Mihai.move(1, 0, gameMap);
-            System.out.println("AI APASAT DREAPTA");
+        switch (wnd.key){
+            case 1: Mihai.move(1, 0, gameMap);
+            break;
+            case 2: Mihai.move(-1, 0, gameMap);
+            break;
+            case 3: Mihai.move(0, -1, gameMap);
+            break;
+            case 4: Mihai.move(0, 1, gameMap);
+            break;
         }
 
     }
@@ -301,7 +306,8 @@ public class Game implements Runnable
 ////            }
 //        }
 
-
+        TileFactory tileFactory = new TileFactory();
+        gameMap = new GameMap("src/PaooGame/Level1.txt", tileFactory);
         gameMap.render(g);
         Mihai.draw(g);
 

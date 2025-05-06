@@ -73,7 +73,13 @@ public class GameWindow implements KeyListener
     public void keyPressed(KeyEvent e) {
         //keyPressed = Invoked when a physical key is pressed down. Uses KeyCode, int output
         switch(e.getKeyCode()) {
-            case 68: key = 1;
+            case 68: key = 1; // dreapta D
+                break;
+            case 65: key = 2; // stanga A
+                break;
+            case 87: key = 3; // sus W
+                break;
+            case 83: key = 4; // jos S
                 break;
         }
         System.out.println("You pressed key char: " + e.getKeyChar());
@@ -84,7 +90,13 @@ public class GameWindow implements KeyListener
     public void keyReleased(KeyEvent e) {
         //keyReleased = called whenever a button is released
         switch(e.getKeyCode()) {
-            case 68: key = 0;
+            case 68: key = 0; // dreapta D
+                break;
+            case 65: key = 0; // stanga A
+                break;
+            case 87: key = 0; // sus W
+                break;
+            case 83: key = 0; // jos S
                 break;
         }
         System.out.println("You released key char: " + e.getKeyChar());
