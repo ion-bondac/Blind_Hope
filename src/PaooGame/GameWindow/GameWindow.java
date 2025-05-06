@@ -8,6 +8,8 @@ import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 /*! \class GameWindow
     \brief Implementeaza notiunea de fereastra a jocului.
@@ -16,7 +18,7 @@ import java.awt.event.ActionListener;
     ferestre grafice si totodata si cea a unui container (toate elementele
     grafice vor fi continute de fereastra).
  */
-public class GameWindow
+public class GameWindow implements KeyListener
 {
     private JFrame  wndFrame;       /*!< fereastra principala a jocului*/
     //private JFrame menuFrame;
@@ -27,7 +29,7 @@ public class GameWindow
     private int     wndHeight;      /*!< inaltimea ferestrei in pixeli*/
     private boolean menuVisible;
     private Canvas  canvas;         /*!< "panza/tablou" in care se poate desena*/
-
+    public int key;
     /*! \fn GameWindow(String title, int width, int height)
             \brief Constructorul cu parametri al clasei GameWindow
 
@@ -47,6 +49,46 @@ public class GameWindow
         //wndFrame    = null;     /*!< Fereastra nu este construita.*/
         menuVisible = true;
         BuildGameWindow();
+
+
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+        //keyTyped = Invoked when a key is typed. Uses KeyChar, char output
+//        switch(e.getKeyChar()) {
+//            case 'a': label.setLocation(label.getX()-10, label.getY());
+//                break;
+//            case 'w': label.setLocation(label.getX(), label.getY()-10);
+//                break;
+//            case 's': label.setLocation(label.getX(), label.getY()+10);
+//                break;
+//            case 'd': label.setLocation(label.getX()+10, label.getY());
+//                break;
+//        }
+
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        //keyPressed = Invoked when a physical key is pressed down. Uses KeyCode, int output
+        switch(e.getKeyCode()) {
+            case 68: key = 1;
+                break;
+        }
+        System.out.println("You pressed key char: " + e.getKeyChar());
+        System.out.println("You pressed key code: " + e.getKeyCode());
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+        //keyReleased = called whenever a button is released
+        switch(e.getKeyCode()) {
+            case 68: key = 0;
+                break;
+        }
+        System.out.println("You released key char: " + e.getKeyChar());
+        System.out.println("You released key code: " + e.getKeyCode());
     }
 
     /*! \fn private void BuildGameWindow()
@@ -63,6 +105,9 @@ public class GameWindow
         wndFrame.setResizable(false);
         wndFrame.setLocationRelativeTo(null);
         wndFrame.setLayout(new BorderLayout());
+        wndFrame.setFocusable(true);
+        wndFrame.requestFocusInWindow();
+        wndFrame.addKeyListener(this);
 
         menuPanel = new JPanel();
         menuPanel.setLayout(new GridBagLayout());
