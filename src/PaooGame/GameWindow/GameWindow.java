@@ -82,8 +82,8 @@ public class GameWindow implements KeyListener
             case 83: key = 4; // jos S
                 break;
         }
-        System.out.println("You pressed key char: " + e.getKeyChar());
-        System.out.println("You pressed key code: " + e.getKeyCode());
+//        System.out.println("You pressed key char: " + e.getKeyChar());
+//        System.out.println("You pressed key code: " + e.getKeyCode());
     }
 
     @Override
@@ -99,8 +99,8 @@ public class GameWindow implements KeyListener
             case 83: key = 0; // jos S
                 break;
         }
-        System.out.println("You released key char: " + e.getKeyChar());
-        System.out.println("You released key code: " + e.getKeyCode());
+//        System.out.println("You released key char: " + e.getKeyChar());
+//        System.out.println("You released key code: " + e.getKeyCode());
     }
 
     /*! \fn private void BuildGameWindow()

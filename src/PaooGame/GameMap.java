@@ -22,6 +22,9 @@ public class GameMap {
         this.tileFactory = factory;
         loadMapFromFile(filename);
     }
+    public boolean isWalkable(int x, int y){
+        return mapTiles[y][x].walkable;
+    }
 
     private void loadMapFromFile(String filename) throws IOException {
         List<String> lines = Files.readAllLines(Paths.get(filename));
