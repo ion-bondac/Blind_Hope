@@ -51,7 +51,7 @@ public class Game implements Runnable
     private BufferStrategy  bs;         /*!< Referinta catre un mecanism cu care se organizeaza memoria complexa pentru un canvas.*/
     GameMap gameMap;
 
-    Player Mihai = new Player(1,1);
+    Player Mihai = new Player(4,3);
 
 
     /// Sunt cateva tipuri de "complex buffer strategies", scopul fiind acela de a elimina fenomenul de
@@ -244,13 +244,34 @@ public class Game implements Runnable
     private void Update()
     {
         switch (wnd.key){
-            case 1: Mihai.move(1, 0, gameMap);
+            case 1:
+                if(Mihai.getX()>=0 && Mihai.getX()<wnd.GetWndWidth()/32){
+                    if (gameMap.isWalkable(Mihai.getX() + 1, Mihai.getY())){
+                        Mihai.move(1, 0, gameMap);
+                    }
+                }
             break;
-            case 2: Mihai.move(-1, 0, gameMap);
+            case 2:
+                if(Mihai.getX()>0 && Mihai.getX()<=wnd.GetWndWidth()/32) {
+                    if (gameMap.isWalkable(Mihai.getX() - 1, Mihai.getY())) {
+                        Mihai.move(-1, 0, gameMap);
+                    }
+                }
+
             break;
-            case 3: Mihai.move(0, -1, gameMap);
+            case 3:
+                if(Mihai.getY()>0 && Mihai.getX()<=wnd.GetWndHeight()/32) {
+                    if (gameMap.isWalkable(Mihai.getX(), Mihai.getY() - 1)) {
+                        Mihai.move(0, -1, gameMap);
+                    }
+                }
             break;
-            case 4: Mihai.move(0, 1, gameMap);
+            case 4:
+                if(Mihai.getY()>=0 && Mihai.getX()<wnd.GetWndHeight()/32) {
+                    if (gameMap.isWalkable(Mihai.getX(), Mihai.getY() + 1)) {
+                        Mihai.move(0, 1, gameMap);
+                    }
+                }
             break;
         }
 
@@ -307,7 +328,8 @@ public class Game implements Runnable
 //        }
 
         TileFactory tileFactory = new TileFactory();
-        gameMap = new GameMap("src/PaooGame/Level1.txt", tileFactory);
+//        gameMap = new GameMap("src/PaooGame/Level1.txt", tileFactory);
+        gameMap = new GameMap("src/PaooGame/map.txt", tileFactory);
         gameMap.render(g);
         Mihai.draw(g);
 

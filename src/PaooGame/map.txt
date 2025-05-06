@@ -1,3 +1,14 @@
-grass,grass,soil,soil,grass
-grass,water,water,soil,grass
-grass,grass,grass,grass,grass
+sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky
+sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky
+sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky
+sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky
+sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky
+sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,cactus,sky,sky
+sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sand,sand,sky,sky
+sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky
+sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky
+sky,sky,grass,sky,sky,sky,sky,cactus,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky,sky
+ground,ground,ground,sky,sky,sky,ground,ground,ground,sky,sky,sky,sky,sky,sky,ground,ground,ground,ground,ground
+ground,ground,ground,sand,sand,sand,ground,ground,ground,ground,ground,ground,ground,ground,ground,ground,ground,ground,ground,ground
+ground,ground,ground,ground,ground,ground,ground,ground,ground,ground,ground,ground,ground,ground,ground,ground,ground,ground,ground,ground
+ground,ground,ground,ground,ground,ground,ground,ground,ground,ground,ground,ground,ground,ground,ground,ground,ground,ground,ground,ground

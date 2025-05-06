@@ -15,7 +15,18 @@ public class TileFactory {
     public Tile getTile(String type) {
         if (!tileCache.containsKey(type)) {
             BufferedImage texture = loadTexture(type);
-            tileCache.put(type, new Tile(type, texture));
+            switch (type){
+                case "sand":
+                case "ground":
+                    tileCache.put(type, new Tile(type, texture, false));
+                    break;
+                case "grass":
+                case "cactus":
+                case "sky":
+                    tileCache.put(type, new Tile(type, texture, true));
+                    break;
+            }
+
         }
         return tileCache.get(type);
     }
