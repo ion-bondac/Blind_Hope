@@ -11,3 +11,4 @@ public class Main
         paooGame.StartGame();
     }
 }
+//nu merge pentru ca o ia din coltul stanga sus si acolo e doar empty

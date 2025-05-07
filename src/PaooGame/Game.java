@@ -51,7 +51,9 @@ public class Game implements Runnable
     private BufferStrategy  bs;         /*!< Referinta catre un mecanism cu care se organizeaza memoria complexa pentru un canvas.*/
     private GameMap gameMap;
     private Graphics        g;          /*!< Referinta catre un context grafic.*/
-    private final Player Mihai = new Player(4,3);
+    private final Player Mihai = new Player(200,200);
+
+    private Camera camera = new Camera(800,480);
 
 
     /// Sunt cateva tipuri de "complex buffer strategies", scopul fiind acela de a elimina fenomenul de
@@ -100,7 +102,7 @@ public class Game implements Runnable
 
         TileFactory tileFactory = new TileFactory();
         try {
-            gameMap = new GameMap("src/PaooGame/map.txt", tileFactory);
+            gameMap = new GameMap("src/PaooGame/Level1Map.txt", tileFactory);
         } catch (IOException e){
             System.err.println("Failed to load game map :"+ e.getMessage());
             JOptionPane.showMessageDialog(wnd.GetCanvas(),"Failed to load game map","Error",JOptionPane.ERROR_MESSAGE);
@@ -255,6 +257,8 @@ public class Game implements Runnable
      */
     private void Update()
     {
+        camera.update(Mihai);
+
         if(gameMap != null){
             if(!Mihai.onGround){
                 Mihai.move(0,Mihai.gravity++, gameMap);
@@ -275,20 +279,28 @@ public class Game implements Runnable
 
                 }
             }
+            Mihai.isMoving = false;
         }
 
         if(wnd.keys[1]){
                 Mihai.move(4, 0, gameMap);
+                Mihai.isMoving = true;
+                Mihai.facingRight = true;
         }
         if(wnd.keys[2]){
-                    Mihai.move(-4, 0, gameMap);
+                Mihai.move(-4, 0, gameMap);
+                Mihai.isMoving = true;
+                Mihai.facingRight = false;
         }
         if(wnd.keys[3]){
             if(Mihai.onGround){
                     Mihai.onGround = false;
                     Mihai.gravity = -12;
+
             }
         }
+        Mihai.updateWalkAnimation(Mihai.isMoving);
+        Mihai.updateJumpAnimation(Mihai.onGround);
 //        if(wnd.keys[2]){
 //            Mihai.move(0, 1, gameMap);
 //        }
@@ -387,9 +399,9 @@ public class Game implements Runnable
 //        gameMap = new GameMap("src/PaooGame/Level1.txt", tileFactory);
 //        gameMap = new GameMap("src/PaooGame/map.txt", tileFactory);
             if (gameMap != null) {
-                gameMap.render(g);
+                gameMap.render(g, camera);
             }
-            Mihai.draw(g);
+            Mihai.draw(g, camera);
 
             // end operatie de desenare
             /// Se afiseaza pe ecran
