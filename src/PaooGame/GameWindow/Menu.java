@@ -30,7 +30,21 @@ public class Menu {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(10, 50, 10, 50);
 
+        gbc.weighty = 1.0;
+        gbc.gridy = 0;
+        menuPanel.add(Box.createVerticalGlue(), gbc);
 
+        gbc.weighty = 0.0;
+        gbc.gridy = 1;
+        menuPanel.add(NewGameButton, gbc);
+        gbc.gridy = 2;
+        menuPanel.add(LoadGameButton, gbc);
+        gbc.gridy = 3;
+        menuPanel.add(ExitButton, gbc);
+
+        gbc.weighty = 0.2;
+        gbc.gridy = 4;
+        menuPanel.add(Box.createVerticalGlue(), gbc);
     }
 
     private JButton createMenuButton(String text)
@@ -52,5 +66,10 @@ public class Menu {
     public boolean isMenuShowing()
     {
         return isVisible;
+    }
+
+    public void setVisible(boolean visible)
+    {
+        isVisible = visible;
     }
 }
