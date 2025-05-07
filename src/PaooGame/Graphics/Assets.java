@@ -30,11 +30,18 @@ public class Assets
 //    public static BufferedImage rockRight;
 //    public static BufferedImage tree;
 
+    public static BufferedImage block;
+    public static BufferedImage sandTop;
+    public static BufferedImage sandBottom;
+    public static BufferedImage sandLeft;
+    public static BufferedImage sandRight;
+    public static BufferedImage sandLeftCorner;
+    public static BufferedImage sandRightCorner;
     public static BufferedImage sand;
-    public static BufferedImage ground;
+    public static BufferedImage plant;
     public static BufferedImage cactus;
-    public static BufferedImage sky;
     public static BufferedImage grass;
+    public static BufferedImage empty;
 
 
     /*! \fn public static void Init()
@@ -46,7 +53,7 @@ public class Assets
     public static void Init()
     {
             /// Se creaza temporar un obiect SpriteSheet initializat prin intermediul clasei ImageLoader
-        SpriteSheet sheet = new SpriteSheet(ImageLoader.LoadImage("/textures/desert_tilemap_scaled.png"));
+        SpriteSheet sheet = new SpriteSheet(ImageLoader.LoadImage("/textures/LEVEL1_MAP.png"));
 
             /// Se obtin subimaginile corespunzatoare elementelor necesare.
 //        grass = sheet.crop(0, 0);
@@ -64,11 +71,25 @@ public class Assets
 //        rockLeft = sheet.crop(0, 3);
 //        rockRight = sheet.crop(1, 3);
 
-        sand = sheet.crop(1,6);
-        ground = sheet.crop(7,6);
-        cactus = sheet.crop(3,14);
-        grass = sheet.crop(6,15);
-        sky = sheet.crop(1,0);
+//        sand = sheet.crop(1,6);
+//        ground = sheet.crop(7,6);
+//        cactus = sheet.crop(3,14);
+//        grass = sheet.crop(6,15);
+//        sky = sheet.crop(1,0);
+//
+
+        block = sheet.crop(0,0);
+        sandTop = sheet.crop(1,0);
+        sandBottom = sheet.crop(2,0);
+        sandLeft = sheet.crop(3,0);
+        sandRight = sheet.crop(4,0);
+        sandLeftCorner = sheet.crop(5,0);
+        sandRightCorner = sheet.crop(6,0);
+        sand = sheet.crop(7,0);
+        plant = sheet.crop(0,1);
+        cactus = sheet.crop(1,1);
+        grass = sheet.crop(2,1);
+        empty = sheet.crop(3,1);
 
 
 //
@@ -87,10 +108,22 @@ public class Assets
 //        tileMap.put("rockLeft", rockLeft);
 //        tileMap.put("rockRight", rockRight);
 
+        tileMap.put("sandBlock", block);
+        tileMap.put("sandTop", sandTop);
+        tileMap.put("sandBottom", sandBottom);
+        tileMap.put("sandLeft", sandLeft);
+        tileMap.put("sandRight", sandRight);
+        tileMap.put("sandLeftCorner", sandLeftCorner);
+        tileMap.put("sandRightCorner", sandRightCorner);
         tileMap.put("sand", sand);
-        tileMap.put("ground", ground);
+        tileMap.put("plant", plant);
         tileMap.put("cactus", cactus);
         tileMap.put("grass", grass);
-        tileMap.put("sky", sky);
+        tileMap.put("empty", empty);
+
+//        tileMap.put("ground", ground);
+//        tileMap.put("cactus", cactus);
+//        tileMap.put("grass", grass);
+//        tileMap.put("sky", sky);
     }
 }

@@ -17,14 +17,22 @@ public class TileFactory {
             BufferedImage texture = loadTexture(type);
             switch (type){
                 case "sand":
-                case "ground":
+                case "sandBlock":
+                case "sandTop":
+                case "sandBottom":
+                case "sandLeft":
+                case "sandRight":
+                case "sandLeftCorner":
+                case "sandRightCorner":
                     tileCache.put(type, new Tile(type, texture, false));
                     break;
                 case "grass":
                 case "cactus":
-                case "sky":
+                case "plant":
+                case "empty":
                     tileCache.put(type, new Tile(type, texture, true));
                     break;
+
             }
 
         }
