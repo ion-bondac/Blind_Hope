@@ -255,38 +255,88 @@ public class Game implements Runnable
      */
     private void Update()
     {
-        switch (wnd.key){
-            case 1:
-                if(Mihai.getX()>=0 && Mihai.getX()<wnd.GetWndWidth()/32){
-                    if (gameMap.isWalkable(Mihai.getX() + 1, Mihai.getY())){
-                        Mihai.move(1, 0, gameMap);
-                    }
-                }
-            break;
-            case 2:
-                if(Mihai.getX()>0 && Mihai.getX()<=wnd.GetWndWidth()/32) {
-                    if (gameMap.isWalkable(Mihai.getX() - 1, Mihai.getY())) {
-                        Mihai.move(-1, 0, gameMap);
-                    }
-                }
+        if(gameMap != null){
+            if(!Mihai.onGround){
+                Mihai.move(0,Mihai.gravity++, gameMap);
+            }
+            if(!gameMap.isWalkable(Mihai.getX()/Mihai.getSize(), Mihai.getY()/Mihai.getSize() + 1)){
+                Mihai.onGround = true;
+                Mihai.move(0, -Mihai.getY()% Mihai.getSize(), gameMap);
+                Mihai.gravity = 0;
+            }
+            else{
+                Mihai.onGround = false;
+            }
+            if(!gameMap.isWalkable(Mihai.getX()/Mihai.getSize()+1, Mihai.getY()/Mihai.getSize() + 1)){
+                if(Mihai.getX() % Mihai.getSize() >=4){
+                    Mihai.onGround = true;
+                    Mihai.move(0, -Mihai.getY() % Mihai.getSize(), gameMap);
+                    Mihai.gravity = 0;
 
-            break;
-            case 3:
-                if(Mihai.getY()>0 && Mihai.getX()<=wnd.GetWndHeight()/32) {
-                    if (gameMap.isWalkable(Mihai.getX(), Mihai.getY() - 1)) {
-                        Mihai.move(0, -1, gameMap);
-                    }
                 }
-            break;
-            case 4:
-                if(Mihai.getY()>=0 && Mihai.getX()<wnd.GetWndHeight()/32) {
-                    if (gameMap.isWalkable(Mihai.getX(), Mihai.getY() + 1)) {
-                        Mihai.move(0, 1, gameMap);
-                    }
-                }
-            break;
+            }
         }
 
+        if(wnd.keys[1]){
+                Mihai.move(4, 0, gameMap);
+        }
+        if(wnd.keys[2]){
+                    Mihai.move(-4, 0, gameMap);
+        }
+        if(wnd.keys[3]){
+            if(Mihai.onGround){
+                    Mihai.onGround = false;
+                    Mihai.gravity = -12;
+            }
+        }
+//        if(wnd.keys[2]){
+//            Mihai.move(0, 1, gameMap);
+//        }
+
+
+//        switch (wnd.key){
+//            case 1:
+////                if(Mihai.getX()>=0 && Mihai.getX()<wnd.GetWndWidth()/32){
+////                    if (gameMap.isWalkable(Mihai.getX()/Mihai.getSize()+1, Mihai.getY()/ Mihai.getSize())){
+////                        System.out.println(Mihai.getX()/Mihai.getSize()+1);
+////                        System.out.println(Mihai.getY());
+////                        Mihai.move(1, 0, gameMap);
+////                    }
+////                }
+//                Mihai.move(4, 0, gameMap);
+//
+//            break;
+//            case 2:
+////                if(Mihai.getX()>0 && Mihai.getX()<=wnd.GetWndWidth()/32) {
+////                    if (gameMap.isWalkable(Mihai.getX() - 1, Mihai.getY())) {
+////                        Mihai.move(-1, 0, gameMap);
+////                    }
+////                    Mihai.move(-1, 0, gameMap);
+////                }
+//                    Mihai.move(-4, 0, gameMap);
+//
+//            break;
+//            case 3:
+//                if(Mihai.onGround){
+//                    Mihai.onGround = false;
+//                    Mihai.gravity = -12;
+//                }
+//
+//
+////                Mihai.jump(gameMap);
+//            break;
+//            case 4:
+////                if(Mihai.getY()>=0 && Mihai.getX()<wnd.GetWndHeight()/32) {
+////                    if (gameMap.isWalkable(Mihai.getX(), Mihai.getY() + 1)) {
+////                        Mihai.move(0, 1, gameMap);
+////                    }
+////                    Mihai.move(0, 1, gameMap);
+////                }
+//                Mihai.move(0, 1, gameMap);
+//
+//            break;
+//        }
+//
     }
 
     /*! \fn private void Draw()
