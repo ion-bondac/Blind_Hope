@@ -45,13 +45,13 @@ import java.io.IOException;
  */
 public class Game implements Runnable
 {
-    private GameWindow      wnd;        /*!< Fereastra in care se va desena tabla jocului*/
+    private final GameWindow      wnd;        /*!< Fereastra in care se va desena tabla jocului*/
     private boolean         runState;   /*!< Flag ce starea firului de executie.*/
     private Thread          gameThread; /*!< Referinta catre thread-ul de update si draw al ferestrei*/
     private BufferStrategy  bs;         /*!< Referinta catre un mecanism cu care se organizeaza memoria complexa pentru un canvas.*/
-    GameMap gameMap;
-
-    Player Mihai = new Player(4,3);
+    private GameMap gameMap;
+    private Graphics        g;          /*!< Referinta catre un context grafic.*/
+    private final Player Mihai = new Player(4,3);
 
 
     /// Sunt cateva tipuri de "complex buffer strategies", scopul fiind acela de a elimina fenomenul de
@@ -66,10 +66,9 @@ public class Game implements Runnable
     ///                 *              *          *               *        *             *
     ///                 ****************          *****************        ***************
 
-    private Graphics        g;          /*!< Referinta catre un context grafic.*/
 
 
-    private Tile tile; /*!< variabila membra temporara. Este folosita in aceasta etapa doar pentru a desena ceva pe ecran.*/
+//    private Tile tile; /*!< variabila membra temporara. Este folosita in aceasta etapa doar pentru a desena ceva pe ecran.*/
 
     /*! \fn public Game(String title, int width, int height)
         \brief Constructor de initializare al clasei Game.
@@ -90,6 +89,24 @@ public class Game implements Runnable
         runState = false;
     }
 
+    private void InitGame() throws IOException {
+//        wnd = new GameWindow(title, width, height);
+//        wnd.BuildGameWindow();
+//        /// Este construita fereastra grafica.
+//        wnd.showMenu();
+        /// Se incarca toate elementele grafice (dale)
+        Assets.Init();
+        setupMenuButtons();
+
+        TileFactory tileFactory = new TileFactory();
+        try {
+            gameMap = new GameMap("src/PaooGame/map.txt", tileFactory);
+        } catch (IOException e){
+            System.err.println("Failed to load game map :"+ e.getMessage());
+            JOptionPane.showMessageDialog(wnd.GetCanvas(),"Failed to load game map","Error",JOptionPane.ERROR_MESSAGE);
+            System.exit(1);
+        }
+    }
 
     /*! \fn public void run()
         \brief Functia ce va rula in thread-ul creat.
@@ -99,7 +116,12 @@ public class Game implements Runnable
     public void run()
     {
             /// Initializeaza obiectul game
-        InitGame();
+        try {
+            InitGame();
+        }catch (IOException e){
+            e.printStackTrace();
+            return;
+        }
         long oldTime = System.nanoTime();   /*!< Retine timpul in nanosecunde aferent frame-ului anterior.*/
         long curentTime;                    /*!< Retine timpul curent de executie.*/
 
@@ -142,16 +164,6 @@ public class Game implements Runnable
     Sunt construite elementele grafice (assets): dale, player, elemente active si pasive.
 
  */
-    private void InitGame()
-    {
-//        wnd = new GameWindow(title, width, height);
-//        wnd.BuildGameWindow();
-//        /// Este construita fereastra grafica.
-//        wnd.showMenu();
-        /// Se incarca toate elementele grafice (dale)
-        Assets.Init();
-        setupMenuButtons();
-    }
 
     private void setupMenuButtons()
     {
@@ -283,32 +295,26 @@ public class Game implements Runnable
         Metoda este declarata privat deoarece trebuie apelata doar in metoda run()
      */
     private void Draw() throws IOException {
-        if(wnd.GetCanvas() == null)
-        {
-            return;
-        }
-            /// Returnez bufferStrategy pentru canvasul existent
-        bs = wnd.GetCanvas().getBufferStrategy();
-            /// Verific daca buffer strategy a fost construit sau nu
-        if(bs == null)
-        {
-                /// Se executa doar la primul apel al metodei Draw()
-            try
-            {
-                    /// Se construieste tripul buffer
-                wnd.GetCanvas().createBufferStrategy(3);
+        try {
+            Canvas canvas = wnd.GetCanvas();
+            if (canvas == null) {
                 return;
             }
-            catch (Exception e)
-            {
-                    /// Afisez informatii despre problema aparuta pentru depanare.
-                e.printStackTrace();
+            /// Returnez bufferStrategy pentru canvasul existent
+            bs = canvas.getBufferStrategy();
+            /// Verific daca buffer strategy a fost construit sau nu
+            if (bs == null) {
+                /// Se executa doar la primul apel al metodei Draw()
+                /// Se construieste tripul buffer
+                canvas.createBufferStrategy(3);
+                return;
+
             }
-        }
+
             /// Se obtine contextul grafic curent in care se poate desena.
-        g = bs.getDrawGraphics();
+            g = bs.getDrawGraphics();
             /// Se sterge ce era
-        g.clearRect(0, 0, wnd.GetWndWidth(), wnd.GetWndHeight());
+            g.clearRect(0, 0, wnd.GetWndWidth(), wnd.GetWndHeight());
 
             /// operatie de desenare
             // ...............
@@ -327,19 +333,25 @@ public class Game implements Runnable
 ////            }
 //        }
 
-        TileFactory tileFactory = new TileFactory();
+//        TileFactory tileFactory = new TileFactory();
 //        gameMap = new GameMap("src/PaooGame/Level1.txt", tileFactory);
-        gameMap = new GameMap("src/PaooGame/map.txt", tileFactory);
-        gameMap.render(g);
-        Mihai.draw(g);
+//        gameMap = new GameMap("src/PaooGame/map.txt", tileFactory);
+            if (gameMap != null) {
+                gameMap.render(g);
+            }
+            Mihai.draw(g);
 
-        // end operatie de desenare
+            // end operatie de desenare
             /// Se afiseaza pe ecran
-        bs.show();
+            bs.show();
 
             /// Elibereaza resursele de memorie aferente contextului grafic curent (zonele de memorie ocupate de
             /// elementele grafice ce au fost desenate pe canvas).
-        g.dispose();
+            g.dispose();
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 }
 

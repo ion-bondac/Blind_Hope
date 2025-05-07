@@ -48,6 +48,13 @@ public class GameWindow implements KeyListener
         wndHeight   = height;   /*!< Retine inaltimea ferestrei.*/
         //wndFrame    = null;     /*!< Fereastra nu este construita.*/
         menuVisible = true;
+
+        canvas = new Canvas();
+        canvas.setPreferredSize(new Dimension(wndWidth,wndHeight));
+        canvas.setMaximumSize(new Dimension(wndWidth,wndHeight));
+        canvas.setMinimumSize(new Dimension(wndWidth,wndHeight));
+        canvas.addKeyListener(this);
+
         BuildGameWindow();
 
 
@@ -109,8 +116,7 @@ public class GameWindow implements KeyListener
         inchidere, invalideaza redimensionarea ferestrei, afiseaza fereastra.
 
      */
-    public void BuildGameWindow()
-    {
+    public void BuildGameWindow() {
         wndFrame = new JFrame(wndTitle);
         wndFrame.setSize(wndWidth, wndHeight);
         wndFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -133,7 +139,7 @@ public class GameWindow implements KeyListener
 
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(10,50,10,50);
+        gbc.insets = new Insets(10, 50, 10, 50);
 
         menuPanel.add(NewGameButton, gbc);
         menuPanel.add(LoadGameButton, gbc);
@@ -168,78 +174,14 @@ public class GameWindow implements KeyListener
 
         gbc2.gridwidth = GridBagConstraints.SOUTHEAST;
         gbc2.fill = GridBagConstraints.HORIZONTAL;
-        gbc2.insets = new Insets(0,100,0,0);
+        gbc2.insets = new Insets(0, 100, 0, 0);
 
         settingsIcon.add(SettingsBtn, gbc2);
 
         menuPanel.add(settingsIcon, gbc);
-        wndFrame.add(menuPanel , BorderLayout.CENTER);
+        wndFrame.add(menuPanel, BorderLayout.CENTER);
         wndFrame.setVisible(true);
 
-//        startButton.setFont(new Font("Arial", Font.PLAIN, 20));
-//        startButton.setPreferredSize(new Dimension(200, 50));
-//
-//        startButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                hideMenu();
-//            }
-//        });
-//
-//        menuPanel.add(startButton);
-//        wndFrame.add(menuPanel);
-//        wndFrame.setVisible(true);
-
-//            /// Daca fereastra a mai fost construita intr-un apel anterior
-//            /// se renunta la apel
-//
-//        if(wndFrame != null)
-//        {
-//            return;
-//        }
-//            /// Aloca memorie pentru obiectul de tip fereastra si seteaza denumirea
-//            /// ce apare in bara de titlu
-//        wndFrame = new JFrame(wndTitle);
-//            /// Seteaza dimensiunile ferestrei in pixeli
-//        wndFrame.setSize(wndWidth, wndHeight);
-//            /// Operatia de inchidere (fereastra sa poata fi inchisa atunci cand
-//            /// este apasat butonul x din dreapta sus al ferestrei). Totodata acest
-//            /// lucru garanteaza ca nu doar fereastra va fi inchisa ci intregul
-//            /// program
-//        wndFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//            /// Avand in vedere ca dimensiunea ferestrei poate fi modificata
-//            /// si corespunzator continutul actualizat (aici ma refer la dalele
-//            /// randate) va recomand sa constrangeti deocamdata jucatorul
-//            /// sa se joace in fereastra stabilitata de voi. Puteti reveni asupra
-//            /// urmatorului apel ulterior.
-//        wndFrame.setResizable(false);
-//            /// Recomand ca fereastra sa apara in centrul ecranului. Pentru orice
-//            /// alte pozitie se va apela "wndFrame.setLocation(x, y)" etc.
-//        wndFrame.setLocationRelativeTo(null);
-//            /// Implicit o fereastra cand este creata nu este vizibila motiv pentru
-//            /// care trebuie setata aceasta proprietate
-//        wndFrame.setVisible(true);
-//
-//            /// Creaza obiectul de tip canvas (panza) pe care se poate desena.
-//        canvas = new Canvas();
-//            /// In aceeasi maniera trebuiesc setate proprietatile pentru acest obiect
-//            /// canvas (panza): dimensiuni preferabile, minime, maxime etc.
-//            /// Urmotorul apel de functie seteaza dimensiunea "preferata"/implicita
-//            /// a obiectului de tip canvas.
-//            /// Functia primeste ca parametru un obiect de tip Dimension ca incapsuleaza
-//            /// doua proprietati: latime si inaltime. Cum acest obiect nu exista
-//            /// a fost creat unul si dat ca parametru.
-//        canvas.setPreferredSize(new Dimension(wndWidth, wndHeight));
-//            /// Avand in vedere ca elementele unei ferestre pot fi scalate atunci cand
-//            /// fereastra este redimensionata
-//        canvas.setMaximumSize(new Dimension(wndWidth, wndHeight));
-//        canvas.setMinimumSize(new Dimension(wndWidth, wndHeight));
-//            /// Avand in vedere ca obiectul de tip canvas, proaspat creat, nu este automat
-//            /// adaugat in fereastra trebuie apelata metoda add a obiectul wndFrame
-//        wndFrame.add(canvas);
-//            /// Urmatorul apel de functie are ca scop eventuala redimensionare a ferestrei
-//            /// ca tot ce contine sa poate fi afisat complet
-//        wndFrame.pack();
     }
 
     private JButton createMenuButton(String text)
@@ -256,16 +198,17 @@ public class GameWindow implements KeyListener
     public void hideMenu() {
         menuVisible = false;
         wndFrame.remove(menuPanel);
-
+        wndFrame.add(canvas,BorderLayout.CENTER);
 
         // Initialize game canvas
-        canvas = new Canvas();
-        canvas.setPreferredSize(new Dimension(wndWidth, wndHeight));
-        canvas.setMaximumSize(new Dimension(wndWidth, wndHeight));
-        canvas.setMinimumSize(new Dimension(wndWidth, wndHeight));
-        wndFrame.add(canvas);
+//        canvas = new Canvas();
+//        canvas.setPreferredSize(new Dimension(wndWidth, wndHeight));
+//        canvas.setMaximumSize(new Dimension(wndWidth, wndHeight));
+//        canvas.setMinimumSize(new Dimension(wndWidth, wndHeight));
+//        wndFrame.add(canvas);
         wndFrame.revalidate();
         wndFrame.repaint();
+        canvas.requestFocusInWindow();
     }
 
 //    public void showMenu()
@@ -328,6 +271,8 @@ public class GameWindow implements KeyListener
     public Canvas GetCanvas() {
         return canvas;
     }
+
+    public JFrame getWndFrame(){return wndFrame;}
 
     public JPanel getMenuPanel()
     {
