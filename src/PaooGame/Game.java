@@ -167,14 +167,21 @@ public class Game implements Runnable
 
     private void setupMenuButtons()
     {
-        for(Component comp : wnd.getMenuPanel().getComponents())
-        {
-            if(comp instanceof JButton)
-            {
-                JButton button = (JButton) comp;
-                button.addActionListener(e -> handleButtonAction(button.getText()));
-            }
-        }
+//        for(Component comp : wnd.getMenuPanel().getComponents())
+//        {
+//            if(comp instanceof JButton)
+//            {
+//                JButton button = (JButton) comp;
+//                button.addActionListener(e -> handleButtonAction(button.getText()));
+//            }
+//        }
+        wnd.getMenu().addActionListenerToButton("New Game", e -> handleButtonAction("New Game"));
+        wnd.getMenu().addActionListenerToButton("Load Game", e -> handleButtonAction("Load Game"));
+        wnd.getMenu().addActionListenerToButton("Exit", e -> handleButtonAction("Exit"));
+        wnd.getMenu().addSettingsActionListener(e -> {
+            System.out.println("Settings button clicked");
+            // Add your settings functionality here
+        });
     }
 
     private void handleButtonAction(String buttonText)
