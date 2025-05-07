@@ -29,7 +29,7 @@ public class GameWindow implements KeyListener
     private int     wndHeight;      /*!< inaltimea ferestrei in pixeli*/
     private boolean menuVisible;
     private Canvas  canvas;         /*!< "panza/tablou" in care se poate desena*/
-    public int key;
+    public boolean[] keys = new boolean[10];
     /*! \fn GameWindow(String title, int width, int height)
             \brief Constructorul cu parametri al clasei GameWindow
 
@@ -80,13 +80,13 @@ public class GameWindow implements KeyListener
     public void keyPressed(KeyEvent e) {
         //keyPressed = Invoked when a physical key is pressed down. Uses KeyCode, int output
         switch(e.getKeyCode()) {
-            case 68: key = 1; // dreapta D
+            case 68: keys[1] = true; // dreapta D
                 break;
-            case 65: key = 2; // stanga A
+            case 65: keys[2] = true; // stanga A
                 break;
-            case 87: key = 3; // sus W
+            case 87: keys[3] = true; // sus W
                 break;
-            case 83: key = 4; // jos S
+            case 83: keys[4] = true; // jos S
                 break;
         }
 //        System.out.println("You pressed key char: " + e.getKeyChar());
@@ -97,13 +97,13 @@ public class GameWindow implements KeyListener
     public void keyReleased(KeyEvent e) {
         //keyReleased = called whenever a button is released
         switch(e.getKeyCode()) {
-            case 68: key = 0; // dreapta D
+            case 68: keys[1] = false; // dreapta D
                 break;
-            case 65: key = 0; // stanga A
+            case 65: keys[2] = false; // stanga A
                 break;
-            case 87: key = 0; // sus W
+            case 87: keys[3] = false; // sus W
                 break;
-            case 83: key = 0; // jos S
+            case 83: keys[4] = false; // jos S
                 break;
         }
 //        System.out.println("You released key char: " + e.getKeyChar());
