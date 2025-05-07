@@ -1,5 +1,6 @@
 package PaooGame.GameWindow;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -7,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 
 public class Menu extends JPanel {
@@ -14,6 +16,7 @@ public class Menu extends JPanel {
     private Rectangle settingsBounds;
     private boolean settingsHovered = false;
     private ActionListener settingsActionListener;
+    private BufferedImage[] backgroundLayers = new BufferedImage[5];
 
     public Menu() {
         setLayout(new GridBagLayout());
@@ -21,8 +24,21 @@ public class Menu extends JPanel {
         isVisible = true;
         settingsBounds = new Rectangle();
 
+        loadBackgroundImages();
         setupMenuButtons();
         setupSettingsInteraction();
+    }
+
+    private void loadBackgroundImages() {
+        try {
+            backgroundLayers[0] = ImageIO.read(getClass().getResource("/menu/1.png"));
+            backgroundLayers[1] = ImageIO.read(getClass().getResource("/menu/2.png"));
+            backgroundLayers[2] = ImageIO.read(getClass().getResource("/menu/3.png"));
+            backgroundLayers[3] = ImageIO.read(getClass().getResource("/menu/4.png"));
+            backgroundLayers[4] = ImageIO.read(getClass().getResource("/menu/menu_logo.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void setupMenuButtons() {
@@ -96,35 +112,36 @@ public class Menu extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+        Graphics2D g2d = (Graphics2D) g;
 
-        // Position settings button 30px from right edge and 10px from bottom
+        // Desenare background-uri stratificate
+        for (BufferedImage layer : backgroundLayers) {
+            if (layer != null) {
+                g2d.drawImage(layer, 0, 0, getWidth(), getHeight(), null);
+            }
+        }
+
+        // Apoi desenăm butonul Settings
+        // (restul codului deja existent)
         int buttonSize = 30;
         settingsBounds = new Rectangle(
-                getWidth() - buttonSize - 30,  // 30px from right edge
-                getHeight() - buttonSize - 10, // 10px from bottom
+                getWidth() - buttonSize - 30,
+                getHeight() - buttonSize - 10,
                 buttonSize,
                 buttonSize
         );
 
-        // Draw button
-        Graphics2D g2d = (Graphics2D)g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-        // Button background
         g2d.setColor(settingsHovered ? new Color(80, 80, 80) : new Color(60, 60, 60));
         g2d.fillOval(settingsBounds.x, settingsBounds.y, buttonSize, buttonSize);
-
-        // Button border
         g2d.setColor(settingsHovered ? Color.WHITE : Color.LIGHT_GRAY);
         g2d.setStroke(new BasicStroke(2));
         g2d.drawOval(settingsBounds.x, settingsBounds.y, buttonSize, buttonSize);
-
-        // Draw asterisk
         g2d.setColor(Color.WHITE);
         g2d.setFont(new Font("Arial", Font.BOLD, 16));
         FontMetrics fm = g2d.getFontMetrics();
-        int textX = settingsBounds.x + (buttonSize - fm.stringWidth("*"))/2;
-        int textY = settingsBounds.y + ((buttonSize - fm.getHeight())/2) + fm.getAscent();
+        int textX = settingsBounds.x + (buttonSize - fm.stringWidth("*")) / 2;
+        int textY = settingsBounds.y + ((buttonSize - fm.getHeight()) / 2) + fm.getAscent();
         g2d.drawString("*", textX, textY);
     }
 
