@@ -46,51 +46,6 @@ public class Menu extends JPanel {
         }
     }
 
-//    private void createSettingsPanel() {
-//        settingsPanel = new JPanel();
-//        settingsPanel.setLayout(new BorderLayout());
-//        settingsPanel.setBackground(new Color(0, 0, 0, 200)); // Semi-transparent black
-//        settingsPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-//
-//        // Make the settings panel initially invisible
-//        settingsPanel.setVisible(false);
-//        settingsPanel.setOpaque(false);
-//
-//        // Add settings components
-//        JLabel titleLabel = new JLabel("Settings", SwingConstants.CENTER);
-//        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
-//        titleLabel.setForeground(Color.WHITE);
-//        settingsPanel.add(titleLabel, BorderLayout.NORTH);
-//
-//        // Settings content panel
-//        JPanel contentPanel = new JPanel();
-//        contentPanel.setLayout(new GridLayout(0, 1, 10, 10));
-//        contentPanel.setOpaque(false);
-//
-//        // Volume control
-//        JPanel volumePanel = new JPanel(new BorderLayout());
-//        volumePanel.setOpaque(false);
-//        JLabel volumeLabel = new JLabel("Volume:");
-//        volumeLabel.setForeground(Color.WHITE);
-//        JSlider volumeSlider = new JSlider(0, 100, 50);
-//        volumePanel.add(volumeLabel, BorderLayout.WEST);
-//        volumePanel.add(volumeSlider, BorderLayout.CENTER);
-//        contentPanel.add(volumePanel);
-//
-//        // Close button
-//        JButton closeButton = new JButton("Close");
-//        closeButton.addActionListener(e -> toggleSettings());
-//        contentPanel.add(closeButton);
-//
-//        settingsPanel.add(contentPanel, BorderLayout.CENTER);
-//        this.add(settingsPanel);
-//    }
-
-//    private void toggleSettings() {
-//        settingsVisible = !settingsVisible;
-//        settingsPanel.setVisible(settingsVisible);
-//        repaint();
-//    }
 
     private void setupMenuButtons() {
         GridBagConstraints gbc = new GridBagConstraints();
@@ -184,16 +139,24 @@ public class Menu extends JPanel {
         int buttonSize = 40;
         settingsBounds = new Rectangle(
                 getWidth() - buttonSize - 20,
-                20, // Moved to top right
+                getHeight() - buttonSize - 20, // Moved to top right
                 buttonSize,
                 buttonSize
         );
 
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        // Draw button background
-        g2d.setColor(settingsHovered ? new Color(80, 80, 80, 150) : new Color(60, 60, 60, 150));
+        // Draw button background with light gray color
+        Color lightGray = new Color(200, 200, 200); // Light gray color
+        Color hoverColor = new Color(180, 180, 180); // Slightly darker on hover
+
+        g2d.setColor(settingsHovered ? hoverColor : lightGray);
         g2d.fillRoundRect(settingsBounds.x, settingsBounds.y, buttonSize, buttonSize, 10, 10);
+
+        // Optional: Add a subtle border
+        g2d.setColor(new Color(150, 150, 150));
+        g2d.setStroke(new BasicStroke(1.5f));
+        g2d.drawRoundRect(settingsBounds.x, settingsBounds.y, buttonSize, buttonSize, 10, 10);
 
         // Draw icon if available
         if (settingsIconImage != null) {
@@ -203,8 +166,8 @@ public class Menu extends JPanel {
             g2d.drawImage(settingsIconImage, iconX, iconY, iconSize, iconSize, null);
         } else {
             // Fallback if icon not loaded
-            g2d.setColor(Color.WHITE);
-            g2d.setFont(new Font("Arial", Font.BOLD, 16));
+            g2d.setColor(new Color(80,80,80));
+            g2d.setFont(new Font("Arial", Font.BOLD, 18));
             FontMetrics fm = g2d.getFontMetrics();
             int textX = settingsBounds.x + (buttonSize - fm.stringWidth("⚙")) / 2;
             int textY = settingsBounds.y + ((buttonSize - fm.getHeight()) / 2) + fm.getAscent();
