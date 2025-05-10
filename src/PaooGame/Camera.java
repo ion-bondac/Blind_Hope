@@ -18,4 +18,8 @@ public class Camera {
 
     public int getX() { return x; }
     public int getY() { return y; }
+
+    public int getScreenHeight() { return screenHeight; }
+
+    public int getScreenWidth() { return screenWidth; }
 }
