@@ -5,8 +5,11 @@ import PaooGame.Graphics.Assets;
 import PaooGame.Tiles.Tile;
 import PaooGame.Tiles.TileFactory;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferStrategy;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -17,10 +20,18 @@ import java.util.List;
 public class GameMap {
     private Tile[][] mapTiles;
     private TileFactory tileFactory;
+    private BufferedImage background;
+
 
     public GameMap(String filename, TileFactory factory) throws IOException {
         this.tileFactory = factory;
         loadMapFromFile(filename);
+
+        try {
+            background = ImageIO.read(new File("res/textures/level1bg1.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
     public boolean isWalkable(int x, int y){
         return mapTiles[y][x].walkable;
@@ -54,6 +65,13 @@ public void render(Graphics g, Camera camera) {
     int tileSize = 32;
     int screenWidth = camera.getScreenWidth();  // Add this to Camera class
     int screenHeight = camera.getScreenHeight(); // Add this to Camera class
+
+
+    if (background != null) {
+        int bgX = camera.getX() / 2;
+        int bgY = camera.getY() / 2;
+        g.drawImage(background, -bgX, -bgY, null);
+    }
 
     // Calculate visible tile range
     int startX = Math.max(0, camera.getX() / tileSize);
