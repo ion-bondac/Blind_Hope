@@ -47,13 +47,27 @@ public class GameMap {
 //            }
 //        }
 //    }
-    public void render(Graphics g, Camera camera) {
-        for (int y = 0; y < mapTiles.length; y++) {
-            for (int x = 0; x < mapTiles[y].length; x++) {
-                mapTiles[y][x].draw(g, x * 32 - camera.getX(), y * 32 - camera.getY());
-            }
+public void render(Graphics g, Camera camera) {
+    int tileSize = 32;
+    int screenWidth = camera.getScreenWidth();  // Add this to Camera class
+    int screenHeight = camera.getScreenHeight(); // Add this to Camera class
+
+    // Calculate visible tile range
+    int startX = Math.max(0, camera.getX() / tileSize);
+    int startY = Math.max(0, camera.getY() / tileSize);
+    int endX = Math.min(mapTiles[0].length, (camera.getX() + screenWidth) / tileSize + 1);
+    int endY = Math.min(mapTiles.length, (camera.getY() + screenHeight) / tileSize + 1);
+
+    // Render only visible tiles
+    for (int y = startY; y < endY; y++) {
+        for (int x = startX; x < endX; x++) {
+            mapTiles[y][x].draw(g,
+                    x * tileSize - camera.getX(),
+                    y * tileSize - camera.getY()
+            );
         }
     }
+}
 
 }
 
