@@ -94,6 +94,12 @@ public class Player {
         }
     }
 
+
+    public void respawn(int NewX, int NewY){
+        x=NewX;
+        y=NewY;
+    }
+
     public void draw(Graphics g, Camera camera) {
         BufferedImage frameToDraw;
         if (spriteSheet != null) {
