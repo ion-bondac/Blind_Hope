@@ -25,6 +25,9 @@ public class GameMap {
     public boolean isWalkable(int x, int y){
         return mapTiles[y][x].walkable;
     }
+    public boolean isFloor(int x, int y){
+        return mapTiles[y][x].getType().equals("56");
+    }
 
     private void loadMapFromFile(String filename) throws IOException {
         List<String> lines = Files.readAllLines(Paths.get(filename));

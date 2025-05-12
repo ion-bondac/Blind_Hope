@@ -102,7 +102,7 @@ public class Game implements Runnable
 
         TileFactory tileFactory = new TileFactory();
         try {
-            gameMap = new GameMap("src/PaooGame/Level1Map.txt", tileFactory);
+            gameMap = new GameMap("src/PaooGame/Level1MapNEW.txt", tileFactory);
         } catch (IOException e){
             System.err.println("Failed to load game map :"+ e.getMessage());
             JOptionPane.showMessageDialog(wnd.GetCanvas(),"Failed to load game map","Error",JOptionPane.ERROR_MESSAGE);
@@ -293,7 +293,6 @@ public class Game implements Runnable
 
             Mihai.isMoving = false;
         }
-
         if(wnd.keys[1]){
                 Mihai.move(4, 0, gameMap);
                 Mihai.isMoving = true;
@@ -313,6 +312,10 @@ public class Game implements Runnable
         }
         Mihai.updateWalkAnimation(Mihai.isMoving);
         Mihai.updateJumpAnimation(Mihai.onGround);
+        if(gameMap.isFloor(Mihai.getX()/Mihai.getSize(), Mihai.getY()/Mihai.getSize() + 1)){
+                Mihai.respawn(200, 100);
+        }
+
 //        if(wnd.keys[2]){
 //            Mihai.move(0, 1, gameMap);
 //        }

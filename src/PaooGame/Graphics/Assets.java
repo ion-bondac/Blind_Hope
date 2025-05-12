@@ -42,6 +42,7 @@ public class Assets
     public static BufferedImage cactus;
     public static BufferedImage grass;
     public static BufferedImage empty;
+    public static BufferedImage floor;
 
 
     /*! \fn public static void Init()
@@ -90,6 +91,7 @@ public class Assets
         cactus = sheet.crop(1,1);
         grass = sheet.crop(2,1);
         empty = sheet.crop(3,1);
+        floor = sheet.crop(4,1);
 
 
 //
@@ -108,18 +110,19 @@ public class Assets
 //        tileMap.put("rockLeft", rockLeft);
 //        tileMap.put("rockRight", rockRight);
 
-        tileMap.put("sandBlock", block);
-        tileMap.put("sandTop", sandTop);
-        tileMap.put("sandBottom", sandBottom);
-        tileMap.put("sandLeft", sandLeft);
-        tileMap.put("sandRight", sandRight);
-        tileMap.put("sandLeftCorner", sandLeftCorner);
-        tileMap.put("sandRightCorner", sandRightCorner);
-        tileMap.put("sand", sand);
-        tileMap.put("plant", plant);
-        tileMap.put("cactus", cactus);
-        tileMap.put("grass", grass);
-        tileMap.put("empty", empty);
+        tileMap.put("0", block);
+        tileMap.put("1", sandTop);
+        tileMap.put("2", sandBottom);
+        tileMap.put("3", sandLeft);
+        tileMap.put("4", sandRight);
+        tileMap.put("5", sandLeftCorner);
+        tileMap.put("6", sandRightCorner);
+        tileMap.put("7", sand);
+        tileMap.put("8", plant);
+        tileMap.put("9", cactus);
+        tileMap.put("10", grass);
+        tileMap.put("-1", empty);
+        tileMap.put("56", floor);
 
 //        tileMap.put("ground", ground);
 //        tileMap.put("cactus", cactus);

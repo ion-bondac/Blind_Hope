@@ -16,20 +16,21 @@ public class TileFactory {
         if (!tileCache.containsKey(type)) {
             BufferedImage texture = loadTexture(type);
             switch (type){
-                case "sand":
-                case "sandBlock":
-                case "sandTop":
-                case "sandBottom":
-                case "sandLeft":
-                case "sandRight":
-                case "sandLeftCorner":
-                case "sandRightCorner":
+                case "0":
+                case "1":
+                case "2":
+                case "3":
+                case "4":
+                case "5":
+                case "6":
+                case "7":
+                case "56":
                     tileCache.put(type, new Tile(type, texture, false));
                     break;
-                case "grass":
-                case "cactus":
-                case "plant":
-                case "empty":
+                case "8":
+                case "9":
+                case "10":
+                case "-1":
                     tileCache.put(type, new Tile(type, texture, true));
                     break;
 
