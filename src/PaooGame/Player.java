@@ -59,10 +59,13 @@ public class Player {
         if (map.isWalkable(tileX, tileY)) {
             x = newX;
             y = newY;
-            if (map.isWalkable(x/size, y/size + 1)) {
-                onGround = false;
-            }
         }
+//        if (map.isWalkable(x/size, y/size + 1)){
+//            onGround = false;
+//        }
+//        else{
+//            onGround = true;
+//        }
     }
 
     public void updateWalkAnimation(boolean moving) {

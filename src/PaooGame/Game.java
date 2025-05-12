@@ -270,22 +270,27 @@ public class Game implements Runnable
             if(!Mihai.onGround){
                 Mihai.move(0,Mihai.gravity++, gameMap);
             }
-            if(!gameMap.isWalkable(Mihai.getX()/Mihai.getSize(), Mihai.getY()/Mihai.getSize() + 1)){
+            int PlayerX = Mihai.getX();
+            if(Mihai.getX()% Mihai.getSize() > 8 && !gameMap.isWalkable(Mihai.getX()/Mihai.getSize() + 1, Mihai.getY()/Mihai.getSize() + 1)){
+                PlayerX += 32;
+            }
+            if(!gameMap.isWalkable(PlayerX/Mihai.getSize(), Mihai.getY()/Mihai.getSize() + 1)){
                 Mihai.onGround = true;
-                Mihai.move(0, -Mihai.getY()% Mihai.getSize(), gameMap);
+                Mihai.move(0, -Mihai.getY() % Mihai.getSize(), gameMap);
                 Mihai.gravity = 0;
             }
             else{
                 Mihai.onGround = false;
             }
-            if(!gameMap.isWalkable(Mihai.getX()/Mihai.getSize()+1, Mihai.getY()/Mihai.getSize() + 1)){
-                if(Mihai.getX() % Mihai.getSize() >=4){
-                    Mihai.onGround = true;
-                    Mihai.move(0, -Mihai.getY() % Mihai.getSize(), gameMap);
-                    Mihai.gravity = 0;
+//            if(!gameMap.isWalkable(Mihai.getX()/Mihai.getSize() +1, Mihai.getY()/Mihai.getSize() + 1)){
+//                if(Mihai.getX() % Mihai.getSize() >=30){
+//                    Mihai.onGround = true;
+//                    Mihai.move(0, -Mihai.getY() % Mihai.getSize(), gameMap);
+//                    Mihai.gravity = 0;
+//
+//                }
+//            }
 
-                }
-            }
             Mihai.isMoving = false;
         }
 
@@ -302,7 +307,7 @@ public class Game implements Runnable
         if(wnd.keys[3]){
             if(Mihai.onGround){
                     Mihai.onGround = false;
-                    Mihai.gravity = -12;
+                    Mihai.gravity = -14;
 
             }
         }
