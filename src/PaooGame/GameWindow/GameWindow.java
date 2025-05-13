@@ -107,8 +107,6 @@ public class GameWindow implements KeyListener
             case 83: keys[4] = false; // jos S
                 break;
         }
-//        System.out.println("You released key char: " + e.getKeyChar());
-//        System.out.println("You released key code: " + e.getKeyCode());
     }
 
     /*! \fn private void BuildGameWindow()
