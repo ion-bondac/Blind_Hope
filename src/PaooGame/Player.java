@@ -5,7 +5,7 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-public class Player {
+public class Player extends Entity {
     private int x, y; // position in tiles
     private final int size = 32;
     private Color color = Color.RED;
@@ -31,8 +31,11 @@ public class Player {
     public Player(int x, int y) {
         this.x = x;
         this.y = y;
+        this.speed = 4;
+        this.health = 100;
+        this.width = 32;
+        this.height = 32;
         try{
-//            sprite = ImageIO.read(getClass().getResource("/sprites/Esperis_static_tile.png"));
             spriteSheet = ImageIO.read(getClass().getResource("/sprites/Esperis_Spritesheet.png"));
             standing = spriteSheet.getSubimage(0,0,size,size);
             for(int i = 0; i < walkFrames.length; i++) {
@@ -100,18 +103,21 @@ public class Player {
         y=NewY;
     }
 
-    public void draw(Graphics g, Camera camera) {
+@Override
+public void update(){
+        ;
+}
+
+@Override
+public void render(Graphics g, Camera camera) {
         BufferedImage frameToDraw;
         if (spriteSheet != null) {
             if(isMoving){
                 frameToDraw = walkFrames[walkFrameIndex];
-//                g.drawImage(walkFrames[walkFrameIndex], x- camera.getX(), y- camera.getY(), size, size, null);
             } else if (!onGround) {
                 frameToDraw = jumpFrames[jumpFrameIndex];
-//                g.drawImage(jumpFrames[jumpFrameIndex], x- camera.getX(), y- camera.getY(), size, size, null);
             } else{
                 frameToDraw = standing;
-//                g.drawImage(standing, x- camera.getX(), y- camera.getY(), size, size, null);
             }
             if (facingRight) {
                 g.drawImage(frameToDraw,

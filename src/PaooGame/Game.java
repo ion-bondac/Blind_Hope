@@ -53,8 +53,10 @@ public class Game implements Runnable
     private Graphics        g;          /*!< Referinta catre un context grafic.*/
     private final Player Mihai = new Player(200,200);
 
-    private Camera camera = new Camera(800,480);
+    private Enemy enemy1 = new Enemy(250,300, Mihai);
 
+    private Camera camera = new Camera(800,480);
+    EntityManager entityManager = new EntityManager();
 
     /// Sunt cateva tipuri de "complex buffer strategies", scopul fiind acela de a elimina fenomenul de
     /// flickering (palpaire) a ferestrei.
@@ -108,6 +110,10 @@ public class Game implements Runnable
             JOptionPane.showMessageDialog(wnd.GetCanvas(),"Failed to load game map","Error",JOptionPane.ERROR_MESSAGE);
             System.exit(1);
         }
+
+        entityManager.addEntity(Mihai);
+        entityManager.addEntity(enemy1);
+
     }
 
     /*! \fn public void run()
@@ -294,12 +300,12 @@ public class Game implements Runnable
             Mihai.isMoving = false;
         }
         if(wnd.keys[1]){
-                Mihai.move(4, 0, gameMap);
+                Mihai.move(Mihai.speed, 0, gameMap);
                 Mihai.isMoving = true;
                 Mihai.facingRight = true;
         }
         if(wnd.keys[2]){
-                Mihai.move(-4, 0, gameMap);
+                Mihai.move(-Mihai.speed, 0, gameMap);
                 Mihai.isMoving = true;
                 Mihai.facingRight = false;
         }
@@ -315,55 +321,8 @@ public class Game implements Runnable
         if(gameMap.isFloor(Mihai.getX()/Mihai.getSize(), Mihai.getY()/Mihai.getSize() + 1)){
                 Mihai.respawn(200, 100);
         }
+        entityManager.updateAll();
 
-//        if(wnd.keys[2]){
-//            Mihai.move(0, 1, gameMap);
-//        }
-
-
-//        switch (wnd.key){
-//            case 1:
-////                if(Mihai.getX()>=0 && Mihai.getX()<wnd.GetWndWidth()/32){
-////                    if (gameMap.isWalkable(Mihai.getX()/Mihai.getSize()+1, Mihai.getY()/ Mihai.getSize())){
-////                        System.out.println(Mihai.getX()/Mihai.getSize()+1);
-////                        System.out.println(Mihai.getY());
-////                        Mihai.move(1, 0, gameMap);
-////                    }
-////                }
-//                Mihai.move(4, 0, gameMap);
-//
-//            break;
-//            case 2:
-////                if(Mihai.getX()>0 && Mihai.getX()<=wnd.GetWndWidth()/32) {
-////                    if (gameMap.isWalkable(Mihai.getX() - 1, Mihai.getY())) {
-////                        Mihai.move(-1, 0, gameMap);
-////                    }
-////                    Mihai.move(-1, 0, gameMap);
-////                }
-//                    Mihai.move(-4, 0, gameMap);
-//
-//            break;
-//            case 3:
-//                if(Mihai.onGround){
-//                    Mihai.onGround = false;
-//                    Mihai.gravity = -12;
-//                }
-//
-//
-////                Mihai.jump(gameMap);
-//            break;
-//            case 4:
-////                if(Mihai.getY()>=0 && Mihai.getX()<wnd.GetWndHeight()/32) {
-////                    if (gameMap.isWalkable(Mihai.getX(), Mihai.getY() + 1)) {
-////                        Mihai.move(0, 1, gameMap);
-////                    }
-////                    Mihai.move(0, 1, gameMap);
-////                }
-//                Mihai.move(0, 1, gameMap);
-//
-//            break;
-//        }
-//
     }
 
     /*! \fn private void Draw()
@@ -416,7 +375,8 @@ public class Game implements Runnable
             if (gameMap != null) {
                 gameMap.render(g, camera);
             }
-            Mihai.draw(g, camera);
+//            Mihai.render(g, camera);
+            entityManager.renderAll(g,camera);
 
             // end operatie de desenare
             /// Se afiseaza pe ecran
