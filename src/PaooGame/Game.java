@@ -1,15 +1,33 @@
+//package PaooGame;
+//
+//import PaooGame.Database.DatabaseManager;
+//import PaooGame.Database.GameSession;
+//import PaooGame.GameWindow.GameWindow;
+//import PaooGame.GameWindow.LoadGamePanel;
+//import PaooGame.Graphics.Assets;
+//import PaooGame.Tiles.Tile;
+//import PaooGame.Tiles.TileFactory;
+//
+//import javax.swing.*;
+//import java.awt.*;
+//import java.awt.event.KeyEvent;
+//import java.awt.image.BufferStrategy;
+//import java.io.IOException;
 package PaooGame;
 
+import PaooGame.Database.DatabaseManager;
+import PaooGame.Database.GameSession;
 import PaooGame.GameWindow.GameWindow;
+import PaooGame.GameWindow.LoadGamePanel; // Add for LoadGamePanel
 import PaooGame.Graphics.Assets;
 import PaooGame.Tiles.Tile;
 import PaooGame.Tiles.TileFactory;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferStrategy;
 import java.io.IOException;
+import java.util.List; // Add for List
 /*! \class Game
     \brief Clasa principala a intregului proiect. Implementeaza Game - Loop (Update -> Draw)
 
@@ -54,7 +72,7 @@ public class Game implements Runnable
     private final Player Mihai = new Player(200,200);
 
     private Camera camera = new Camera(800,480);
-
+    private DatabaseManager dbManager; // Add DatabaseManager
 
     /// Sunt cateva tipuri de "complex buffer strategies", scopul fiind acela de a elimina fenomenul de
     /// flickering (palpaire) a ferestrei.
@@ -89,25 +107,33 @@ public class Game implements Runnable
         wnd = new GameWindow(title, width, height);
             /// Resetarea flagului runState ce indica starea firului de executie (started/stoped)
         runState = false;
+        dbManager = new DatabaseManager(); // Initialize DatabaseManager
     }
 
+    private void saveGameSession() {
+        try {
+            dbManager.saveSession(Mihai.getX(), Mihai.getY());
+            JOptionPane.showMessageDialog(wnd.getWndFrame(), "Game session saved!", "Success", JOptionPane.INFORMATION_MESSAGE);
+        } catch (RuntimeException e) {
+            JOptionPane.showMessageDialog(wnd.getWndFrame(), "Failed to save session: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }    }
+
     private void InitGame() throws IOException {
-//        wnd = new GameWindow(title, width, height);
-//        wnd.BuildGameWindow();
-//        /// Este construita fereastra grafica.
-//        wnd.showMenu();
-        /// Se incarca toate elementele grafice (dale)
         Assets.Init();
         setupMenuButtons();
-
         TileFactory tileFactory = new TileFactory();
         try {
             gameMap = new GameMap("src/PaooGame/Level1MapNEW.txt", tileFactory);
-        } catch (IOException e){
-            System.err.println("Failed to load game map :"+ e.getMessage());
-            JOptionPane.showMessageDialog(wnd.GetCanvas(),"Failed to load game map","Error",JOptionPane.ERROR_MESSAGE);
+        } catch (IOException e) {
+            System.err.println("Failed to load game map: " + e.getMessage());
+            JOptionPane.showMessageDialog(wnd.GetCanvas(), "Failed to load game map", "Error", JOptionPane.ERROR_MESSAGE);
             System.exit(1);
         }
+        // Ensure menu is shown
+        wnd.getWndFrame().getContentPane().removeAll();
+        wnd.getWndFrame().add(wnd.getMenu(), BorderLayout.CENTER);
+        wnd.getWndFrame().revalidate();
+        wnd.getWndFrame().repaint();
     }
 
     /*! \fn public void run()
@@ -167,34 +193,61 @@ public class Game implements Runnable
 
  */
 
-    private void setupMenuButtons()
-    {
-//        for(Component comp : wnd.getMenuPanel().getComponents())
-//        {
-//            if(comp instanceof JButton)
-//            {
-//                JButton button = (JButton) comp;
-//                button.addActionListener(e -> handleButtonAction(button.getText()));
-//            }
-//        }
-        wnd.getMenu().addActionListenerToButton("New Game", e -> handleButtonAction("New Game"));
-        wnd.getMenu().addActionListenerToButton("Load Game", e -> handleButtonAction("Load Game"));
-        wnd.getMenu().addActionListenerToButton("Exit", e -> handleButtonAction("Exit"));
+    private void setupMenuButtons() {
+        wnd.getMenu().addActionListenerToButton("New Game", e -> {
+            System.out.println("New Game button clicked");
+            handleButtonAction("New Game");
+        });
+        wnd.getMenu().addActionListenerToButton("Load Game", e -> {
+            System.out.println("Load Game button clicked");
+            handleButtonAction("Load Game");
+        });
+        wnd.getMenu().addActionListenerToButton("Exit", e -> {
+            System.out.println("Exit button clicked");
+            handleButtonAction("Exit");
+        });
         wnd.getMenu().addSettingsActionListener(e -> {
             System.out.println("Settings button clicked");
-            // Add your settings functionality here
         });
     }
 
-    private void handleButtonAction(String buttonText)
-    {
-        switch (buttonText)
-        {
+    private void loadGameSession() {
+        List<GameSession> sessions = dbManager.loadAllSessions();
+        if (sessions.isEmpty()) {
+            JOptionPane.showMessageDialog(wnd.getWndFrame(), "No saved sessions found!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Show LoadGamePanel
+        LoadGamePanel loadPanel = new LoadGamePanel(sessions, selectedSession -> {
+            if (gameMap.isWalkable(selectedSession.getPlayerX() / Mihai.getSize(), selectedSession.getPlayerY() / Mihai.getSize())) {
+                Mihai.respawn(selectedSession.getPlayerX(), selectedSession.getPlayerY());
+                wnd.hideMenu();
+                System.out.println("Loaded session: x=" + selectedSession.getPlayerX() + ", y=" + selectedSession.getPlayerY());
+                wnd.getWndFrame().getContentPane().removeAll();
+                wnd.getWndFrame().add(wnd.GetCanvas(), BorderLayout.CENTER);
+                wnd.getWndFrame().revalidate();
+                wnd.getWndFrame().repaint();
+                wnd.GetCanvas().requestFocusInWindow();
+            } else {
+                JOptionPane.showMessageDialog(wnd.getWndFrame(), "Invalid position in saved session!", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }, wnd.getMenu()); // Pass original menu
+
+        wnd.getWndFrame().getContentPane().removeAll();
+        wnd.getWndFrame().add(loadPanel, BorderLayout.CENTER);
+        wnd.getWndFrame().revalidate();
+        wnd.getWndFrame().repaint();
+    }
+
+    private void handleButtonAction(String buttonText) {
+        switch (buttonText) {
             case "New Game":
                 wnd.hideMenu();
+                Mihai.respawn(200, 200);
                 break;
             case "Load Game":
-                System.out.println("Urmeaza de implimentat load-ul");
+                loadGameSession();
                 break;
             case "Exit":
                 System.exit(0);
@@ -282,17 +335,9 @@ public class Game implements Runnable
             else{
                 Mihai.onGround = false;
             }
-//            if(!gameMap.isWalkable(Mihai.getX()/Mihai.getSize() +1, Mihai.getY()/Mihai.getSize() + 1)){
-//                if(Mihai.getX() % Mihai.getSize() >=30){
-//                    Mihai.onGround = true;
-//                    Mihai.move(0, -Mihai.getY() % Mihai.getSize(), gameMap);
-//                    Mihai.gravity = 0;
-//
-//                }
-//            }
-
             Mihai.isMoving = false;
         }
+
         if(wnd.keys[1]){
                 Mihai.move(4, 0, gameMap);
                 Mihai.isMoving = true;
@@ -307,63 +352,18 @@ public class Game implements Runnable
             if(Mihai.onGround){
                     Mihai.onGround = false;
                     Mihai.gravity = -14;
-
             }
+        }
+        if (wnd.keys[5]) { // Assume keys[4] is mapped to 'P'
+            System.out.println("P key pressed! Attempting to save session...");
+            saveGameSession();
+            wnd.keys[5] = false; // Prevent multiple saves
         }
         Mihai.updateWalkAnimation(Mihai.isMoving);
         Mihai.updateJumpAnimation(Mihai.onGround);
         if(gameMap.isFloor(Mihai.getX()/Mihai.getSize(), Mihai.getY()/Mihai.getSize() + 1)){
                 Mihai.respawn(200, 100);
         }
-
-//        if(wnd.keys[2]){
-//            Mihai.move(0, 1, gameMap);
-//        }
-
-
-//        switch (wnd.key){
-//            case 1:
-////                if(Mihai.getX()>=0 && Mihai.getX()<wnd.GetWndWidth()/32){
-////                    if (gameMap.isWalkable(Mihai.getX()/Mihai.getSize()+1, Mihai.getY()/ Mihai.getSize())){
-////                        System.out.println(Mihai.getX()/Mihai.getSize()+1);
-////                        System.out.println(Mihai.getY());
-////                        Mihai.move(1, 0, gameMap);
-////                    }
-////                }
-//                Mihai.move(4, 0, gameMap);
-//
-//            break;
-//            case 2:
-////                if(Mihai.getX()>0 && Mihai.getX()<=wnd.GetWndWidth()/32) {
-////                    if (gameMap.isWalkable(Mihai.getX() - 1, Mihai.getY())) {
-////                        Mihai.move(-1, 0, gameMap);
-////                    }
-////                    Mihai.move(-1, 0, gameMap);
-////                }
-//                    Mihai.move(-4, 0, gameMap);
-//
-//            break;
-//            case 3:
-//                if(Mihai.onGround){
-//                    Mihai.onGround = false;
-//                    Mihai.gravity = -12;
-//                }
-//
-//
-////                Mihai.jump(gameMap);
-//            break;
-//            case 4:
-////                if(Mihai.getY()>=0 && Mihai.getX()<wnd.GetWndHeight()/32) {
-////                    if (gameMap.isWalkable(Mihai.getX(), Mihai.getY() + 1)) {
-////                        Mihai.move(0, 1, gameMap);
-////                    }
-////                    Mihai.move(0, 1, gameMap);
-////                }
-//                Mihai.move(0, 1, gameMap);
-//
-//            break;
-//        }
-//
     }
 
     /*! \fn private void Draw()
@@ -393,26 +393,7 @@ public class Game implements Runnable
             /// Se sterge ce era
             g.clearRect(0, 0, wnd.GetWndWidth(), wnd.GetWndHeight());
 
-            /// operatie de desenare
-            // ...............
-//            Tile.grassTile.Draw(g, 0 * Tile.TILE_WIDTH, 0);
-//            Tile.soilTile.Draw(g, 1 * Tile.TILE_WIDTH, 0);
-//            Tile.waterTile.Draw(g, 2 * Tile.TILE_WIDTH, 0);
-//            Tile.mountainTile.Draw(g, 3 * Tile.TILE_WIDTH, 0);
-//            Tile.treeTile.Draw(g, 4 * Tile.TILE_WIDTH, 0);
-//
-//            g.drawRect(1 * Tile.TILE_WIDTH, 1 * Tile.TILE_HEIGHT, Tile.TILE_WIDTH, Tile.TILE_HEIGHT);
 
-//        Mihai.addNativeKeyListener();
-//        if (keyPressed == KeyEvent.VK_RIGHT) {
-////            if (gameMap.isWalkable(M.getX() + 1, player.getY())) {
-//                Mihai.move(1, 0,gameMap);
-////            }
-//        }
-
-//        TileFactory tileFactory = new TileFactory();
-//        gameMap = new GameMap("src/PaooGame/Level1.txt", tileFactory);
-//        gameMap = new GameMap("src/PaooGame/map.txt", tileFactory);
             if (gameMap != null) {
                 gameMap.render(g, camera);
             }
