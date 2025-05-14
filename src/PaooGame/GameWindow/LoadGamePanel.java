@@ -8,16 +8,18 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class LoadGamePanel extends JPanel {
-    final private JTable sessionTable;
-    final private JScrollPane scrollPane;
-    final private JButton loadButton;
-    final private JButton cancelButton;
+    private JTable sessionTable;
+    private JScrollPane scrollPane;
+    private JButton loadButton;
+    private JButton cancelButton;
     private Consumer<GameSession> loadSessionCallback;
-    private Menu mainMenu; // Store reference to original menu
+    private Menu mainMenu;
+    private PauseMenu pauseMenu; // Add for pause menu
 
-    public LoadGamePanel(List<GameSession> sessions, Consumer<GameSession> loadSessionCallback, Menu mainMenu) {
+    public LoadGamePanel(List<GameSession> sessions, Consumer<GameSession> loadSessionCallback, Menu mainMenu, PauseMenu pauseMenu) {
         this.loadSessionCallback = loadSessionCallback;
-        this.mainMenu = mainMenu; // Initialize mainMenu
+        this.mainMenu = mainMenu;
+        this.pauseMenu = pauseMenu;
         setLayout(new BorderLayout(10, 10));
         setBackground(new Color(20, 30, 50));
 
@@ -69,13 +71,17 @@ public class LoadGamePanel extends JPanel {
             Container parent = getParent();
             if (parent != null) {
                 parent.remove(this);
-                parent.add(mainMenu, BorderLayout.CENTER); // Reuse original menu
-                mainMenu.setVisible(true); // Ensure menu is visible
+                if (pauseMenu != null) {
+                    parent.add(pauseMenu, BorderLayout.CENTER); // Return to pause menu
+                    pauseMenu.setVisible(true);
+                } else {
+                    parent.add(mainMenu, BorderLayout.CENTER); // Fallback to main menu
+                    mainMenu.setVisible(true);
+                }
                 parent.revalidate();
                 parent.repaint();
-                // Ensure frame has focus
                 parent.requestFocusInWindow();
-                System.out.println("Returned to main menu");
+                System.out.println("Returned to " + (pauseMenu != null ? "pause menu" : "main menu"));
             }
         });
         buttonPanel.add(cancelButton);

@@ -87,8 +87,8 @@ public class GameWindow implements KeyListener
                 break;
             case 87: keys[3] = true; // sus W
                 break;
-            case 80: keys[5] = true; // save P
-                System.out.println("P key detected in keyPressed");
+            case 27: keys[4] = true; // esc
+                System.out.println("esc key detected in keyPressed");
                 break;
         }
 //        System.out.println("You pressed key char: " + e.getKeyChar());
@@ -105,7 +105,7 @@ public class GameWindow implements KeyListener
                 break;
             case 87: keys[3] = false; // sus W
                 break;
-            case 80: keys[5] = false; // save P
+            case 27: keys[4] = false; // esc
                 break;
         }
     }
@@ -125,7 +125,7 @@ public class GameWindow implements KeyListener
         wndFrame.setLayout(new BorderLayout());
         wndFrame.setFocusable(true);
         wndFrame.requestFocusInWindow();
-        wndFrame.addKeyListener(this);
+//        wndFrame.addKeyListener(this);
 
         menu = new Menu();
         wndFrame.add(menu,BorderLayout.CENTER);
@@ -134,13 +134,24 @@ public class GameWindow implements KeyListener
 
     public void hideMenu() {
         menu.setVisible(false);
-        wndFrame.getContentPane().removeAll();
-        wndFrame.add(canvas, BorderLayout.CENTER);
-        wndFrame.revalidate();
-        wndFrame.repaint();
+        getWndFrame().getContentPane().removeAll();
+
+        // Prepare canvas
+        canvas.setIgnoreRepaint(true);
         canvas.setFocusable(true);
         canvas.requestFocusInWindow();
-        System.out.println("Menu hidden. Canvas focus: " + canvas.hasFocus());
+
+        getWndFrame().add(canvas, BorderLayout.CENTER);
+        getWndFrame().revalidate();
+        getWndFrame().repaint();
+
+        // Create buffer strategy if needed
+        if (canvas.getBufferStrategy() == null) {
+            canvas.createBufferStrategy(3);
+        }
+
+        System.out.println("Menu hidden. Canvas ready: " + canvas.isDisplayable() +
+                ", focus: " + canvas.hasFocus());
     }
 
 

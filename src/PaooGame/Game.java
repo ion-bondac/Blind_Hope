@@ -1,24 +1,10 @@
-//package PaooGame;
-//
-//import PaooGame.Database.DatabaseManager;
-//import PaooGame.Database.GameSession;
-//import PaooGame.GameWindow.GameWindow;
-//import PaooGame.GameWindow.LoadGamePanel;
-//import PaooGame.Graphics.Assets;
-//import PaooGame.Tiles.Tile;
-//import PaooGame.Tiles.TileFactory;
-//
-//import javax.swing.*;
-//import java.awt.*;
-//import java.awt.event.KeyEvent;
-//import java.awt.image.BufferStrategy;
-//import java.io.IOException;
 package PaooGame;
 
 import PaooGame.Database.DatabaseManager;
 import PaooGame.Database.GameSession;
 import PaooGame.GameWindow.GameWindow;
 import PaooGame.GameWindow.LoadGamePanel; // Add for LoadGamePanel
+import PaooGame.GameWindow.PauseMenu;
 import PaooGame.Graphics.Assets;
 import PaooGame.Tiles.Tile;
 import PaooGame.Tiles.TileFactory;
@@ -73,6 +59,8 @@ public class Game implements Runnable
 
     private Camera camera = new Camera(800,480);
     private DatabaseManager dbManager; // Add DatabaseManager
+    private PauseMenu pauseMenu;
+    private boolean isPaused; // Track pause state
 
     /// Sunt cateva tipuri de "complex buffer strategies", scopul fiind acela de a elimina fenomenul de
     /// flickering (palpaire) a ferestrei.
@@ -108,6 +96,8 @@ public class Game implements Runnable
             /// Resetarea flagului runState ce indica starea firului de executie (started/stoped)
         runState = false;
         dbManager = new DatabaseManager(); // Initialize DatabaseManager
+        isPaused = false; // Initialize pause state
+        pauseMenu = null; // Ensure no pause menu
     }
 
     private void saveGameSession() {
@@ -129,7 +119,9 @@ public class Game implements Runnable
             JOptionPane.showMessageDialog(wnd.GetCanvas(), "Failed to load game map", "Error", JOptionPane.ERROR_MESSAGE);
             System.exit(1);
         }
-        // Ensure menu is shown
+        isPaused = false; // Reset pause state
+        pauseMenu = null; // Clear pause menu
+        // menu is shown
         wnd.getWndFrame().getContentPane().removeAll();
         wnd.getWndFrame().add(wnd.getMenu(), BorderLayout.CENTER);
         wnd.getWndFrame().revalidate();
@@ -150,6 +142,17 @@ public class Game implements Runnable
             e.printStackTrace();
             return;
         }
+
+
+        // Wait for window to be ready
+        while (!wnd.getWndFrame().isDisplayable()) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
         long oldTime = System.nanoTime();   /*!< Retine timpul in nanosecunde aferent frame-ului anterior.*/
         long curentTime;                    /*!< Retine timpul curent de executie.*/
 
@@ -167,7 +170,7 @@ public class Game implements Runnable
                 /// Daca diferenta de timp dintre curentTime si oldTime mai mare decat 16.6 ms
             if((curentTime - oldTime) > timeFrame)
             {
-                if(!wnd.isMenuShowing())
+                if (!wnd.isMenuShowing() && wnd.GetCanvas().isDisplayable())
                 {
                     /// Actualizeaza pozitiile elementelor
                     Update();
@@ -213,16 +216,16 @@ public class Game implements Runnable
 
     private void loadGameSession() {
         List<GameSession> sessions = dbManager.loadAllSessions();
-        if (sessions.isEmpty()) {
+        if (sessions == null || sessions.isEmpty()) {
             JOptionPane.showMessageDialog(wnd.getWndFrame(), "No saved sessions found!", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        // Show LoadGamePanel
         LoadGamePanel loadPanel = new LoadGamePanel(sessions, selectedSession -> {
             if (gameMap.isWalkable(selectedSession.getPlayerX() / Mihai.getSize(), selectedSession.getPlayerY() / Mihai.getSize())) {
                 Mihai.respawn(selectedSession.getPlayerX(), selectedSession.getPlayerY());
                 wnd.hideMenu();
+                hidePauseMenu(); // Ensure pause menu is closed
                 System.out.println("Loaded session: x=" + selectedSession.getPlayerX() + ", y=" + selectedSession.getPlayerY());
                 wnd.getWndFrame().getContentPane().removeAll();
                 wnd.getWndFrame().add(wnd.GetCanvas(), BorderLayout.CENTER);
@@ -232,7 +235,7 @@ public class Game implements Runnable
             } else {
                 JOptionPane.showMessageDialog(wnd.getWndFrame(), "Invalid position in saved session!", "Error", JOptionPane.ERROR_MESSAGE);
             }
-        }, wnd.getMenu()); // Pass original menu
+        }, wnd.getMenu(), pauseMenu); // Pass pauseMenu
 
         wnd.getWndFrame().getContentPane().removeAll();
         wnd.getWndFrame().add(loadPanel, BorderLayout.CENTER);
@@ -241,10 +244,21 @@ public class Game implements Runnable
     }
 
     private void handleButtonAction(String buttonText) {
+        System.out.println("Handling button: " + buttonText + ", isPaused: " + isPaused);
         switch (buttonText) {
             case "New Game":
-                wnd.hideMenu();
+                // Reset game state
                 Mihai.respawn(200, 200);
+                camera.update(Mihai); // Reset camera position
+                isPaused = false;
+                pauseMenu = null;
+
+                // Properly initialize canvas
+                wnd.hideMenu();
+                wnd.GetCanvas().createBufferStrategy(3); // Ensure buffer strategy exists
+                wnd.GetCanvas().requestFocusInWindow(); // Ensure canvas has focus
+
+                System.out.println("New Game started, canvas focus: " + wnd.GetCanvas().hasFocus());
                 break;
             case "Load Game":
                 loadGameSession();
@@ -310,62 +324,130 @@ public class Game implements Runnable
         }
     }
 
+    private void showPauseMenu() {
+        System.out.println("Attempting to show pause menu");
+        pauseMenu = new PauseMenu(
+                this::saveGameSession,
+                this::loadGameSession,
+                () -> System.exit(0),
+                this::hidePauseMenu
+        );
+
+        // Remove canvas first
+        wnd.getWndFrame().getContentPane().removeAll();
+
+        // Add pause menu
+        wnd.getWndFrame().add(pauseMenu, BorderLayout.CENTER);
+
+        wnd.getWndFrame().revalidate();
+        wnd.getWndFrame().repaint();
+
+        // Request focus for the pause menu
+        pauseMenu.setFocusable(true);
+        pauseMenu.requestFocusInWindow();
+        System.out.println("Pause menu should be visible now");
+    }
+
+    private void hidePauseMenu() {
+        if (pauseMenu != null) {
+            System.out.println("Hiding pause menu: isPaused = " + isPaused);
+            wnd.getWndFrame().getContentPane().remove(pauseMenu);
+            pauseMenu = null;
+            isPaused = false;
+            wnd.getWndFrame().add(wnd.GetCanvas(), BorderLayout.CENTER);
+            wnd.getWndFrame().revalidate();
+            wnd.getWndFrame().repaint();
+            wnd.GetCanvas().requestFocusInWindow();
+            System.out.println("Pause menu hidden: isPaused = " + isPaused);
+        }
+    }
     /*! \fn private void Update()
         \brief Actualizeaza starea elementelor din joc.
 
         Metoda este declarata privat deoarece trebuie apelata doar in metoda run()
      */
-    private void Update()
-    {
-        camera.update(Mihai);
-
-        if(gameMap != null){
-            if(!Mihai.onGround){
-                Mihai.move(0,Mihai.gravity++, gameMap);
-            }
-            int PlayerX = Mihai.getX();
-            if(Mihai.getX()% Mihai.getSize() > 8 && !gameMap.isWalkable(Mihai.getX()/Mihai.getSize() + 1, Mihai.getY()/Mihai.getSize() + 1)){
-                PlayerX += 32;
-            }
-            if(!gameMap.isWalkable(PlayerX/Mihai.getSize(), Mihai.getY()/Mihai.getSize() + 1)){
-                Mihai.onGround = true;
-                Mihai.move(0, -Mihai.getY() % Mihai.getSize(), gameMap);
-                Mihai.gravity = 0;
-            }
-            else{
-                Mihai.onGround = false;
-            }
-            Mihai.isMoving = false;
+    private void Update() {
+        if (wnd.isMenuShowing()) {
+            System.out.println("Update skipped: Main menu is showing");
+            return;
         }
 
-        if(wnd.keys[1]){
+        // Handle escape key for pause menu
+        if (wnd.keys[4]) { // Escape key
+            System.out.println("Escape key detected in Update. isPaused: " + isPaused);
+            if (!isPaused) {
+                showPauseMenu();
+                isPaused = true;
+            } else {
+                hidePauseMenu();
+                isPaused = false;
+            }
+            wnd.keys[4] = false; // Prevent repeated toggling
+            return; // Skip other updates this frame
+        }
+
+        // Only update game logic if not paused
+        if (!isPaused) {
+            // Update camera position
+            camera.update(Mihai);
+
+            // Handle player physics and movement
+            if (gameMap != null) {
+                // Gravity and ground detection
+                if (!Mihai.onGround) {
+                    Mihai.move(0, Mihai.gravity++, gameMap);
+                }
+
+                int PlayerX = Mihai.getX();
+                if (Mihai.getX() % Mihai.getSize() > 8 &&
+                        !gameMap.isWalkable(Mihai.getX() / Mihai.getSize() + 1,
+                                Mihai.getY() / Mihai.getSize() + 1)) {
+                    PlayerX += 32;
+                }
+
+                if (!gameMap.isWalkable(PlayerX / Mihai.getSize(),
+                        Mihai.getY() / Mihai.getSize() + 1)) {
+                    Mihai.onGround = true;
+                    Mihai.move(0, -Mihai.getY() % Mihai.getSize(), gameMap);
+                    Mihai.gravity = 0;
+                } else {
+                    Mihai.onGround = false;
+                }
+
+                Mihai.isMoving = false;
+            }
+
+            // Handle movement keys
+            if (wnd.keys[1]) { // Right (D)
                 Mihai.move(4, 0, gameMap);
                 Mihai.isMoving = true;
                 Mihai.facingRight = true;
-        }
-        if(wnd.keys[2]){
+            }
+            if (wnd.keys[2]) { // Left (A)
                 Mihai.move(-4, 0, gameMap);
                 Mihai.isMoving = true;
                 Mihai.facingRight = false;
-        }
-        if(wnd.keys[3]){
-            if(Mihai.onGround){
+            }
+            if (wnd.keys[3]) { // Jump (W)
+                if (Mihai.onGround) {
                     Mihai.onGround = false;
                     Mihai.gravity = -14;
+                }
             }
-        }
-        if (wnd.keys[5]) { // Assume keys[4] is mapped to 'P'
-            System.out.println("P key pressed! Attempting to save session...");
-            saveGameSession();
-            wnd.keys[5] = false; // Prevent multiple saves
-        }
-        Mihai.updateWalkAnimation(Mihai.isMoving);
-        Mihai.updateJumpAnimation(Mihai.onGround);
-        if(gameMap.isFloor(Mihai.getX()/Mihai.getSize(), Mihai.getY()/Mihai.getSize() + 1)){
+
+            // Update animations
+            Mihai.updateWalkAnimation(Mihai.isMoving);
+            Mihai.updateJumpAnimation(Mihai.onGround);
+
+            // Check for death condition
+            if (gameMap.isFloor(Mihai.getX() / Mihai.getSize(),
+                    Mihai.getY() / Mihai.getSize() + 1)) {
                 Mihai.respawn(200, 100);
+            }
+        } else {
+            System.out.println("Game paused, skipping normal updates");
         }
     }
-
     /*! \fn private void Draw()
         \brief Deseneaza elementele grafice in fereastra coresponzator starilor actualizate ale elementelor.
 
