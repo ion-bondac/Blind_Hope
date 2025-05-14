@@ -104,8 +104,8 @@ public class Player extends Entity {
     }
 
 @Override
-public void update(){
-        ;
+public void update(GameMap gameMap){
+        System.out.println(health);
 }
 
 @Override
@@ -138,6 +138,10 @@ public void render(Graphics g, Camera camera) {
         }
     }
 
+
+    public void Damage(int d){
+        this.health -= d;
+    }
 
     public int getX() { return x; }
     public int getY() { return y; }

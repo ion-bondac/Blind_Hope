@@ -9,7 +9,7 @@ public abstract class Entity {
     protected int speed;
     protected int health;
     protected boolean active = true;
-    public abstract void update();
+    public abstract void update(GameMap gameMap);
     public abstract void render(Graphics g, Camera camera);
     public Rectangle getBounds() {
         return new Rectangle(x, y, width, height);

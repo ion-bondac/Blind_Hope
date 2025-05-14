@@ -13,10 +13,10 @@ public class EntityManager {
         entities.add(e);
     }
 
-    public void updateAll() {
+    public void updateAll(GameMap gameMap) {
         for (Entity e : entities) {
             if (e.isActive()) {
-                e.update();
+                e.update(gameMap);
             }
         }
     }
