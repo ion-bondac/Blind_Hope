@@ -170,7 +170,7 @@ public class Game implements Runnable
                 /// Daca diferenta de timp dintre curentTime si oldTime mai mare decat 16.6 ms
             if((curentTime - oldTime) > timeFrame)
             {
-                if (!wnd.isMenuShowing() && wnd.GetCanvas().isDisplayable())
+                if (!wnd.isMenuShowing() && wnd.GetCanvas().isDisplayable() && !isPaused)
                 {
                     /// Actualizeaza pozitiile elementelor
                     Update();
@@ -325,41 +325,51 @@ public class Game implements Runnable
     }
 
     private void showPauseMenu() {
-        System.out.println("Attempting to show pause menu");
-        pauseMenu = new PauseMenu(
-                this::saveGameSession,
-                this::loadGameSession,
-                () -> System.exit(0),
-                this::hidePauseMenu
-        );
+        SwingUtilities.invokeLater(() -> {
+            try {
+                System.out.println("Attempting to show pause menu");
+                pauseMenu = new PauseMenu(
+                        this::saveGameSession,
+                        this::loadGameSession,
+                        () -> System.exit(0),
+                        this::hidePauseMenu
+                );
 
-        // Remove canvas first
-        wnd.getWndFrame().getContentPane().removeAll();
+                // Remove only the canvas
+                wnd.getWndFrame().getContentPane().remove(wnd.GetCanvas());
+                wnd.getWndFrame().add(pauseMenu, BorderLayout.CENTER);
+                wnd.getWndFrame().revalidate();
+                wnd.getWndFrame().repaint();
 
-        // Add pause menu
-        wnd.getWndFrame().add(pauseMenu, BorderLayout.CENTER);
-
-        wnd.getWndFrame().revalidate();
-        wnd.getWndFrame().repaint();
-
-        // Request focus for the pause menu
-        pauseMenu.setFocusable(true);
-        pauseMenu.requestFocusInWindow();
-        System.out.println("Pause menu should be visible now");
+                pauseMenu.setFocusable(true);
+                pauseMenu.requestFocusInWindow();
+                System.out.println("Pause menu should be visible now");
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(wnd.getWndFrame(), "Error showing pause menu: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
     }
 
     private void hidePauseMenu() {
-        if (pauseMenu != null) {
-            System.out.println("Hiding pause menu: isPaused = " + isPaused);
-            wnd.getWndFrame().getContentPane().remove(pauseMenu);
-            pauseMenu = null;
-            isPaused = false;
-            wnd.getWndFrame().add(wnd.GetCanvas(), BorderLayout.CENTER);
-            wnd.getWndFrame().revalidate();
-            wnd.getWndFrame().repaint();
-            wnd.GetCanvas().requestFocusInWindow();
-            System.out.println("Pause menu hidden: isPaused = " + isPaused);
-        }
+        SwingUtilities.invokeLater(() -> {
+            try {
+                if (pauseMenu != null) {
+                    System.out.println("Hiding pause menu: isPaused = " + isPaused);
+                    wnd.getWndFrame().getContentPane().remove(pauseMenu);
+                    pauseMenu = null;
+                    isPaused = false;
+                    wnd.getWndFrame().add(wnd.GetCanvas(), BorderLayout.CENTER);
+                    wnd.getWndFrame().revalidate();
+                    wnd.getWndFrame().repaint();
+                    wnd.GetCanvas().requestFocusInWindow();
+                    System.out.println("Pause menu hidden: isPaused = " + isPaused);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(wnd.getWndFrame(), "Error hiding pause menu: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
     }
     /*! \fn private void Update()
         \brief Actualizeaza starea elementelor din joc.
@@ -456,7 +466,7 @@ public class Game implements Runnable
     private void Draw() throws IOException {
         try {
             Canvas canvas = wnd.GetCanvas();
-            if (canvas == null) {
+            if (canvas == null || !canvas.isDisplayable() || !canvas.isShowing()) {
                 return;
             }
             /// Returnez bufferStrategy pentru canvasul existent
