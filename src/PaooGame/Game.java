@@ -10,6 +10,9 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferStrategy;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+
 /*! \class Game
     \brief Clasa principala a intregului proiect. Implementeaza Game - Loop (Update -> Draw)
 
@@ -52,8 +55,22 @@ public class Game implements Runnable
     private GameMap gameMap;
     private Graphics        g;          /*!< Referinta catre un context grafic.*/
     private final Player Mihai = new Player(200,200);
+    private int tileSize = 32;
 
-    private Enemy enemy1 = new Enemy(250,300, Mihai);
+//    private ArrayList<Enemy> Eagles = new ArrayList<Enemy>(
+//            new Enemy(22*tileSize,14*tileSize, Mihai, "Eagle");
+//    );
+    private ArrayList<Enemy> Eagles = new ArrayList<>(
+            Arrays.asList(
+                    new Enemy(22 * tileSize, 14 * tileSize, Mihai, "Eagle", true),
+                    new Enemy(30 * tileSize, 12 * tileSize, Mihai, "Eagle", false),
+                    new Enemy(45 * tileSize, 17 * tileSize, Mihai, "Eagle", true),
+                    new Enemy(63 * tileSize, 24 * tileSize, Mihai, "Eagle", false),
+                    new Enemy(73 * tileSize, 29 * tileSize, Mihai, "Eagle", false),
+                    new Enemy(80 * tileSize, 25 * tileSize, Mihai, "Eagle", false),
+                    new Enemy(84 * tileSize, 23 * tileSize, Mihai, "Eagle", false)
+            )
+    );
 
     private Camera camera = new Camera(800,480);
     EntityManager entityManager = new EntityManager();
@@ -112,8 +129,9 @@ public class Game implements Runnable
         }
 
         entityManager.addEntity(Mihai);
-        entityManager.addEntity(enemy1);
-
+        for(int i=0; i<Eagles.size(); i++){
+            entityManager.addEntity(Eagles.get(i));
+        }
     }
 
     /*! \fn public void run()
@@ -321,7 +339,7 @@ public class Game implements Runnable
         if(gameMap.isFloor(Mihai.getX()/Mihai.getSize(), Mihai.getY()/Mihai.getSize() + 1)){
                 Mihai.respawn(200, 100);
         }
-        entityManager.updateAll();
+        entityManager.updateAll(gameMap);
 
     }
 
