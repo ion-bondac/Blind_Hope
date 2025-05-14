@@ -10,8 +10,11 @@ public class Player extends Entity {
     private final int size = 32;
     private Color color = Color.RED;
     public boolean onGround = false;
+    public boolean attacking = false;
     public boolean isMoving = false;
     public boolean facingRight = true;
+    public boolean hurt = false;
+    public boolean dead = false;
     public int gravity = 0;
     private BufferedImage standing;
     private BufferedImage spriteSheet;
@@ -26,13 +29,28 @@ public class Player extends Entity {
     int jumpFrameDelay = 7; // număr de update-uri între schimbările de frame
     int jumpFrameTick = 0;
 
+    BufferedImage[] attackFrames = new BufferedImage[4];
+    int attackFrameIndex = 0;
+    int attackFrameDelay = 5; // număr de update-uri între schimbările de frame
+    int attackFrameTick = 0;
+
+    BufferedImage[] hurtFrames = new BufferedImage[4];
+    int hurtFrameIndex = 0;
+    int hurtFrameDelay = 5; // număr de update-uri între schimbările de frame
+    int hurtFrameTick = 0;
+
+    BufferedImage[] deathFrames = new BufferedImage[8];
+    int deathFrameIndex = 0;
+    int deathFrameDelay = 5; // număr de update-uri între schimbările de frame
+    int deathFrameTick = 0;
+
 
 
     public Player(int x, int y) {
         this.x = x;
         this.y = y;
         this.speed = 4;
-        this.health = 100;
+        this.health = 300;
         this.width = 32;
         this.height = 32;
         try{
@@ -43,6 +61,15 @@ public class Player extends Entity {
             }
             for(int i = 0; i < jumpFrames.length; i++) {
                 jumpFrames[i] = spriteSheet.getSubimage(i * size, 2*size, size, size);
+            }
+            for(int i = 0; i < attackFrames.length; i++) {
+                attackFrames[i] = spriteSheet.getSubimage(i * size, 3*size, size, size);
+            }
+            for(int i = 0; i < hurtFrames.length; i++) {
+                hurtFrames[i] = spriteSheet.getSubimage(i * size, 4*size, size, size);
+            }
+            for(int i = 0; i < deathFrames.length; i++) {
+                deathFrames[i] = spriteSheet.getSubimage(i * size, 5*size, size, size);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -97,7 +124,6 @@ public class Player extends Entity {
         }
     }
 
-
     public void respawn(int NewX, int NewY){
         x=NewX;
         y=NewY;
@@ -105,16 +131,57 @@ public class Player extends Entity {
 
 @Override
 public void update(GameMap gameMap){
-        System.out.println(health);
+//        System.out.println(health/100 + "vieti");
+    ;
 }
 
 @Override
 public void render(Graphics g, Camera camera) {
         BufferedImage frameToDraw;
         if (spriteSheet != null) {
-            if(isMoving){
+            if(dead){
+                deathFrameTick++;
+                if (deathFrameTick >= deathFrameDelay) {
+                    deathFrameTick = 0;
+                    deathFrameIndex++;
+                }
+                if (deathFrameIndex >= deathFrames.length) {
+                    deathFrameIndex = 0;
+                    dead = false;
+                    respawn(200,100);
+                    health = 300;
+                }
+                frameToDraw = deathFrames[deathFrameIndex];
+            }
+            else if(hurt){
+                hurtFrameTick++;
+                if (hurtFrameTick >= hurtFrameDelay) {
+                    hurtFrameTick = 0;
+                    hurtFrameIndex++;
+                }
+                if (hurtFrameIndex >= hurtFrames.length) {
+                    hurtFrameIndex = 0;
+                    hurt = false;
+                }
+                frameToDraw = hurtFrames[hurtFrameIndex];
+            }
+            else if (attacking) {
+                attackFrameTick++;
+                if (attackFrameTick >= attackFrameDelay) {
+                    attackFrameTick = 0;
+                    attackFrameIndex++;
+                }
+                if (attackFrameIndex >= attackFrames.length) {
+                    attackFrameIndex = 0;
+                    attacking = false;
+                }
+                frameToDraw = attackFrames[attackFrameIndex];
+
+            }
+            else if(isMoving){
                 frameToDraw = walkFrames[walkFrameIndex];
-            } else if (!onGround) {
+            }
+            else if (!onGround) {
                 frameToDraw = jumpFrames[jumpFrameIndex];
             } else{
                 frameToDraw = standing;
@@ -141,6 +208,7 @@ public void render(Graphics g, Camera camera) {
 
     public void Damage(int d){
         this.health -= d;
+        this.hurt = true;
     }
 
     public int getX() { return x; }

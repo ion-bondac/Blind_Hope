@@ -99,14 +99,19 @@ public class Enemy extends Entity {
             offset = -32;
         }
         if((x+offset)/32 == target.getX()/32 && y/32 == target.getY()/32){
-            target.Damage(20);
-            if(movingRight){
-                x-=60;
-                target.move(32, 0, gameMap);
+            if(target.attacking){
+                this.active = false;
             }
             else{
-                x+=60;
-                target.move(-32, 0, gameMap);
+                target.Damage(100);
+                if(movingRight){
+                    x-=60;
+                    target.move(32, 0, gameMap);
+                }
+                else{
+                    x+=60;
+                    target.move(-32, 0, gameMap);
+                }
             }
         }
 

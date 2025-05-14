@@ -89,6 +89,8 @@ public class GameWindow implements KeyListener
                 break;
             case 83: keys[4] = true; // jos S
                 break;
+            case 32: keys[5] = true; // attack SPACE
+                break;
         }
 //        System.out.println("You pressed key char: " + e.getKeyChar());
 //        System.out.println("You pressed key code: " + e.getKeyCode());
@@ -105,6 +107,8 @@ public class GameWindow implements KeyListener
             case 87: keys[3] = false; // sus W
                 break;
             case 83: keys[4] = false; // jos S
+                break;
+            case 32: keys[5] = false; // attack SPACE
                 break;
         }
 //        System.out.println("You released key char: " + e.getKeyChar());

@@ -317,27 +317,44 @@ public class Game implements Runnable
 
             Mihai.isMoving = false;
         }
-        if(wnd.keys[1]){
+        if(!Mihai.dead){
+            if(wnd.keys[1]){
                 Mihai.move(Mihai.speed, 0, gameMap);
                 Mihai.isMoving = true;
                 Mihai.facingRight = true;
-        }
-        if(wnd.keys[2]){
+            }
+            if(wnd.keys[2]){
                 Mihai.move(-Mihai.speed, 0, gameMap);
                 Mihai.isMoving = true;
                 Mihai.facingRight = false;
-        }
-        if(wnd.keys[3]){
-            if(Mihai.onGround){
+            }
+            if(wnd.keys[3]){
+                if(Mihai.onGround){
                     Mihai.onGround = false;
                     Mihai.gravity = -14;
 
+                }
+            }
+            if(wnd.keys[5]){
+                if(!Mihai.attacking){
+                    Mihai.attacking = true;
+                    if(Mihai.facingRight){
+                        Mihai.move(10, 0, gameMap);
+                    }
+                    else{
+                        Mihai.move(-10,0,gameMap);
+                    }
+                }
             }
         }
+
         Mihai.updateWalkAnimation(Mihai.isMoving);
         Mihai.updateJumpAnimation(Mihai.onGround);
         if(gameMap.isFloor(Mihai.getX()/Mihai.getSize(), Mihai.getY()/Mihai.getSize() + 1)){
                 Mihai.respawn(200, 100);
+        }
+        if(Mihai.health == 0){
+            Mihai.dead = true;
         }
         entityManager.updateAll(gameMap);
 
