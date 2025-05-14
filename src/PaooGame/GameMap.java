@@ -28,7 +28,8 @@ public class GameMap {
         loadMapFromFile(filename);
 
         try {
-            background = ImageIO.read(new File("res/textures/level1bg1.png"));
+//            background = ImageIO.read(new File("res/textures/level1bg1.png"));
+            background = ImageIO.read(new File("res/textures/gradBG.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -68,8 +69,8 @@ public void render(Graphics g, Camera camera) {
 
 
     if (background != null) {
-        int bgX = camera.getX() / 2;
-        int bgY = camera.getY() / 2;
+        int bgX = 0;
+        int bgY = 0;
         g.drawImage(background, -bgX, -bgY, null);
     }
 

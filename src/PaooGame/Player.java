@@ -211,6 +211,10 @@ public void render(Graphics g, Camera camera) {
         this.hurt = true;
     }
 
+    public int getHealth(){
+        return health;
+    }
+
     public int getX() { return x; }
     public int getY() { return y; }
     public int getSize() { return size; }

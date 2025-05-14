@@ -2,6 +2,7 @@ package PaooGame;
 
 import PaooGame.GameWindow.GameWindow;
 import PaooGame.Graphics.Assets;
+import PaooGame.Graphics.HealthBar;
 import PaooGame.Tiles.Tile;
 import PaooGame.Tiles.TileFactory;
 
@@ -55,6 +56,7 @@ public class Game implements Runnable
     private GameMap gameMap;
     private Graphics        g;          /*!< Referinta catre un context grafic.*/
     private final Player Mihai = new Player(200,200);
+    private HealthBar healthBar = new HealthBar(Mihai);
     private int tileSize = 32;
 
 //    private ArrayList<Enemy> Eagles = new ArrayList<Enemy>(
@@ -411,6 +413,7 @@ public class Game implements Runnable
                 gameMap.render(g, camera);
             }
 //            Mihai.render(g, camera);
+            healthBar.render(g,camera);
             entityManager.renderAll(g,camera);
 
             // end operatie de desenare
