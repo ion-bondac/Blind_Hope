@@ -1,11 +1,14 @@
 package PaooGame;
 
+import PaooGame.Database.DatabaseManager;
+import PaooGame.Database.GameSession;
 import PaooGame.GameWindow.GameWindow;
+import PaooGame.GameWindow.LoadGamePanel; // Add for LoadGamePanel
+import PaooGame.GameWindow.PauseMenu;
 import PaooGame.Graphics.Assets;
 import PaooGame.Graphics.HealthBar;
 import PaooGame.Tiles.Tile;
 import PaooGame.Tiles.TileFactory;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -14,6 +17,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import java.util.List; // Add for List
 /*! \class Game
     \brief Clasa principala a intregului proiect. Implementeaza Game - Loop (Update -> Draw)
 
@@ -76,6 +80,9 @@ public class Game implements Runnable
 
     private Camera camera = new Camera(800,480);
     EntityManager entityManager = new EntityManager();
+    private DatabaseManager dbManager; // Add DatabaseManager
+    private PauseMenu pauseMenu;
+    private boolean isPaused; // Track pause state
 
     /// Sunt cateva tipuri de "complex buffer strategies", scopul fiind acela de a elimina fenomenul de
     /// flickering (palpaire) a ferestrei.
@@ -110,23 +117,28 @@ public class Game implements Runnable
         wnd = new GameWindow(title, width, height);
             /// Resetarea flagului runState ce indica starea firului de executie (started/stoped)
         runState = false;
+        dbManager = new DatabaseManager(); // Initialize DatabaseManager
+        isPaused = false; // Initialize pause state
+        pauseMenu = null; // Ensure no pause menu
     }
 
+    private void saveGameSession() {
+        try {
+            dbManager.saveSession(Mihai.getX(), Mihai.getY());
+            JOptionPane.showMessageDialog(wnd.getWndFrame(), "Game session saved!", "Success", JOptionPane.INFORMATION_MESSAGE);
+        } catch (RuntimeException e) {
+            JOptionPane.showMessageDialog(wnd.getWndFrame(), "Failed to save session: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }    }
+
     private void InitGame() throws IOException {
-//        wnd = new GameWindow(title, width, height);
-//        wnd.BuildGameWindow();
-//        /// Este construita fereastra grafica.
-//        wnd.showMenu();
-        /// Se incarca toate elementele grafice (dale)
         Assets.Init();
         setupMenuButtons();
-
         TileFactory tileFactory = new TileFactory();
         try {
             gameMap = new GameMap("src/PaooGame/Level1MapNEW.txt", tileFactory);
-        } catch (IOException e){
-            System.err.println("Failed to load game map :"+ e.getMessage());
-            JOptionPane.showMessageDialog(wnd.GetCanvas(),"Failed to load game map","Error",JOptionPane.ERROR_MESSAGE);
+        } catch (IOException e) {
+            System.err.println("Failed to load game map: " + e.getMessage());
+            JOptionPane.showMessageDialog(wnd.GetCanvas(), "Failed to load game map", "Error", JOptionPane.ERROR_MESSAGE);
             System.exit(1);
         }
 
@@ -134,6 +146,13 @@ public class Game implements Runnable
         for(int i=0; i<Eagles.size(); i++){
             entityManager.addEntity(Eagles.get(i));
         }
+        isPaused = false; // Reset pause state
+        pauseMenu = null; // Clear pause menu
+        // menu is shown
+        wnd.getWndFrame().getContentPane().removeAll();
+        wnd.getWndFrame().add(wnd.getMenu(), BorderLayout.CENTER);
+        wnd.getWndFrame().revalidate();
+        wnd.getWndFrame().repaint();
     }
 
     /*! \fn public void run()
@@ -150,6 +169,17 @@ public class Game implements Runnable
             e.printStackTrace();
             return;
         }
+
+
+        // Wait for window to be ready
+        while (!wnd.getWndFrame().isDisplayable()) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
         long oldTime = System.nanoTime();   /*!< Retine timpul in nanosecunde aferent frame-ului anterior.*/
         long curentTime;                    /*!< Retine timpul curent de executie.*/
 
@@ -167,7 +197,7 @@ public class Game implements Runnable
                 /// Daca diferenta de timp dintre curentTime si oldTime mai mare decat 16.6 ms
             if((curentTime - oldTime) > timeFrame)
             {
-                if(!wnd.isMenuShowing())
+                if (!wnd.isMenuShowing() && wnd.GetCanvas().isDisplayable() && !isPaused)
                 {
                     /// Actualizeaza pozitiile elementelor
                     Update();
@@ -193,34 +223,72 @@ public class Game implements Runnable
 
  */
 
-    private void setupMenuButtons()
-    {
-//        for(Component comp : wnd.getMenuPanel().getComponents())
-//        {
-//            if(comp instanceof JButton)
-//            {
-//                JButton button = (JButton) comp;
-//                button.addActionListener(e -> handleButtonAction(button.getText()));
-//            }
-//        }
-        wnd.getMenu().addActionListenerToButton("New Game", e -> handleButtonAction("New Game"));
-        wnd.getMenu().addActionListenerToButton("Load Game", e -> handleButtonAction("Load Game"));
-        wnd.getMenu().addActionListenerToButton("Exit", e -> handleButtonAction("Exit"));
+    private void setupMenuButtons() {
+        wnd.getMenu().addActionListenerToButton("New Game", e -> {
+            System.out.println("New Game button clicked");
+            handleButtonAction("New Game");
+        });
+        wnd.getMenu().addActionListenerToButton("Load Game", e -> {
+            System.out.println("Load Game button clicked");
+            handleButtonAction("Load Game");
+        });
+        wnd.getMenu().addActionListenerToButton("Exit", e -> {
+            System.out.println("Exit button clicked");
+            handleButtonAction("Exit");
+        });
         wnd.getMenu().addSettingsActionListener(e -> {
             System.out.println("Settings button clicked");
-            // Add your settings functionality here
         });
     }
 
-    private void handleButtonAction(String buttonText)
-    {
-        switch (buttonText)
-        {
-            case "New Game":
+    private void loadGameSession() {
+        List<GameSession> sessions = dbManager.loadAllSessions();
+        if (sessions == null || sessions.isEmpty()) {
+            JOptionPane.showMessageDialog(wnd.getWndFrame(), "No saved sessions found!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        LoadGamePanel loadPanel = new LoadGamePanel(sessions, selectedSession -> {
+            if (gameMap.isWalkable(selectedSession.getPlayerX() / Mihai.getSize(), selectedSession.getPlayerY() / Mihai.getSize())) {
+                Mihai.respawn(selectedSession.getPlayerX(), selectedSession.getPlayerY());
                 wnd.hideMenu();
+                hidePauseMenu(); // Ensure pause menu is closed
+                System.out.println("Loaded session: x=" + selectedSession.getPlayerX() + ", y=" + selectedSession.getPlayerY());
+                wnd.getWndFrame().getContentPane().removeAll();
+                wnd.getWndFrame().add(wnd.GetCanvas(), BorderLayout.CENTER);
+                wnd.getWndFrame().revalidate();
+                wnd.getWndFrame().repaint();
+                wnd.GetCanvas().requestFocusInWindow();
+            } else {
+                JOptionPane.showMessageDialog(wnd.getWndFrame(), "Invalid position in saved session!", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }, wnd.getMenu(), pauseMenu); // Pass pauseMenu
+
+        wnd.getWndFrame().getContentPane().removeAll();
+        wnd.getWndFrame().add(loadPanel, BorderLayout.CENTER);
+        wnd.getWndFrame().revalidate();
+        wnd.getWndFrame().repaint();
+    }
+
+    private void handleButtonAction(String buttonText) {
+        System.out.println("Handling button: " + buttonText + ", isPaused: " + isPaused);
+        switch (buttonText) {
+            case "New Game":
+                // Reset game state
+                Mihai.respawn(200, 200);
+                camera.update(Mihai); // Reset camera position
+                isPaused = false;
+                pauseMenu = null;
+
+                // Properly initialize canvas
+                wnd.hideMenu();
+                wnd.GetCanvas().createBufferStrategy(3); // Ensure buffer strategy exists
+                wnd.GetCanvas().requestFocusInWindow(); // Ensure canvas has focus
+
+                System.out.println("New Game started, canvas focus: " + wnd.GetCanvas().hasFocus());
                 break;
             case "Load Game":
-                System.out.println("Urmeaza de implimentat load-ul");
+                loadGameSession();
                 break;
             case "Exit":
                 System.exit(0);
@@ -283,39 +351,105 @@ public class Game implements Runnable
         }
     }
 
+    private void showPauseMenu() {
+        SwingUtilities.invokeLater(() -> {
+            try {
+                System.out.println("Attempting to show pause menu");
+                pauseMenu = new PauseMenu(
+                        this::saveGameSession,
+                        this::loadGameSession,
+                        () -> System.exit(0),
+                        this::hidePauseMenu
+                );
+
+                // Remove only the canvas
+                wnd.getWndFrame().getContentPane().remove(wnd.GetCanvas());
+                wnd.getWndFrame().add(pauseMenu, BorderLayout.CENTER);
+                wnd.getWndFrame().revalidate();
+                wnd.getWndFrame().repaint();
+
+                pauseMenu.setFocusable(true);
+                pauseMenu.requestFocusInWindow();
+                System.out.println("Pause menu should be visible now");
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(wnd.getWndFrame(), "Error showing pause menu: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+    }
+
+    private void hidePauseMenu() {
+        SwingUtilities.invokeLater(() -> {
+            try {
+                if (pauseMenu != null) {
+                    System.out.println("Hiding pause menu: isPaused = " + isPaused);
+                    wnd.getWndFrame().getContentPane().remove(pauseMenu);
+                    pauseMenu = null;
+                    isPaused = false;
+                    wnd.getWndFrame().add(wnd.GetCanvas(), BorderLayout.CENTER);
+                    wnd.getWndFrame().revalidate();
+                    wnd.getWndFrame().repaint();
+                    wnd.GetCanvas().requestFocusInWindow();
+                    System.out.println("Pause menu hidden: isPaused = " + isPaused);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(wnd.getWndFrame(), "Error hiding pause menu: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+    }
     /*! \fn private void Update()
         \brief Actualizeaza starea elementelor din joc.
 
         Metoda este declarata privat deoarece trebuie apelata doar in metoda run()
      */
-    private void Update()
-    {
-        camera.update(Mihai);
+    private void Update() {
+        if (wnd.isMenuShowing()) {
+            System.out.println("Update skipped: Main menu is showing");
+            return;
+        }
 
-        if(gameMap != null){
-            if(!Mihai.onGround){
-                Mihai.move(0,Mihai.gravity++, gameMap);
+        // Handle escape key for pause menu
+        if (wnd.keys[4]) { // Escape key
+            System.out.println("Escape key detected in Update. isPaused: " + isPaused);
+            if (!isPaused) {
+                showPauseMenu();
+                isPaused = true;
+            } else {
+                hidePauseMenu();
+                isPaused = false;
             }
-            int PlayerX = Mihai.getX();
-            if(Mihai.getX()% Mihai.getSize() > 8 && !gameMap.isWalkable(Mihai.getX()/Mihai.getSize() + 1, Mihai.getY()/Mihai.getSize() + 1)){
-                PlayerX += 32;
-            }
-            if(!gameMap.isWalkable(PlayerX/Mihai.getSize(), Mihai.getY()/Mihai.getSize() + 1)){
-                Mihai.onGround = true;
-                Mihai.move(0, -Mihai.getY() % Mihai.getSize(), gameMap);
-                Mihai.gravity = 0;
-            }
-            else{
-                Mihai.onGround = false;
-            }
-//            if(!gameMap.isWalkable(Mihai.getX()/Mihai.getSize() +1, Mihai.getY()/Mihai.getSize() + 1)){
-//                if(Mihai.getX() % Mihai.getSize() >=30){
-//                    Mihai.onGround = true;
-//                    Mihai.move(0, -Mihai.getY() % Mihai.getSize(), gameMap);
-//                    Mihai.gravity = 0;
-//
-//                }
-//            }
+            wnd.keys[4] = false; // Prevent repeated toggling
+            return; // Skip other updates this frame
+        }
+
+        // Only update game logic if not paused
+        if (!isPaused) {
+            // Update camera position
+            camera.update(Mihai);
+
+            // Handle player physics and movement
+            if (gameMap != null) {
+                // Gravity and ground detection
+                if (!Mihai.onGround) {
+                    Mihai.move(0, Mihai.gravity++, gameMap);
+                }
+
+                int PlayerX = Mihai.getX();
+                if (Mihai.getX() % Mihai.getSize() > 8 &&
+                        !gameMap.isWalkable(Mihai.getX() / Mihai.getSize() + 1,
+                                Mihai.getY() / Mihai.getSize() + 1)) {
+                    PlayerX += 32;
+                }
+
+                if (!gameMap.isWalkable(PlayerX / Mihai.getSize(),
+                        Mihai.getY() / Mihai.getSize() + 1)) {
+                    Mihai.onGround = true;
+                    Mihai.move(0, -Mihai.getY() % Mihai.getSize(), gameMap);
+                    Mihai.gravity = 0;
+                } else {
+                    Mihai.onGround = false;
+                }
 
             Mihai.isMoving = false;
         }
@@ -354,6 +488,9 @@ public class Game implements Runnable
         Mihai.updateJumpAnimation(Mihai.onGround);
         if(gameMap.isFloor(Mihai.getX()/Mihai.getSize(), Mihai.getY()/Mihai.getSize() + 1)){
                 Mihai.respawn(200, 100);
+            }
+        } else {
+            System.out.println("Game paused, skipping normal updates");
         }
         if(Mihai.health == 0){
             Mihai.dead = true;
@@ -361,7 +498,6 @@ public class Game implements Runnable
         entityManager.updateAll(gameMap);
 
     }
-
     /*! \fn private void Draw()
         \brief Deseneaza elementele grafice in fereastra coresponzator starilor actualizate ale elementelor.
 
@@ -370,7 +506,7 @@ public class Game implements Runnable
     private void Draw() throws IOException {
         try {
             Canvas canvas = wnd.GetCanvas();
-            if (canvas == null) {
+            if (canvas == null || !canvas.isDisplayable() || !canvas.isShowing()) {
                 return;
             }
             /// Returnez bufferStrategy pentru canvasul existent
@@ -389,26 +525,7 @@ public class Game implements Runnable
             /// Se sterge ce era
             g.clearRect(0, 0, wnd.GetWndWidth(), wnd.GetWndHeight());
 
-            /// operatie de desenare
-            // ...............
-//            Tile.grassTile.Draw(g, 0 * Tile.TILE_WIDTH, 0);
-//            Tile.soilTile.Draw(g, 1 * Tile.TILE_WIDTH, 0);
-//            Tile.waterTile.Draw(g, 2 * Tile.TILE_WIDTH, 0);
-//            Tile.mountainTile.Draw(g, 3 * Tile.TILE_WIDTH, 0);
-//            Tile.treeTile.Draw(g, 4 * Tile.TILE_WIDTH, 0);
-//
-//            g.drawRect(1 * Tile.TILE_WIDTH, 1 * Tile.TILE_HEIGHT, Tile.TILE_WIDTH, Tile.TILE_HEIGHT);
 
-//        Mihai.addNativeKeyListener();
-//        if (keyPressed == KeyEvent.VK_RIGHT) {
-////            if (gameMap.isWalkable(M.getX() + 1, player.getY())) {
-//                Mihai.move(1, 0,gameMap);
-////            }
-//        }
-
-//        TileFactory tileFactory = new TileFactory();
-//        gameMap = new GameMap("src/PaooGame/Level1.txt", tileFactory);
-//        gameMap = new GameMap("src/PaooGame/map.txt", tileFactory);
             if (gameMap != null) {
                 gameMap.render(g, camera);
             }
