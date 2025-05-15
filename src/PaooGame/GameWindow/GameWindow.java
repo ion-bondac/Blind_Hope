@@ -87,7 +87,8 @@ public class GameWindow implements KeyListener
                 break;
             case 87: keys[3] = true; // sus W
                 break;
-            case 83: keys[4] = true; // jos S
+            case 27: keys[4] = true; // esc
+                System.out.println("esc key detected in keyPressed");
                 break;
             case 32: keys[5] = true; // attack SPACE
                 break;
@@ -106,13 +107,11 @@ public class GameWindow implements KeyListener
                 break;
             case 87: keys[3] = false; // sus W
                 break;
-            case 83: keys[4] = false; // jos S
+            case 27: keys[4] = false; // esc
                 break;
             case 32: keys[5] = false; // attack SPACE
                 break;
         }
-//        System.out.println("You released key char: " + e.getKeyChar());
-//        System.out.println("You released key code: " + e.getKeyCode());
     }
 
     /*! \fn private void BuildGameWindow()
@@ -130,88 +129,33 @@ public class GameWindow implements KeyListener
         wndFrame.setLayout(new BorderLayout());
         wndFrame.setFocusable(true);
         wndFrame.requestFocusInWindow();
-        wndFrame.addKeyListener(this);
+//        wndFrame.addKeyListener(this);
 
         menu = new Menu();
         wndFrame.add(menu,BorderLayout.CENTER);
         wndFrame.setVisible(true);
-
-//        menuPanel = new JPanel();
-//        menuPanel.setLayout(new GridBagLayout());
-//        menuPanel.setBackground(Color.BLACK);
-
-//        JButton NewGameButton = createMenuButton("New Game");
-//        JButton LoadGameButton = createMenuButton("Load Game");
-//        JButton ExitButton = createMenuButton("Exit");
-//
-//        GridBagConstraints gbc = new GridBagConstraints();
-//
-//        gbc.gridwidth = GridBagConstraints.REMAINDER;
-//        gbc.fill = GridBagConstraints.HORIZONTAL;
-//        gbc.insets = new Insets(10, 50, 10, 50);
-//
-//        menuPanel.add(NewGameButton, gbc);
-//        menuPanel.add(LoadGameButton, gbc);
-//        menuPanel.add(ExitButton, gbc);
-
-        // Adaugă spațiu flexibil deasupra butoanelor pentru a le împinge în jos
-//        gbc.weighty = 1.0; // Acordă prioritate spațiului vertical
-//        gbc.gridy = 0;     // Prima poziție în GridBagLayout
-//        menuPanel.add(Box.createVerticalGlue(), gbc); // Spațiu elastic
-//
-//        // Resetează weighty pentru butoane
-//        gbc.weighty = 0.0;
-//        gbc.gridy = 1;
-//        menuPanel.add(NewGameButton, gbc);
-//        gbc.gridy = 2;
-//        menuPanel.add(LoadGameButton, gbc);
-//        gbc.gridy = 3;
-//        menuPanel.add(ExitButton, gbc);
-
-        // Adaugă spațiu sub butoane (opțional)
-//        gbc.weighty = 0.2; // Spațiu mai mic sub butoane față de cel de deasupra
-//        gbc.gridy = 4;
-//        menuPanel.add(Box.createVerticalGlue(), gbc);
-//
-//
-//        settingsIcon = new JPanel();
-//        settingsIcon.setLayout(new GridBagLayout());
-//        settingsIcon.setBackground(null);
-//        JButton SettingsBtn = createMenuButton("*");
-//
-//        GridBagConstraints gbc2 = new GridBagConstraints();
-//
-//        gbc2.gridwidth = GridBagConstraints.SOUTHEAST;
-//        gbc2.fill = GridBagConstraints.HORIZONTAL;
-//        gbc2.insets = new Insets(0, 100, 0, 0);
-//
-//        settingsIcon.add(SettingsBtn, gbc2);
-
-//        menuPanel.add(settingsIcon, gbc);
-//        wndFrame.add(menuPanel, BorderLayout.CENTER);
-//        wndFrame.setVisible(true);
-
     }
-
-//    private JButton createMenuButton(String text)
-//    {
-//        JButton Button = new JButton(text);
-//        Button.setFont(new Font("Arial",Font.PLAIN,24));
-//        Button.setBackground(Color.DARK_GRAY);
-//        Button.setForeground(Color.WHITE);
-//        Button.setFocusPainted(false);
-//        Button.setBorder(BorderFactory.createLineBorder(Color.WHITE,2));
-//        return Button;
-//    }
 
     public void hideMenu() {
         menu.setVisible(false);
-        wndFrame.remove(menu);
-        wndFrame.add(canvas,BorderLayout.CENTER);
+        getWndFrame().getContentPane().removeAll();
 
-        wndFrame.revalidate();
-        wndFrame.repaint();
+        // Prepare canvas
+        canvas.setIgnoreRepaint(true);
+        canvas.setFocusable(true);
         canvas.requestFocusInWindow();
+
+        getWndFrame().add(canvas, BorderLayout.CENTER);
+        getWndFrame().revalidate();
+        getWndFrame().repaint();
+
+        // Create buffer strategy if needed
+        if (canvas.getBufferStrategy() == null) {
+            canvas.createBufferStrategy(3);
+        }
+
+        System.out.println("Menu hidden. Canvas ready: " + canvas.isDisplayable() +
+                ", focus: " + canvas.hasFocus());
     }
 
 
