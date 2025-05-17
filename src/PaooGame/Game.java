@@ -496,7 +496,7 @@ public class Game implements Runnable
             Mihai.dead = true;
         }
         entityManager.updateAll(gameMap);
-
+        gameMap.update();
     }
     /*! \fn private void Draw()
         \brief Deseneaza elementele grafice in fereastra coresponzator starilor actualizate ale elementelor.
