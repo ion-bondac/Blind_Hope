@@ -104,6 +104,7 @@ public class Enemy extends Entity {
             }
             else{
                 target.Damage(100);
+                target.attackCooldown = 0;
                 if(movingRight){
                     x-=60;
                     target.move(32, 0, gameMap);

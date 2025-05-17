@@ -13,6 +13,8 @@ public class Player extends Entity {
     public boolean attacking = false;
     public boolean isMoving = false;
     public boolean facingRight = true;
+    public int attackCooldown = 0;
+    public int maxAttackCooldown = 40;
     public boolean hurt = false;
     public boolean dead = false;
     public int gravity = 0;
@@ -31,7 +33,7 @@ public class Player extends Entity {
 
     BufferedImage[] attackFrames = new BufferedImage[4];
     int attackFrameIndex = 0;
-    int attackFrameDelay = 5; // număr de update-uri între schimbările de frame
+    int attackFrameDelay = 7; // număr de update-uri între schimbările de frame
     int attackFrameTick = 0;
 
     BufferedImage[] hurtFrames = new BufferedImage[4];
@@ -104,6 +106,9 @@ public class Player extends Entity {
             if (walkFrameTick >= walkFrameDelay) {
                 walkFrameTick = 0;
                 walkFrameIndex = (walkFrameIndex + 1) % walkFrames.length;
+                if(onGround){
+                    SoundPlayer.playSound("/sounds/walk2.wav");
+                }
             }
         } else {
             walkFrameIndex= 0;
@@ -133,6 +138,9 @@ public class Player extends Entity {
 public void update(GameMap gameMap){
 //        System.out.println(health/100 + "vieti");
     ;
+    if (attackCooldown > 0) {
+        attackCooldown--;
+    }
 }
 
 @Override
@@ -209,6 +217,7 @@ public void render(Graphics g, Camera camera) {
     public void Damage(int d){
         this.health -= d;
         this.hurt = true;
+        SoundPlayer.playSound("/sounds/hurt.wav");
     }
 
     public int getHealth(){
