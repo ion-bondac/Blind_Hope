@@ -21,7 +21,15 @@ public class GameMap {
     private Tile[][] mapTiles;
     private TileFactory tileFactory;
     private BufferedImage background;
-
+    private BufferedImage cloud1;
+    private BufferedImage cloud2;
+    private BufferedImage cloud3;
+    private BufferedImage rocks;
+    private BufferedImage rocks2;
+    private BufferedImage rocks3;
+    private int[] cloudsX;
+    private int[] cloudsY;
+    private int delay = 0;
 
     public GameMap(String filename, TileFactory factory) throws IOException {
         this.tileFactory = factory;
@@ -29,10 +37,45 @@ public class GameMap {
 
         try {
 //            background = ImageIO.read(new File("res/textures/level1bg1.png"));
-            background = ImageIO.read(new File("res/textures/gradBG.png"));
+            background = ImageIO.read(new File("res/textures/Level1/lvl1-bg.png"));
+            cloud1 = ImageIO.read(new File("res/textures/Level1/lvl1-cloud1.png"));
+            cloud2 = ImageIO.read(new File("res/textures/Level1/lvl1-cloud2.png"));
+            cloud3 = ImageIO.read(new File("res/textures/Level1/lvl1-cloud3.png"));
+            rocks = ImageIO.read(new File("res/textures/Level1/bgrocks.png"));
+//            rocks2 = ImageIO.read(new File("res/textures/Level1/lvl1-rocks2.png"));
+//            rocks3 = ImageIO.read(new File("res/textures/Level1/lvl1-rocks3.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+
+        cloudsX = new int[]{
+                100,
+                0,
+                150,
+                200,
+                250,
+                400,
+                -300,
+                480,
+                500,
+                -600,
+                -700
+        };
+
+        cloudsY = new int[] {
+                200,
+                0,
+                0,
+                100,
+                50,
+                100,
+                200,
+                150,
+                0,
+                150,
+                0
+        };
     }
     public boolean isWalkable(int x, int y){
         return mapTiles[y][x].walkable;
@@ -62,6 +105,16 @@ public class GameMap {
 //            }
 //        }
 //    }
+
+    public void update(){
+        delay++;
+        if(delay % 15 == 0){
+            for(int i=0; i<11; i++){
+                cloudsX[i]++;
+            }
+        }
+    }
+
 public void render(Graphics g, Camera camera) {
     int tileSize = 32;
     int screenWidth = camera.getScreenWidth();  // Add this to Camera class
@@ -73,6 +126,22 @@ public void render(Graphics g, Camera camera) {
         int bgY = 0;
         g.drawImage(background, -bgX, -bgY, null);
     }
+
+    g.drawImage(cloud1, cloudsX[0]-camera.getX()/5, cloudsY[0]-camera.getY()/5, 600,320, null);
+    g.drawImage(cloud2, cloudsX[1]-camera.getX()/5, cloudsY[1]-camera.getY()/5, null);
+    g.drawImage(cloud3, cloudsX[2]-camera.getX()/5, cloudsY[2]-camera.getY()/5, 600,320,null);
+    g.drawImage(cloud1, cloudsX[3]-camera.getX()/5, cloudsY[3]-camera.getY()/5, null);
+    g.drawImage(cloud2, cloudsX[4]-camera.getX()/5, cloudsY[4]-camera.getY()/5, 600,320,null);
+    g.drawImage(cloud3, cloudsX[5]-camera.getX()/5, cloudsY[5]-camera.getY()/5, null);
+    g.drawImage(cloud1, cloudsX[6]-camera.getX()/5, cloudsY[6]-camera.getY()/5, 600,320,null);
+    g.drawImage(cloud2, cloudsX[7]-camera.getX()/5, cloudsY[7]-camera.getY()/5, null);
+    g.drawImage(cloud3, cloudsX[8]-camera.getX()/5, cloudsY[8]-camera.getY()/5, null);
+    g.drawImage(cloud1, cloudsX[9]-camera.getX()/5, cloudsY[9]-camera.getY()/5, null);
+    g.drawImage(cloud2, cloudsX[10]-camera.getX()/5, cloudsY[10]-camera.getY()/5, null);
+
+
+//    g.drawImage(rocks,0, 50, null);
+//    g.drawImage(rocks2, 0-camera.getX()/2, -camera.getY()/3, null);
 
     // Calculate visible tile range
     int startX = Math.max(0, camera.getX() / tileSize);
@@ -89,6 +158,7 @@ public void render(Graphics g, Camera camera) {
             );
         }
     }
+
 }
 
 }
