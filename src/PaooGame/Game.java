@@ -70,11 +70,14 @@ public class Game implements Runnable
             Arrays.asList(
                     new Enemy(22 * tileSize, 14 * tileSize, Mihai, "Eagle", true),
                     new Enemy(30 * tileSize, 12 * tileSize, Mihai, "Eagle", false),
+                    new Enemy(41 * tileSize, 14 * tileSize, Mihai, "Eagle", false),
                     new Enemy(45 * tileSize, 17 * tileSize, Mihai, "Eagle", true),
+                    new Enemy(55 * tileSize, 20 * tileSize, Mihai, "Eagle", true),
                     new Enemy(63 * tileSize, 24 * tileSize, Mihai, "Eagle", false),
                     new Enemy(73 * tileSize, 29 * tileSize, Mihai, "Eagle", false),
                     new Enemy(80 * tileSize, 25 * tileSize, Mihai, "Eagle", false),
-                    new Enemy(84 * tileSize, 23 * tileSize, Mihai, "Eagle", false)
+                    new Enemy(84 * tileSize, 23 * tileSize, Mihai, "Eagle", false),
+                    new Enemy(86 * tileSize, 22 * tileSize, Mihai, "Eagle", false)
             )
     );
 

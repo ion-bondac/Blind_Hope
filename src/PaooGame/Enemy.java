@@ -23,13 +23,20 @@ public class Enemy extends Entity {
     int flyFrameDelay = 5; // număr de update-uri între schimbările de frame
     int flyFrameTick = 0;
 
+    public boolean isHurt = false;
+    public int hurtDelay= 0;
+    BufferedImage[] hurtFrames = new BufferedImage[2];
+    int hurtFrameIndex;
+    int hurtFrameDelay = 5; // număr de update-uri între schimbările de frame
+    int hurtFrameTick = 0;
+
 
     public Enemy(int x, int y, Player target, String type, boolean right) {
         Random rand = new Random();
         this.x = x + rand.nextInt(80);
         this.y = y;
         this.speed = 2;
-        this.health = 50;
+        this.health = 100;
         this.width = 32;
         this.height = 32;
         this.target = target;
@@ -41,6 +48,9 @@ public class Enemy extends Entity {
             spriteSheet = ImageIO.read(Objects.requireNonNull(getClass().getResource("/sprites/EagleSpritesheet.png")));
             for(int i = 0; i < flyFrames.length; i++) {
                 flyFrames[i] = spriteSheet.getSubimage(i * width, 0, width, height);
+            }
+            for(int i = 0; i < hurtFrames.length; i++) {
+                hurtFrames[i] = spriteSheet.getSubimage(i * width, height, width, height);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -81,11 +91,27 @@ public class Enemy extends Entity {
                     if (x <= startX - 80)
                         movingRight = true;
                 }
-                flyFrameTick++;
-                if (flyFrameTick >= flyFrameDelay) {
-                    flyFrameTick = 0;
-                    flyFrameIndex = (flyFrameIndex + 1) % flyFrames.length;
+                ;
+                if(isHurt){
+                    hurtDelay++;
+                    hurtFrameTick++;
+                    if (hurtFrameTick >= hurtFrameDelay) {
+                        hurtFrameTick = 0;
+                        hurtFrameIndex = (hurtFrameIndex + 1) % hurtFrames.length;
+                    }
+                    if(hurtDelay>=10){
+                        isHurt = false;
+                        hurtDelay=0;
+                    }
                 }
+                else{
+                    flyFrameTick++;
+                    if (flyFrameTick >= flyFrameDelay) {
+                        flyFrameTick = 0;
+                        flyFrameIndex = (flyFrameIndex + 1) % flyFrames.length;
+                    }
+                }
+
         }
 
 
@@ -100,7 +126,19 @@ public class Enemy extends Entity {
         }
         if((x+offset)/32 == target.getX()/32 && y/32 == target.getY()/32){
             if(target.attacking){
-                this.active = false;
+                isHurt = true;
+                health -=50;
+                speed -=1;
+                if(target.facingRight){
+                    x+=50;
+                }
+                else{
+                    x-=50;
+                }
+                if(health == 0){
+//                    isHurt = false;
+                    this.active = false;
+                }
             }
             else{
                 target.Damage(100);
@@ -120,10 +158,15 @@ public class Enemy extends Entity {
 
     @Override
     public void render(Graphics g, Camera camera) {
-        BufferedImage frameToDraw = flyFrames[0];
+        BufferedImage frameToDraw = hurtFrames[1];
         if(type.equals("Eagle")){
             if(!isChasing){
-                frameToDraw = flyFrames[flyFrameIndex];
+                if(isHurt){
+                    frameToDraw = hurtFrames[hurtFrameIndex];
+                }
+                else{
+                    frameToDraw =flyFrames[flyFrameIndex];
+                }
             }
             if (movingRight) {
                 g.drawImage(frameToDraw,
