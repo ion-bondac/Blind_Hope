@@ -468,12 +468,13 @@ public class Game implements Runnable
                 if(Mihai.onGround){
                     Mihai.onGround = false;
                     Mihai.gravity = -14;
-
+                    SoundPlayer.playSound("/sounds/jump3.wav");
                 }
             }
             if(wnd.keys[5]){
-                if(!Mihai.attacking){
+                if(!Mihai.attacking && Mihai.attackCooldown == 0){
                     Mihai.attacking = true;
+                    Mihai.attackCooldown = Mihai.maxAttackCooldown;
                     if(Mihai.facingRight){
                         Mihai.move(10, 0, gameMap);
                     }
@@ -492,7 +493,7 @@ public class Game implements Runnable
         } else {
             System.out.println("Game paused, skipping normal updates");
         }
-        if(Mihai.health == 0){
+        if(Mihai.health <= 0){
             Mihai.dead = true;
         }
         entityManager.updateAll(gameMap);
