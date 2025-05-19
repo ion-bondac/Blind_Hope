@@ -138,7 +138,7 @@ public class Game implements Runnable
         setupMenuButtons();
         TileFactory tileFactory = new TileFactory();
         try {
-            gameMap = new GameMap("src/PaooGame/Level1MapNEW.txt", tileFactory);
+            gameMap = new GameMap("src/PaooGame/LEVEL1MAPV3.txt", tileFactory);
         } catch (IOException e) {
             System.err.println("Failed to load game map: " + e.getMessage());
             JOptionPane.showMessageDialog(wnd.GetCanvas(), "Failed to load game map", "Error", JOptionPane.ERROR_MESSAGE);
