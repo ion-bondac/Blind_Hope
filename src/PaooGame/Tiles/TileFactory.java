@@ -30,6 +30,7 @@ public class TileFactory {
                 case "8":
                 case "9":
                 case "10":
+                case "11":
                 case "-1":
                     tileCache.put(type, new Tile(type, texture, true));
                     break;

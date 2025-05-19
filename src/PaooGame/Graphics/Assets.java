@@ -41,6 +41,7 @@ public class Assets
     public static BufferedImage plant;
     public static BufferedImage cactus;
     public static BufferedImage grass;
+    public static BufferedImage flower;
     public static BufferedImage empty;
     public static BufferedImage floor;
 
@@ -90,8 +91,9 @@ public class Assets
         plant = sheet.crop(0,1);
         cactus = sheet.crop(1,1);
         grass = sheet.crop(2,1);
-        empty = sheet.crop(3,1);
-        floor = sheet.crop(4,1);
+        flower = sheet.crop(3,1);
+        empty = sheet.crop(4,1);
+        floor = sheet.crop(5,1);
 
 
 //
@@ -121,6 +123,7 @@ public class Assets
         tileMap.put("8", plant);
         tileMap.put("9", cactus);
         tileMap.put("10", grass);
+        tileMap.put("11", flower);
         tileMap.put("-1", empty);
         tileMap.put("56", floor);
 
