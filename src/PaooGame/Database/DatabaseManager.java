@@ -51,26 +51,26 @@ public class DatabaseManager {
         }
     }
 
-    public GameSession loadLatestSession() {
-        String sql = "SELECT session_id, player_x, player_y, save_date FROM game_sessions " +
-                "ORDER BY save_date DESC LIMIT 1";
-        try (Connection conn = connect();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
-            if (rs.next()) {
-                return new GameSession(
-                        rs.getInt("session_id"),
-                        rs.getInt("player_x"),
-                        rs.getInt("player_y"),
-                        rs.getTimestamp("save_date")
-                );
-            }
-            System.out.println("No sessions found in database");
-            return null;
-        } catch (SQLException e) {
-            throw new RuntimeException("Failed to load session: " + e.getMessage(), e);
-        }
-    }
+//    public GameSession loadLatestSession() {
+//        String sql = "SELECT session_id, player_x, player_y, save_date FROM game_sessions " +
+//                "ORDER BY save_date DESC LIMIT 1";
+//        try (Connection conn = connect();
+//             Statement stmt = conn.createStatement();
+//             ResultSet rs = stmt.executeQuery(sql)) {
+//            if (rs.next()) {
+//                return new GameSession(
+//                        rs.getInt("session_id"),
+//                        rs.getInt("player_x"),
+//                        rs.getInt("player_y"),
+//                        rs.getTimestamp("save_date")
+//                );
+//            }
+//            System.out.println("No sessions found in database");
+//            return null;
+//        } catch (SQLException e) {
+//            throw new RuntimeException("Failed to load session: " + e.getMessage(), e);
+//        }
+//    }
 
     // New method to fetch all sessions
     public List<GameSession> loadAllSessions() {
@@ -91,6 +91,21 @@ public class DatabaseManager {
             return sessions;
         } catch (SQLException e) {
             throw new RuntimeException("Failed to load sessions: " + e.getMessage(), e);
+        }
+    }
+    public void deleteSession(int sessionId) {
+        String sql = "DELETE FROM game_sessions WHERE session_id = ?";
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, sessionId);
+            int rowsAffected = pstmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Session " + sessionId + " deleted successfully. Rows affected: " + rowsAffected);
+            } else {
+                System.out.println("No session found with ID: " + sessionId);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to delete session: " + e.getMessage(), e);
         }
     }
 }

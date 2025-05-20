@@ -255,7 +255,7 @@ public class Game implements Runnable
             if (gameMap.isWalkable(selectedSession.getPlayerX() / Mihai.getSize(), selectedSession.getPlayerY() / Mihai.getSize())) {
                 Mihai.respawn(selectedSession.getPlayerX(), selectedSession.getPlayerY());
                 wnd.hideMenu();
-                hidePauseMenu(); // Ensure pause menu is closed
+                hidePauseMenu();
                 System.out.println("Loaded session: x=" + selectedSession.getPlayerX() + ", y=" + selectedSession.getPlayerY());
                 wnd.getWndFrame().getContentPane().removeAll();
                 wnd.getWndFrame().add(wnd.GetCanvas(), BorderLayout.CENTER);
@@ -265,7 +265,7 @@ public class Game implements Runnable
             } else {
                 JOptionPane.showMessageDialog(wnd.getWndFrame(), "Invalid position in saved session!", "Error", JOptionPane.ERROR_MESSAGE);
             }
-        }, wnd.getMenu(), pauseMenu); // Pass pauseMenu
+        }, wnd.getMenu(), pauseMenu, dbManager); // Pass DatabaseManager
 
         wnd.getWndFrame().getContentPane().removeAll();
         wnd.getWndFrame().add(loadPanel, BorderLayout.CENTER);
