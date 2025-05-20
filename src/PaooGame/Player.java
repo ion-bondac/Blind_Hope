@@ -17,8 +17,10 @@ public class Player extends Entity {
     public int maxAttackCooldown = 40;
     public boolean hurt = false;
     public boolean dead = false;
+    public boolean blindfolded = false;
     public int gravity = 0;
     private BufferedImage standing;
+    private BufferedImage standingBlindfolded;
     private BufferedImage spriteSheet;
 
     BufferedImage[] walkFrames = new BufferedImage[6];
@@ -46,6 +48,11 @@ public class Player extends Entity {
     int deathFrameDelay = 5; // număr de update-uri între schimbările de frame
     int deathFrameTick = 0;
 
+    BufferedImage[] blindfoldFrames = new BufferedImage[6];
+    int blindfoldFrameIndex = 0;
+    int blidnfoldFrameDelay = 5; // număr de update-uri între schimbările de frame
+    int blindfoldFrameTick = 0;
+
 
 
     public Player(int x, int y) {
@@ -58,6 +65,7 @@ public class Player extends Entity {
         try{
             spriteSheet = ImageIO.read(getClass().getResource("/sprites/Esperis_Spritesheet.png"));
             standing = spriteSheet.getSubimage(0,0,size,size);
+            standingBlindfolded = spriteSheet.getSubimage(size,0,size,size);
             for(int i = 0; i < walkFrames.length; i++) {
                 walkFrames[i] = spriteSheet.getSubimage(i * size, size, size, size);
             }
@@ -72,6 +80,9 @@ public class Player extends Entity {
             }
             for(int i = 0; i < deathFrames.length; i++) {
                 deathFrames[i] = spriteSheet.getSubimage(i * size, 5*size, size, size);
+            }
+            for(int i = 0; i < blindfoldFrames.length; i++){
+                blindfoldFrames[i] = spriteSheet.getSubimage(i*size, 6*size, size, size);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -191,6 +202,9 @@ public void render(Graphics g, Camera camera) {
             }
             else if (!onGround) {
                 frameToDraw = jumpFrames[jumpFrameIndex];
+            }
+            else if (blindfolded) {
+                frameToDraw = standingBlindfolded;
             } else{
                 frameToDraw = standing;
             }
