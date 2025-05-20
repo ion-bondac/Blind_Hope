@@ -486,6 +486,10 @@ public class Game implements Runnable
                     }
                 }
             }
+            if(wnd.keys[6]){
+                System.out.println("Q");
+                Mihai.blindfolded = true;
+            }
         }
 
         Mihai.updateWalkAnimation(Mihai.isMoving);
