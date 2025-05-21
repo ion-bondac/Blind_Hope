@@ -18,6 +18,8 @@ public class Player extends Entity {
     public boolean hurt = false;
     public boolean dead = false;
     public boolean blindfolded = false;
+    public boolean equipBlindfold = false;
+    public boolean removeBlindfold = false;
     public int gravity = 0;
     private BufferedImage standing;
     private BufferedImage standingBlindfolded;
@@ -48,12 +50,38 @@ public class Player extends Entity {
     int deathFrameDelay = 5; // număr de update-uri între schimbările de frame
     int deathFrameTick = 0;
 
+
+    // BLINDFOLD ////////////////////
+
     BufferedImage[] blindfoldFrames = new BufferedImage[6];
     int blindfoldFrameIndex = 0;
-    int blidnfoldFrameDelay = 5; // număr de update-uri între schimbările de frame
+    int blindfoldFrameDelay = 5; // număr de update-uri între schimbările de frame
     int blindfoldFrameTick = 0;
 
+    BufferedImage[] blindWalkFrames = new BufferedImage[6];
+    int blindWalkFrameIndex = 0;
+    int blindWalkFrameDelay = 5; // număr de update-uri între schimbările de frame
+    int blindWalkFrameTick = 0;
 
+    BufferedImage[] blindJumpFrames = new BufferedImage[8];
+    int blindJumpFrameIndex = 0;
+    int blindJumpFrameDelay = 7; // număr de update-uri între schimbările de frame
+    int blindJumpFrameTick = 0;
+
+    BufferedImage[] blindAttackFrames = new BufferedImage[4];
+    int blindAttackFrameIndex = 0;
+    int blindAttackFrameDelay = 7; // număr de update-uri între schimbările de frame
+    int blindAttackFrameTick = 0;
+
+    BufferedImage[] blindHurtFrames = new BufferedImage[4];
+    int blindHurtFrameIndex = 0;
+    int blindHurtFrameDelay = 5; // număr de update-uri între schimbările de frame
+    int blindHurtFrameTick = 0;
+
+    BufferedImage[] blindDeathFrames = new BufferedImage[8];
+    int blindDeathFrameIndex = 0;
+    int blindDeathFrameDelay = 5; // număr de update-uri între schimbările de frame
+    int blindDeathFrameTick = 0;
 
     public Player(int x, int y) {
         this.x = x;
@@ -68,18 +96,23 @@ public class Player extends Entity {
             standingBlindfolded = spriteSheet.getSubimage(size,0,size,size);
             for(int i = 0; i < walkFrames.length; i++) {
                 walkFrames[i] = spriteSheet.getSubimage(i * size, size, size, size);
+                blindWalkFrames[i] = spriteSheet.getSubimage(i*size, 7*size, size, size);
             }
             for(int i = 0; i < jumpFrames.length; i++) {
                 jumpFrames[i] = spriteSheet.getSubimage(i * size, 2*size, size, size);
+                blindJumpFrames[i] = spriteSheet.getSubimage(i * size, 8*size, size, size);
             }
             for(int i = 0; i < attackFrames.length; i++) {
                 attackFrames[i] = spriteSheet.getSubimage(i * size, 3*size, size, size);
+                blindAttackFrames[i] = spriteSheet.getSubimage(i * size, 9*size, size, size);
             }
             for(int i = 0; i < hurtFrames.length; i++) {
                 hurtFrames[i] = spriteSheet.getSubimage(i * size, 4*size, size, size);
+                blindHurtFrames[i] = spriteSheet.getSubimage(i * size, 10*size, size, size);
             }
             for(int i = 0; i < deathFrames.length; i++) {
                 deathFrames[i] = spriteSheet.getSubimage(i * size, 5*size, size, size);
+                blindDeathFrames[i] = spriteSheet.getSubimage(i * size, 11*size, size, size);
             }
             for(int i = 0; i < blindfoldFrames.length; i++){
                 blindfoldFrames[i] = spriteSheet.getSubimage(i*size, 6*size, size, size);
@@ -159,54 +192,141 @@ public void render(Graphics g, Camera camera) {
         BufferedImage frameToDraw;
         if (spriteSheet != null) {
             if(dead){
-                deathFrameTick++;
-                if (deathFrameTick >= deathFrameDelay) {
-                    deathFrameTick = 0;
-                    deathFrameIndex++;
+                if(blindfolded){
+                    blindDeathFrameTick++;
+                    if (blindDeathFrameTick >= blindDeathFrameDelay) {
+                        blindDeathFrameTick = 0;
+                        blindDeathFrameIndex++;
+                    }
+                    if (blindDeathFrameIndex >= blindDeathFrames.length) {
+                        blindDeathFrameIndex = 0;
+                        blindfolded = false;
+                        equipBlindfold = false;
+                        dead = false;
+                        respawn(200,100);
+                        health = 300;
+                    }
+                    frameToDraw = blindDeathFrames[blindDeathFrameIndex];
                 }
-                if (deathFrameIndex >= deathFrames.length) {
-                    deathFrameIndex = 0;
-                    dead = false;
-                    respawn(200,100);
-                    health = 300;
+                else{
+                    deathFrameTick++;
+                    if (deathFrameTick >= deathFrameDelay) {
+                        deathFrameTick = 0;
+                        deathFrameIndex++;
+                    }
+                    if (deathFrameIndex >= deathFrames.length) {
+                        deathFrameIndex = 0;
+                        dead = false;
+                        respawn(200,100);
+                        health = 300;
+                    }
+                    frameToDraw = deathFrames[deathFrameIndex];
                 }
-                frameToDraw = deathFrames[deathFrameIndex];
+
             }
             else if(hurt){
-                hurtFrameTick++;
-                if (hurtFrameTick >= hurtFrameDelay) {
-                    hurtFrameTick = 0;
-                    hurtFrameIndex++;
+                if(blindfolded){
+                    blindHurtFrameTick++;
+                    if (blindHurtFrameTick >= blindHurtFrameDelay) {
+                        blindHurtFrameTick = 0;
+                        blindHurtFrameIndex++;
+                    }
+                    if (blindHurtFrameIndex >= blindHurtFrames.length) {
+                        blindHurtFrameIndex = 0;
+                        hurt = false;
+                    }
+                    frameToDraw = blindHurtFrames[blindHurtFrameIndex];
                 }
-                if (hurtFrameIndex >= hurtFrames.length) {
-                    hurtFrameIndex = 0;
-                    hurt = false;
+                else{
+                    hurtFrameTick++;
+                    if (hurtFrameTick >= hurtFrameDelay) {
+                        hurtFrameTick = 0;
+                        hurtFrameIndex++;
+                    }
+                    if (hurtFrameIndex >= hurtFrames.length) {
+                        hurtFrameIndex = 0;
+                        hurt = false;
+                    }
+                    frameToDraw = hurtFrames[hurtFrameIndex];
                 }
-                frameToDraw = hurtFrames[hurtFrameIndex];
             }
             else if (attacking) {
-                attackFrameTick++;
-                if (attackFrameTick >= attackFrameDelay) {
-                    attackFrameTick = 0;
-                    attackFrameIndex++;
+                if(blindfolded){
+                    blindAttackFrameTick++;
+                    if (blindAttackFrameTick >= blindAttackFrameDelay) {
+                        blindAttackFrameTick = 0;
+                        blindAttackFrameIndex++;
+                    }
+                    if (blindAttackFrameIndex >= blindAttackFrames.length) {
+                        blindAttackFrameIndex = 0;
+                        attacking = false;
+                    }
+                    frameToDraw = blindAttackFrames[blindAttackFrameIndex];
                 }
-                if (attackFrameIndex >= attackFrames.length) {
-                    attackFrameIndex = 0;
-                    attacking = false;
+                else{
+                    attackFrameTick++;
+                    if (attackFrameTick >= attackFrameDelay) {
+                        attackFrameTick = 0;
+                        attackFrameIndex++;
+                    }
+                    if (attackFrameIndex >= attackFrames.length) {
+                        attackFrameIndex = 0;
+                        attacking = false;
+                    }
+                    frameToDraw = attackFrames[attackFrameIndex];
                 }
-                frameToDraw = attackFrames[attackFrameIndex];
 
             }
             else if(isMoving){
-                frameToDraw = walkFrames[walkFrameIndex];
+                if(blindfolded){
+                    frameToDraw = blindWalkFrames[walkFrameIndex];
+                }
+                else{
+                    frameToDraw = walkFrames[walkFrameIndex];
+                }
             }
             else if (!onGround) {
-                frameToDraw = jumpFrames[jumpFrameIndex];
+                if(blindfolded){
+                    frameToDraw = blindJumpFrames[jumpFrameIndex];
+                }
+                else{
+                    frameToDraw = jumpFrames[jumpFrameIndex];
+                }
             }
-            else if (blindfolded) {
-                frameToDraw = standingBlindfolded;
+            else if (equipBlindfold) {
+                blindfoldFrameTick++;
+                if (blindfoldFrameTick >= blindfoldFrameDelay) {
+                    blindfoldFrameTick = 0;
+                    blindfoldFrameIndex++;
+                }
+                if (blindfoldFrameIndex >= blindfoldFrames.length) {
+                    blindfoldFrameIndex = 5;
+                    blindfolded = true;
+                    equipBlindfold = false;
+                }
+                frameToDraw = blindfoldFrames[blindfoldFrameIndex];
+
+            }else if (removeBlindfold) {
+                blindfoldFrameTick++;
+                if (blindfoldFrameTick >= blindfoldFrameDelay) {
+                    blindfoldFrameTick = 0;
+                    blindfoldFrameIndex++;
+                }
+
+                if (blindfoldFrameIndex >= blindfoldFrames.length) {
+                    blindfoldFrameIndex = 5;
+                    blindfolded = false;
+                    removeBlindfold = false;
+                }
+                frameToDraw = blindfoldFrames[blindfoldFrames.length -  blindfoldFrameIndex - 1];
+
             } else{
-                frameToDraw = standing;
+                if(blindfolded){
+                    frameToDraw = standingBlindfolded;
+                }
+                else{
+                    frameToDraw = standing;
+                }
             }
             if (facingRight) {
                 g.drawImage(frameToDraw,

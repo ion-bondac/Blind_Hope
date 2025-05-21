@@ -6,6 +6,8 @@ import PaooGame.GameWindow.GameWindow;
 import PaooGame.GameWindow.LoadGamePanel; // Add for LoadGamePanel
 import PaooGame.GameWindow.PauseMenu;
 import PaooGame.Graphics.Assets;
+import PaooGame.Graphics.BlindOverlay;
+import PaooGame.Graphics.Fog;
 import PaooGame.Graphics.HealthBar;
 import PaooGame.Tiles.Tile;
 import PaooGame.Tiles.TileFactory;
@@ -61,11 +63,21 @@ public class Game implements Runnable
     private Graphics        g;          /*!< Referinta catre un context grafic.*/
     private final Player Mihai = new Player(200,200);
     private HealthBar healthBar = new HealthBar(Mihai);
+    private BlindOverlay overlay = new BlindOverlay(Mihai);
     private int tileSize = 32;
 
-//    private ArrayList<Enemy> Eagles = new ArrayList<Enemy>(
-//            new Enemy(22*tileSize,14*tileSize, Mihai, "Eagle");
-//    );
+    private ArrayList<Fog> FogList = new ArrayList<>(
+            Arrays.asList(
+                    new Fog(Mihai,21, 24),
+                    new Fog(Mihai,23, 23),
+                    new Fog(Mihai,33, 24),
+                    new Fog(Mihai,44, 26),
+                    new Fog(Mihai,70, 28)
+
+            )
+    );
+
+
     private ArrayList<Enemy> Eagles = new ArrayList<>(
             Arrays.asList(
                     new Enemy(22 * tileSize, 14 * tileSize, Mihai, "Eagle", true),
@@ -486,9 +498,15 @@ public class Game implements Runnable
                     }
                 }
             }
-            if(wnd.keys[6]){
-                System.out.println("Q");
-                Mihai.blindfolded = true;
+            if (wnd.keys[6]) {
+                if (!Mihai.equipBlindfold && !Mihai.removeBlindfold) {
+                    Mihai.blindfoldFrameIndex = 0;
+                    if (Mihai.blindfolded) {
+                        Mihai.removeBlindfold = true;
+                    } else {
+                        Mihai.equipBlindfold = true;
+                    }
+                }
             }
         }
 
@@ -504,6 +522,9 @@ public class Game implements Runnable
             Mihai.dead = true;
         }
         entityManager.updateAll(gameMap);
+        for(Fog f : FogList){
+            f.update(gameMap);
+        }
         gameMap.update();
     }
     /*! \fn private void Draw()
@@ -538,9 +559,12 @@ public class Game implements Runnable
                 gameMap.render(g, camera);
             }
 //            Mihai.render(g, camera);
-            healthBar.render(g,camera);
             entityManager.renderAll(g,camera);
-
+            for(Fog f : FogList){
+                f.render(g,camera);
+            }
+            overlay.render(g,camera);
+            healthBar.render(g,camera);
             // end operatie de desenare
             /// Se afiseaza pe ecran
             bs.show();
