@@ -62,7 +62,7 @@ public class Game implements Runnable
     private final Player Mihai = new Player(200,200);
     private HealthBar healthBar = new HealthBar(Mihai);
     private int tileSize = 32;
-
+    private int currentLevel = 1;
 //    private ArrayList<Enemy> Eagles = new ArrayList<Enemy>(
 //            new Enemy(22*tileSize,14*tileSize, Mihai, "Eagle");
 //    );
@@ -138,8 +138,11 @@ public class Game implements Runnable
         setupMenuButtons();
         TileFactory tileFactory = new TileFactory();
         try {
-            gameMap = new GameMap("src/PaooGame/LEVEL1MAPV3.txt", tileFactory);
-        } catch (IOException e) {
+            if (currentLevel == 1) {
+                gameMap = new GameMap("src/PaooGame/LEVEL1MAPV3.txt", tileFactory,1);
+            } else {
+                gameMap = new GameMap("src/PaooGame/LEVEL2MAP.txt", tileFactory,2);
+            }        } catch (IOException e) {
             System.err.println("Failed to load game map: " + e.getMessage());
             JOptionPane.showMessageDialog(wnd.GetCanvas(), "Failed to load game map", "Error", JOptionPane.ERROR_MESSAGE);
             System.exit(1);
@@ -278,6 +281,7 @@ public class Game implements Runnable
         switch (buttonText) {
             case "New Game":
                 // Reset game state
+                currentLevel = 1; // Resetează nivelul la 1
                 Mihai.respawn(200, 200);
                 camera.update(Mihai); // Reset camera position
                 isPaused = false;
@@ -401,6 +405,22 @@ public class Game implements Runnable
             }
         });
     }
+
+    private void loadLevel(String filename) {
+        try {
+            TileFactory tileFactory = new TileFactory();
+            gameMap = new GameMap(filename, tileFactory,currentLevel);
+            // Resetează inamicii pentru noul nivel (dacă este necesar)
+            Eagles.clear();
+            // Adaugă inamicii pentru nivelul 2 (dacă este necesar)
+            // Exemplu: Eagles.add(new Enemy(...));
+        } catch (IOException e) {
+            System.err.println("Failed to load game map: " + e.getMessage());
+            JOptionPane.showMessageDialog(wnd.GetCanvas(), "Failed to load game map", "Error", JOptionPane.ERROR_MESSAGE);
+            System.exit(1);
+        }
+    }
+
     /*! \fn private void Update()
         \brief Actualizeaza starea elementelor din joc.
 
@@ -428,6 +448,14 @@ public class Game implements Runnable
 
         // Only update game logic if not paused
         if (!isPaused) {
+            // Verifică dacă jucătorul a atins cactusul (tile-ul cu ID-ul 9)
+            int playerTileX = Mihai.getX() / Mihai.getSize();
+            int playerTileY = Mihai.getY() / Mihai.getSize();
+            if (gameMap.isCactus(playerTileX, playerTileY) && currentLevel == 1) {
+                currentLevel = 2;
+                loadLevel("src/PaooGame/LEVEL2MAP.txt"); // Încarcă nivelul 2
+                Mihai.respawn(200, 100); // Respawn la poziția inițială pentru nivelul 2
+            }
             // Update camera position
             camera.update(Mihai);
 
