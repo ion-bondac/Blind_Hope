@@ -1,5 +1,6 @@
 package PaooGame.GameWindow;
 
+import PaooGame.Database.DatabaseManager;
 import PaooGame.Database.GameSession;
 
 import javax.swing.*;
@@ -11,47 +12,31 @@ public class LoadGamePanel extends JPanel {
     private JTable sessionTable;
     private JScrollPane scrollPane;
     private JButton loadButton;
+    private JButton deleteButton;
     private JButton cancelButton;
     private Consumer<GameSession> loadSessionCallback;
     private Menu mainMenu;
-    private PauseMenu pauseMenu; // Add for pause menu
+    private PauseMenu pauseMenu;
+    private DatabaseManager dbManager; // Add DatabaseManager reference
+    private List<GameSession> sessions; // Store sessions for refreshing
 
-    public LoadGamePanel(List<GameSession> sessions, Consumer<GameSession> loadSessionCallback, Menu mainMenu, PauseMenu pauseMenu) {
+    public LoadGamePanel(List<GameSession> sessions, Consumer<GameSession> loadSessionCallback, Menu mainMenu, PauseMenu pauseMenu, DatabaseManager dbManager) {
+        this.sessions = sessions;
         this.loadSessionCallback = loadSessionCallback;
         this.mainMenu = mainMenu;
         this.pauseMenu = pauseMenu;
+        this.dbManager = dbManager; // Initialize DatabaseManager
         setLayout(new BorderLayout(10, 10));
         setBackground(new Color(20, 30, 50));
 
-        String[] columns = {"Session ID", "X Position", "Y Position", "Save Date"};
-        Object[][] data = new Object[sessions.size()][4];
-        for (int i = 0; i < sessions.size(); i++) {
-            GameSession session = sessions.get(i);
-            data[i][0] = session.getSessionId();
-            data[i][1] = session.getPlayerX();
-            data[i][2] = session.getPlayerY();
-            data[i][3] = session.getSaveDate().toString();
-        }
+        // Initialize table with session data
+        updateSessionTable();
 
-        sessionTable = new JTable(data, columns) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
-        sessionTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        sessionTable.setBackground(new Color(40, 60, 100));
-        sessionTable.setForeground(Color.WHITE);
-        sessionTable.setFont(new Font("Arial", Font.PLAIN, 14));
-        sessionTable.setRowHeight(25);
-
-        scrollPane = new JScrollPane(sessionTable);
-        scrollPane.setBorder(BorderFactory.createLineBorder(new Color(80, 110, 160), 2));
-        add(scrollPane, BorderLayout.CENTER);
-
+        // Button panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         buttonPanel.setBackground(new Color(20, 30, 50));
 
+        // Load button
         loadButton = new JButton("Load");
         styleButton(loadButton);
         loadButton.addActionListener(e -> {
@@ -65,6 +50,30 @@ public class LoadGamePanel extends JPanel {
         });
         buttonPanel.add(loadButton);
 
+        // Delete button
+        deleteButton = new JButton("Delete");
+        styleButton(deleteButton);
+        deleteButton.addActionListener(e -> {
+            int selectedRow = sessionTable.getSelectedRow();
+            if (selectedRow >= 0) {
+                int sessionId = (int) sessionTable.getValueAt(selectedRow, 0);
+                try {
+                    dbManager.deleteSession(sessionId);
+                    // Refresh session list and table
+                    this.sessions.clear();
+                    this.sessions.addAll(dbManager.loadAllSessions());
+                    updateSessionTable();
+                    JOptionPane.showMessageDialog(this, "Session deleted successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                } catch (RuntimeException ex) {
+                    JOptionPane.showMessageDialog(this, "Failed to delete session: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Please select a session to delete!", "Warning", JOptionPane.WARNING_MESSAGE);
+            }
+        });
+        buttonPanel.add(deleteButton);
+
+        // Cancel button
         cancelButton = new JButton("Cancel");
         styleButton(cancelButton);
         cancelButton.addActionListener(e -> {
@@ -88,6 +97,45 @@ public class LoadGamePanel extends JPanel {
 
         add(buttonPanel, BorderLayout.SOUTH);
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+    }
+
+    private void updateSessionTable() {
+        // Remove existing scroll pane if present
+        if (scrollPane != null) {
+            remove(scrollPane);
+        }
+
+        // Create table data
+        String[] columns = {"Session ID", "X Position", "Y Position", "Save Date"};
+        Object[][] data = new Object[sessions.size()][4];
+        for (int i = 0; i < sessions.size(); i++) {
+            GameSession session = sessions.get(i);
+            data[i][0] = session.getSessionId();
+            data[i][1] = session.getPlayerX();
+            data[i][2] = session.getPlayerY();
+            data[i][3] = session.getSaveDate().toString();
+        }
+
+        // Create and configure table
+        sessionTable = new JTable(data, columns) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        sessionTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        sessionTable.setBackground(new Color(40, 60, 100));
+        sessionTable.setForeground(Color.WHITE);
+        sessionTable.setFont(new Font("Arial", Font.PLAIN, 14));
+        sessionTable.setRowHeight(25);
+
+        scrollPane = new JScrollPane(sessionTable);
+        scrollPane.setBorder(BorderFactory.createLineBorder(new Color(80, 110, 160), 2));
+        add(scrollPane, BorderLayout.CENTER);
+
+        // Refresh UI
+        revalidate();
+        repaint();
     }
 
     private void styleButton(JButton button) {

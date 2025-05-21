@@ -31,19 +31,22 @@ public class GameMap {
     private int[] cloudsY;
     private int delay = 0;
 
-    public GameMap(String filename, TileFactory factory) throws IOException {
+    public GameMap(String filename, TileFactory factory,int level) throws IOException {
         this.tileFactory = factory;
         loadMapFromFile(filename);
 
         try {
-//            background = ImageIO.read(new File("res/textures/level1bg1.png"));
-            background = ImageIO.read(new File("res/textures/Level1/lvl1-bg.png"));
-            cloud1 = ImageIO.read(new File("res/textures/Level1/lvl1-cloud1.png"));
-            cloud2 = ImageIO.read(new File("res/textures/Level1/lvl1-cloud2.png"));
-            cloud3 = ImageIO.read(new File("res/textures/Level1/lvl1-cloud3.png"));
-            rocks = ImageIO.read(new File("res/textures/Level1/bgrocks.png"));
-//            rocks2 = ImageIO.read(new File("res/textures/Level1/lvl1-rocks2.png"));
-//            rocks3 = ImageIO.read(new File("res/textures/Level1/lvl1-rocks3.png"));
+            if (level == 1) {
+                background = ImageIO.read(new File("res/textures/Level1/lvl1-bg.png"));
+                cloud1 = ImageIO.read(new File("res/textures/Level1/lvl1-cloud1.png"));
+                cloud2 = ImageIO.read(new File("res/textures/Level1/lvl1-cloud2.png"));
+                cloud3 = ImageIO.read(new File("res/textures/Level1/lvl1-cloud3.png"));
+            } else if (level == 2) {
+//                background = ImageIO.read(new File("res/textures/Level2/lvl2-bg.png"));
+//                cloud1 = ImageIO.read(new File("res/textures/Level2/lvl2-cloud1.png"));
+//                cloud2 = ImageIO.read(new File("res/textures/Level2/lvl2-cloud2.png"));
+//                cloud3 = ImageIO.read(new File("res/textures/Level2/lvl2-cloud3.png"));
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -158,8 +161,9 @@ public void render(Graphics g, Camera camera) {
             );
         }
     }
-
 }
-
+    public boolean isCactus(int x, int y) {
+        return mapTiles[y][x].getType().equals("11"); // ID-ul pentru cactus
+    }
 }
 

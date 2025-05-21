@@ -78,6 +78,10 @@ public class Game implements Runnable
     );
 
 
+    private int currentLevel = 1;
+//    private ArrayList<Enemy> Eagles = new ArrayList<Enemy>(
+//            new Enemy(22*tileSize,14*tileSize, Mihai, "Eagle");
+//    );
     private ArrayList<Enemy> Eagles = new ArrayList<>(
             Arrays.asList(
                     new Enemy(22 * tileSize, 14 * tileSize, Mihai, "Eagle", true),
@@ -150,8 +154,11 @@ public class Game implements Runnable
         setupMenuButtons();
         TileFactory tileFactory = new TileFactory();
         try {
-            gameMap = new GameMap("src/PaooGame/LEVEL1MAPV3.txt", tileFactory);
-        } catch (IOException e) {
+            if (currentLevel == 1) {
+                gameMap = new GameMap("src/PaooGame/LEVEL1MAPV3.txt", tileFactory,1);
+            } else {
+                gameMap = new GameMap("src/PaooGame/LEVEL2MAP.txt", tileFactory,2);
+            }        } catch (IOException e) {
             System.err.println("Failed to load game map: " + e.getMessage());
             JOptionPane.showMessageDialog(wnd.GetCanvas(), "Failed to load game map", "Error", JOptionPane.ERROR_MESSAGE);
             System.exit(1);
@@ -267,7 +274,7 @@ public class Game implements Runnable
             if (gameMap.isWalkable(selectedSession.getPlayerX() / Mihai.getSize(), selectedSession.getPlayerY() / Mihai.getSize())) {
                 Mihai.respawn(selectedSession.getPlayerX(), selectedSession.getPlayerY());
                 wnd.hideMenu();
-                hidePauseMenu(); // Ensure pause menu is closed
+                hidePauseMenu();
                 System.out.println("Loaded session: x=" + selectedSession.getPlayerX() + ", y=" + selectedSession.getPlayerY());
                 wnd.getWndFrame().getContentPane().removeAll();
                 wnd.getWndFrame().add(wnd.GetCanvas(), BorderLayout.CENTER);
@@ -277,7 +284,7 @@ public class Game implements Runnable
             } else {
                 JOptionPane.showMessageDialog(wnd.getWndFrame(), "Invalid position in saved session!", "Error", JOptionPane.ERROR_MESSAGE);
             }
-        }, wnd.getMenu(), pauseMenu); // Pass pauseMenu
+        }, wnd.getMenu(), pauseMenu, dbManager); // Pass DatabaseManager
 
         wnd.getWndFrame().getContentPane().removeAll();
         wnd.getWndFrame().add(loadPanel, BorderLayout.CENTER);
@@ -413,6 +420,22 @@ public class Game implements Runnable
             }
         });
     }
+
+    private void loadLevel(String filename) {
+        try {
+            TileFactory tileFactory = new TileFactory();
+            gameMap = new GameMap(filename, tileFactory,currentLevel);
+            // Resetează inamicii pentru noul nivel (dacă este necesar)
+            Eagles.clear();
+            // Adaugă inamicii pentru nivelul 2 (dacă este necesar)
+            // Exemplu: Eagles.add(new Enemy(...));
+        } catch (IOException e) {
+            System.err.println("Failed to load game map: " + e.getMessage());
+            JOptionPane.showMessageDialog(wnd.GetCanvas(), "Failed to load game map", "Error", JOptionPane.ERROR_MESSAGE);
+            System.exit(1);
+        }
+    }
+
     /*! \fn private void Update()
         \brief Actualizeaza starea elementelor din joc.
 
@@ -440,6 +463,14 @@ public class Game implements Runnable
 
         // Only update game logic if not paused
         if (!isPaused) {
+            // Verifică dacă jucătorul a atins cactusul (tile-ul cu ID-ul 9)
+            int playerTileX = Mihai.getX() / Mihai.getSize();
+            int playerTileY = Mihai.getY() / Mihai.getSize();
+            if (gameMap.isCactus(playerTileX, playerTileY) && currentLevel == 1) {
+                currentLevel = 2;
+                loadLevel("src/PaooGame/LEVEL2MAP.txt"); // Încarcă nivelul 2
+                Mihai.respawn(200, 100); // Respawn la poziția inițială pentru nivelul 2
+            }
             // Update camera position
             camera.update(Mihai);
 
