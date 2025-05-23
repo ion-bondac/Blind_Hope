@@ -44,6 +44,7 @@ public class Assets
     public static BufferedImage flower;
     public static BufferedImage empty;
     public static BufferedImage floor;
+    public static SpriteSheet sheet = new SpriteSheet(ImageLoader.LoadImage("/textures/LEVEL1_MAP.png"));
 
 
     /*! \fn public static void Init()
@@ -52,10 +53,18 @@ public class Assets
         Aceasta functie poate fi rescrisa astfel incat elementele grafice incarcate/utilizate
         sa fie parametrizate. Din acest motiv referintele nu sunt finale.
      */
-    public static void Init()
+    public static void Init(int level)
     {
             /// Se creaza temporar un obiect SpriteSheet initializat prin intermediul clasei ImageLoader
-        SpriteSheet sheet = new SpriteSheet(ImageLoader.LoadImage("/textures/LEVEL1_MAP.png"));
+        switch (level){
+            case 2:
+                sheet = new SpriteSheet(ImageLoader.LoadImage("/textures/LEVEL2_MAP.png"));
+                break;
+            case 1:
+            default:
+                sheet = new SpriteSheet(ImageLoader.LoadImage("/textures/LEVEL1_MAP.png"));
+                break;
+        }
 
             /// Se obtin subimaginile corespunzatoare elementelor necesare.
 //        grass = sheet.crop(0, 0);

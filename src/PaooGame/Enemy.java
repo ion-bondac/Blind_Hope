@@ -188,4 +188,8 @@ public class Enemy extends Entity {
         }
 
     }
+
+    public void kill(){
+        this.active = false;
+    }
 }

@@ -177,6 +177,11 @@ public class Player extends Entity {
         x=NewX;
         y=NewY;
     }
+    public void NextLevelRespawn(int NewX, int NewY){
+        x=NewX;
+        y=NewY;
+        this.health = 300;
+    }
 
 @Override
 public void update(GameMap gameMap){
@@ -353,6 +358,8 @@ public void render(Graphics g, Camera camera) {
         this.hurt = true;
         SoundPlayer.playSound("/sounds/hurt.wav");
     }
+
+
 
     public int getHealth(){
         return health;

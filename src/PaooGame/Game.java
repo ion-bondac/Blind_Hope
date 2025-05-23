@@ -61,7 +61,7 @@ public class Game implements Runnable
     private BufferStrategy  bs;         /*!< Referinta catre un mecanism cu care se organizeaza memoria complexa pentru un canvas.*/
     private GameMap gameMap;
     private Graphics        g;          /*!< Referinta catre un context grafic.*/
-    private final Player Mihai = new Player(200,200);
+    private Player Mihai = new Player(200,200);
     private HealthBar healthBar = new HealthBar(Mihai);
     private BlindOverlay overlay = new BlindOverlay(Mihai);
     private int tileSize = 32;
@@ -90,9 +90,9 @@ public class Game implements Runnable
                     new Enemy(45 * tileSize, 17 * tileSize, Mihai, "Eagle", true),
                     new Enemy(55 * tileSize, 20 * tileSize, Mihai, "Eagle", true),
                     new Enemy(63 * tileSize, 24 * tileSize, Mihai, "Eagle", false),
-                    new Enemy(73 * tileSize, 29 * tileSize, Mihai, "Eagle", false),
+//                    new Enemy(73 * tileSize, 29 * tileSize, Mihai, "Eagle", false),
                     new Enemy(80 * tileSize, 25 * tileSize, Mihai, "Eagle", false),
-                    new Enemy(84 * tileSize, 23 * tileSize, Mihai, "Eagle", false),
+//                    new Enemy(84 * tileSize, 23 * tileSize, Mihai, "Eagle", false),
                     new Enemy(86 * tileSize, 22 * tileSize, Mihai, "Eagle", false)
             )
     );
@@ -150,7 +150,7 @@ public class Game implements Runnable
         }    }
 
     private void InitGame() throws IOException {
-        Assets.Init();
+        Assets.Init(1);
         setupMenuButtons();
         TileFactory tileFactory = new TileFactory();
         try {
@@ -421,11 +421,16 @@ public class Game implements Runnable
         });
     }
 
-    private void loadLevel(String filename) {
+    private void loadLevel(String filename, int level) {
         try {
+            Assets.Init(level);
             TileFactory tileFactory = new TileFactory();
             gameMap = new GameMap(filename, tileFactory,currentLevel);
             // Resetează inamicii pentru noul nivel (dacă este necesar)
+            for(Enemy e : Eagles){
+                e.kill();
+            }
+            FogList.clear();
             Eagles.clear();
             // Adaugă inamicii pentru nivelul 2 (dacă este necesar)
             // Exemplu: Eagles.add(new Enemy(...));
@@ -468,8 +473,9 @@ public class Game implements Runnable
             int playerTileY = Mihai.getY() / Mihai.getSize();
             if (gameMap.isCactus(playerTileX, playerTileY) && currentLevel == 1) {
                 currentLevel = 2;
-                loadLevel("src/PaooGame/LEVEL2MAP.txt"); // Încarcă nivelul 2
-                Mihai.respawn(200, 100); // Respawn la poziția inițială pentru nivelul 2
+                loadLevel("src/PaooGame/LEVEL2MAP.txt", 2); // Încarcă nivelul 2
+                Mihai.NextLevelRespawn(200, 400); // Respawn la poziția inițială pentru nivelul 2
+                Mihai.health = 300;
             }
             // Update camera position
             camera.update(Mihai);
@@ -544,7 +550,10 @@ public class Game implements Runnable
         Mihai.updateWalkAnimation(Mihai.isMoving);
         Mihai.updateJumpAnimation(Mihai.onGround);
         if(gameMap.isFloor(Mihai.getX()/Mihai.getSize(), Mihai.getY()/Mihai.getSize() + 1)){
-                Mihai.respawn(200, 100);
+                Mihai.health -= 100;
+                if(Mihai.health > 0){
+                    Mihai.respawn(Mihai.getX() - 32, 300);
+                }
             }
         } else {
             System.out.println("Game paused, skipping normal updates");
