@@ -1,6 +1,7 @@
 package PaooGame.Graphics;
 
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,21 +16,6 @@ public class Assets
     public static Map<String, BufferedImage> tileMap = new HashMap<>();
 
     /// Referinte catre elementele grafice (dale) utilizate in joc.
-//    public static BufferedImage playerLeft;
-//    public static BufferedImage playerRight;
-//    public static BufferedImage soil;
-//    public static BufferedImage grass;
-//    public static BufferedImage mountain;
-//    public static BufferedImage townGrass;
-//    public static BufferedImage townGrassDestroyed;
-//    public static BufferedImage townSoil;
-//    public static BufferedImage water;
-//    public static BufferedImage rockUp;
-//    public static BufferedImage rockDown;
-//    public static BufferedImage rockLeft;
-//    public static BufferedImage rockRight;
-//    public static BufferedImage tree;
-
     public static BufferedImage block;
     public static BufferedImage sandTop;
     public static BufferedImage sandBottom;
@@ -55,90 +41,64 @@ public class Assets
      */
     public static void Init(int level)
     {
-            /// Se creaza temporar un obiect SpriteSheet initializat prin intermediul clasei ImageLoader
-        switch (level){
-            case 2:
-                sheet = new SpriteSheet(ImageLoader.LoadImage("/textures/LEVEL2_MAP.png"));
-                break;
-            case 1:
-            default:
-                sheet = new SpriteSheet(ImageLoader.LoadImage("/textures/LEVEL1_MAP.png"));
-                break;
+        tileMap.clear();
+        System.out.println("Clearing tileMap for level: " + level);
+
+        try {
+            String spriteSheetPath = level == 2 ? "/textures/LEVEL2_MAP.png" : "/textures/LEVEL1_MAP.png";
+            BufferedImage spriteSheetImage = ImageLoader.LoadImage(spriteSheetPath);
+            if (spriteSheetImage == null) {
+                throw new IOException("Sprite sheet image is null for path: " + spriteSheetPath);
+            }
+            sheet = new SpriteSheet(spriteSheetImage);
+            System.out.println("Loaded sprite sheet: " + spriteSheetPath + ", dimensions: " +
+                    spriteSheetImage.getWidth() + "x" + spriteSheetImage.getHeight());
+        } catch (Exception e) {
+            System.err.println("Failed to load sprite sheet for level " + level + ": " + e.getMessage());
+            e.printStackTrace();
+            return;
         }
 
-            /// Se obtin subimaginile corespunzatoare elementelor necesare.
-//        grass = sheet.crop(0, 0);
-//        soil = sheet.crop(1, 0);
-//        water = sheet.crop(2, 0);
-//        mountain = sheet.crop(3, 0);
-//        townGrass = sheet.crop(0, 1);
-//        townGrassDestroyed = sheet.crop(1, 1);
-//        townSoil = sheet.crop(2, 1);
-//        tree = sheet.crop(3, 1);
-//        playerLeft = sheet.crop(0, 2);
-//        playerRight = sheet.crop(1, 2);
-//        rockUp = sheet.crop(2, 2);
-//        rockDown = sheet.crop(3, 2);
-//        rockLeft = sheet.crop(0, 3);
-//        rockRight = sheet.crop(1, 3);
+        try {
+            block = sheet.crop(0, 0);
+            sandTop = sheet.crop(1, 0);
+            sandBottom = sheet.crop(2, 0);
+            sandLeft = sheet.crop(3, 0);
+            sandRight = sheet.crop(4, 0);
+            sandLeftCorner = sheet.crop(5, 0);
+            sandRightCorner = sheet.crop(6, 0);
+            sand = sheet.crop(7, 0);
+            plant = sheet.crop(0, 1);
+            cactus = sheet.crop(1, 1);
+            grass = sheet.crop(2, 1);
+            flower = sheet.crop(3, 1);
+            empty = sheet.crop(4, 1);
+            floor = sheet.crop(5, 1);
 
-//        sand = sheet.crop(1,6);
-//        ground = sheet.crop(7,6);
-//        cactus = sheet.crop(3,14);
-//        grass = sheet.crop(6,15);
-//        sky = sheet.crop(1,0);
-//
+            tileMap.put("0", block);
+            tileMap.put("1", sandTop);
+            tileMap.put("2", sandBottom);
+            tileMap.put("3", sandLeft);
+            tileMap.put("4", sandRight);
+            tileMap.put("5", sandLeftCorner);
+            tileMap.put("6", sandRightCorner);
+            tileMap.put("7", sand);
+            tileMap.put("8", plant);
+            tileMap.put("9", cactus);
+            tileMap.put("10", grass);
+            tileMap.put("11", flower);
+            tileMap.put("-1", empty);
+            tileMap.put("56", floor);
 
-        block = sheet.crop(0,0);
-        sandTop = sheet.crop(1,0);
-        sandBottom = sheet.crop(2,0);
-        sandLeft = sheet.crop(3,0);
-        sandRight = sheet.crop(4,0);
-        sandLeftCorner = sheet.crop(5,0);
-        sandRightCorner = sheet.crop(6,0);
-        sand = sheet.crop(7,0);
-        plant = sheet.crop(0,1);
-        cactus = sheet.crop(1,1);
-        grass = sheet.crop(2,1);
-        flower = sheet.crop(3,1);
-        empty = sheet.crop(4,1);
-        floor = sheet.crop(5,1);
-
-
-//
-//        tileMap.put("grass", grass);
-//        tileMap.put("soil", soil);
-//        tileMap.put("water", water);
-//        tileMap.put("mountain", mountain);
-//        tileMap.put("townGrass", townGrass);
-//        tileMap.put("townGrassDestroyed", townGrassDestroyed);
-//        tileMap.put("townSoil", townSoil);
-//        tileMap.put("tree", tree);
-//        tileMap.put("playerLeft", playerLeft);
-//        tileMap.put("playerRight", playerRight);
-//        tileMap.put("rockUp", rockUp);
-//        tileMap.put("rockDown", rockDown);
-//        tileMap.put("rockLeft", rockLeft);
-//        tileMap.put("rockRight", rockRight);
-
-        tileMap.put("0", block);
-        tileMap.put("1", sandTop);
-        tileMap.put("2", sandBottom);
-        tileMap.put("3", sandLeft);
-        tileMap.put("4", sandRight);
-        tileMap.put("5", sandLeftCorner);
-        tileMap.put("6", sandRightCorner);
-        tileMap.put("7", sand);
-        tileMap.put("8", plant);
-        tileMap.put("9", cactus);
-        tileMap.put("10", grass);
-        tileMap.put("11", flower);
-        tileMap.put("-1", empty);
-        tileMap.put("56", floor);
-
-//        tileMap.put("ground", ground);
-//        tileMap.put("cactus", cactus);
-//        tileMap.put("grass", grass);
-//        tileMap.put("sky", sky);
+            System.out.println("Populated tileMap with " + tileMap.size() + " tiles for level: " + level);
+            for (String key : tileMap.keySet()) {
+                BufferedImage img = tileMap.get(key);
+                System.out.println("Tile ID: " + key + ", image size: " +
+                        (img != null ? img.getWidth() + "x" + img.getHeight() : "null"));
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to crop or map tiles for level " + level + ": " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }

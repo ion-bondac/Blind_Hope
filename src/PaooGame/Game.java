@@ -196,8 +196,9 @@ public class Game implements Runnable
 
     private void InitGame() throws IOException {
         Assets.Init(1);
-        setupMenuButtons();
         TileFactory tileFactory = new TileFactory();
+        tileFactory.clearCache();
+        setupMenuButtons();
         try {
             if (currentLevel == 1) {
                 gameMap = new GameMap("src/PaooGame/LEVEL1MAPV3.txt", tileFactory,1);
@@ -318,13 +319,16 @@ public class Game implements Runnable
                 return;
             }
             try {
+                Assets.Init(selectedSession.getLevel());
                 TileFactory tileFactory = new TileFactory();
+                tileFactory.clearCache();
+                gameMap = null; // Force reinitialization
                 if (selectedSession.getLevel() == 1) {
                     gameMap = new GameMap("src/PaooGame/LEVEL1MAPV3.txt", tileFactory, 1);
                 } else {
                     gameMap = new GameMap("src/PaooGame/LEVEL2MAP.txt", tileFactory, 2);
                 }
-                Assets.Init(selectedSession.getLevel());
+//                Assets.Init(selectedSession.getLevel());
             } catch (IOException e) {
                 System.err.println("Failed to load game map: " + e.getMessage());
                 JOptionPane.showMessageDialog(wnd.getWndFrame(), "Failed to load game map", "Error", JOptionPane.ERROR_MESSAGE);
@@ -370,14 +374,16 @@ public class Game implements Runnable
                 Mihai.health = 300; // Reset health
 
                 try {
-                    TileFactory tileFactory = new TileFactory();
-                    gameMap = new GameMap("src/PaooGame/LEVEL1MAPV3.txt", tileFactory, 1);
                     Assets.Init(1);
+                    TileFactory tileFactory = new TileFactory();
+                    tileFactory.clearCache();
+                    gameMap = new GameMap("src/PaooGame/LEVEL1MAPV3.txt", tileFactory, 1);
                 } catch (IOException e) {
                     System.err.println("Failed to load game map: " + e.getMessage());
                     JOptionPane.showMessageDialog(wnd.getWndFrame(), "Failed to load game map", "Error", JOptionPane.ERROR_MESSAGE);
                 }
 
+                resetEntitiesForLevel(currentLevel);
                 // Properly initialize canvas
                 wnd.hideMenu();
                 wnd.GetCanvas().createBufferStrategy(3); // Ensure buffer strategy exists
@@ -501,11 +507,13 @@ public class Game implements Runnable
         try {
             Assets.Init(level);
             TileFactory tileFactory = new TileFactory();
-            //gameMap = new GameMap(filename, tileFactory,currentLevel);
-            // Resetează inamicii pentru noul nivel (dacă este necesar)
+            tileFactory.clearCache();
+            gameMap = null;
             gameMap = new GameMap(filename, tileFactory, level);
             currentLevel = level;
             resetEntitiesForLevel(level);
+            System.out.println("Loaded level: " + level + " with map: " + filename);
+            wnd.GetCanvas().repaint();
         } catch (IOException e) {
             System.err.println("Failed to load game map: " + e.getMessage());
             JOptionPane.showMessageDialog(wnd.GetCanvas(), "Failed to load game map", "Error", JOptionPane.ERROR_MESSAGE);

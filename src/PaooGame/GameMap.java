@@ -30,6 +30,7 @@ public class GameMap {
     private int[] cloudsX;
     private int[] cloudsY;
     private int delay = 0;
+    private int level;
 
     public GameMap(String filename, TileFactory factory,int level) throws IOException {
         this.tileFactory = factory;
@@ -96,8 +97,8 @@ public class GameMap {
         for (int y = 0; y < rows; y++) {
             String[] tokens = lines.get(y).split(",");
             for (int x = 0; x < tokens.length; x++) {
-                mapTiles[y][x] = tileFactory.getTile(tokens[x].trim());
-            }
+                String tileId = tokens[x].trim();
+                mapTiles[y][x] = tileFactory.getTile(tileId);            }
         }
     }
 
