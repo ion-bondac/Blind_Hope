@@ -16,10 +16,8 @@ public class Menu extends JPanel {
     private Rectangle settingsBounds;
     private boolean settingsHovered = false;
     private ActionListener settingsActionListener;
-    private BufferedImage[] backgroundLayers = new BufferedImage[5];
+    private final BufferedImage[] backgroundLayers = new BufferedImage[5];
     private BufferedImage settingsIconImage;
-//    private JPanel settingsPanel;
-//    private boolean settingsVisible = false;
 
     public Menu() {
         setLayout(new GridBagLayout());
