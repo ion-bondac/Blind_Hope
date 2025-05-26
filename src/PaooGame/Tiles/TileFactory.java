@@ -34,6 +34,10 @@ public class TileFactory {
                 case "-1":
                     tileCache.put(type, new Tile(type, texture, true));
                     break;
+                default:
+                    System.err.println("Unknown tile type: " + type + ", defaulting to walkable with tile 0");
+                    tileCache.put(type, new Tile(type, texture, true));
+                    break;
 
             }
 
@@ -51,7 +55,12 @@ public class TileFactory {
         BufferedImage img = Assets.tileMap.get(type);
         if (img == null) {
             System.err.println("Unknown tile type: " + type);
+            img = Assets.tileMap.get("0");
         }
         return img;
+    }
+    public void clearCache() {
+        tileCache.clear();
+        System.out.println("TileFactory cache cleared");
     }
 }

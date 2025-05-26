@@ -143,16 +143,62 @@ public class Game implements Runnable
 
     private void saveGameSession() {
         try {
-            dbManager.saveSession(Mihai.getX(), Mihai.getY());
+            dbManager.saveSession(Mihai.getX(), Mihai.getY(), currentLevel, Mihai.health);
             JOptionPane.showMessageDialog(wnd.getWndFrame(), "Game session saved!", "Success", JOptionPane.INFORMATION_MESSAGE);
         } catch (RuntimeException e) {
             JOptionPane.showMessageDialog(wnd.getWndFrame(), "Failed to save session: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }    }
+        }
+    }
+
+    private void resetEntitiesForLevel(int level) {
+        // Clear existing entities
+        for (Enemy e : Eagles) {
+            e.kill();
+        }
+        FogList.clear();
+        Eagles.clear();
+        entityManager.clearEntities();
+        entityManager.addEntity(Mihai);
+
+        // Initialize entities based on level
+        if (level == 1) {
+            FogList = new ArrayList<>(
+                    Arrays.asList(
+                            new Fog(Mihai, 21, 24),
+                            new Fog(Mihai, 23, 23),
+                            new Fog(Mihai, 33, 24),
+                            new Fog(Mihai, 44, 26),
+                            new Fog(Mihai, 70, 28)
+                    )
+            );
+            Eagles = new ArrayList<>(
+                    Arrays.asList(
+                            new Enemy(22 * tileSize, 14 * tileSize, Mihai, "Eagle", true),
+                            new Enemy(30 * tileSize, 12 * tileSize, Mihai, "Eagle", false),
+                            new Enemy(41 * tileSize, 14 * tileSize, Mihai, "Eagle", false),
+                            new Enemy(45 * tileSize, 17 * tileSize, Mihai, "Eagle", true),
+                            new Enemy(55 * tileSize, 20 * tileSize, Mihai, "Eagle", true),
+                            new Enemy(63 * tileSize, 24 * tileSize, Mihai, "Eagle", false),
+                            new Enemy(80 * tileSize, 25 * tileSize, Mihai, "Eagle", false),
+                            new Enemy(86 * tileSize, 22 * tileSize, Mihai, "Eagle", false)
+                    )
+            );
+        } else if (level == 2) {
+            FogList = new ArrayList<>(); // No fog in Level 2, adjust as needed
+            Eagles = new ArrayList<>(); // Add Level 2 enemies if needed, e.g.:
+            // Eagles.add(new Enemy(10 * tileSize, 10 * tileSize, Mihai, "Eagle", true));
+        }
+
+        for (Enemy e : Eagles) {
+            entityManager.addEntity(e);
+        }
+    }
 
     private void InitGame() throws IOException {
         Assets.Init(1);
-        setupMenuButtons();
         TileFactory tileFactory = new TileFactory();
+        tileFactory.clearCache();
+        setupMenuButtons();
         try {
             if (currentLevel == 1) {
                 gameMap = new GameMap("src/PaooGame/LEVEL1MAPV3.txt", tileFactory,1);
@@ -164,10 +210,7 @@ public class Game implements Runnable
             System.exit(1);
         }
 
-        entityManager.addEntity(Mihai);
-        for(int i=0; i<Eagles.size(); i++){
-            entityManager.addEntity(Eagles.get(i));
-        }
+        resetEntitiesForLevel(currentLevel);
         isPaused = false; // Reset pause state
         pauseMenu = null; // Clear pause menu
         // menu is shown
@@ -271,20 +314,46 @@ public class Game implements Runnable
         }
 
         LoadGamePanel loadPanel = new LoadGamePanel(sessions, selectedSession -> {
+            if (selectedSession.getLevel() < 1 || selectedSession.getLevel() > 2) {
+                JOptionPane.showMessageDialog(wnd.getWndFrame(), "Invalid level in saved session!", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            try {
+                Assets.Init(selectedSession.getLevel());
+                TileFactory tileFactory = new TileFactory();
+                tileFactory.clearCache();
+                gameMap = null; // Force reinitialization
+                if (selectedSession.getLevel() == 1) {
+                    gameMap = new GameMap("src/PaooGame/LEVEL1MAPV3.txt", tileFactory, 1);
+                } else {
+                    gameMap = new GameMap("src/PaooGame/LEVEL2MAP.txt", tileFactory, 2);
+                }
+//                Assets.Init(selectedSession.getLevel());
+            } catch (IOException e) {
+                System.err.println("Failed to load game map: " + e.getMessage());
+                JOptionPane.showMessageDialog(wnd.getWndFrame(), "Failed to load game map", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
             if (gameMap.isWalkable(selectedSession.getPlayerX() / Mihai.getSize(), selectedSession.getPlayerY() / Mihai.getSize())) {
                 Mihai.respawn(selectedSession.getPlayerX(), selectedSession.getPlayerY());
+                Mihai.health = selectedSession.getHealth();
+                currentLevel = selectedSession.getLevel();
+                resetEntitiesForLevel(currentLevel);
+                camera.update(Mihai); // Ensure camera follows player
                 wnd.hideMenu();
                 hidePauseMenu();
-                System.out.println("Loaded session: x=" + selectedSession.getPlayerX() + ", y=" + selectedSession.getPlayerY());
+                System.out.println("Loaded session: x=" + selectedSession.getPlayerX() + ", y=" + selectedSession.getPlayerY() +
+                        ", level=" + selectedSession.getLevel() + ", health=" + selectedSession.getHealth());
                 wnd.getWndFrame().getContentPane().removeAll();
                 wnd.getWndFrame().add(wnd.GetCanvas(), BorderLayout.CENTER);
                 wnd.getWndFrame().revalidate();
                 wnd.getWndFrame().repaint();
+                wnd.GetCanvas().createBufferStrategy(3); // Ensure buffer strategy is set
                 wnd.GetCanvas().requestFocusInWindow();
             } else {
                 JOptionPane.showMessageDialog(wnd.getWndFrame(), "Invalid position in saved session!", "Error", JOptionPane.ERROR_MESSAGE);
             }
-        }, wnd.getMenu(), pauseMenu, dbManager); // Pass DatabaseManager
+        }, wnd.getMenu(), pauseMenu, dbManager);
 
         wnd.getWndFrame().getContentPane().removeAll();
         wnd.getWndFrame().add(loadPanel, BorderLayout.CENTER);
@@ -301,7 +370,20 @@ public class Game implements Runnable
                 camera.update(Mihai); // Reset camera position
                 isPaused = false;
                 pauseMenu = null;
+                currentLevel = 1; // Reset to level 1
+                Mihai.health = 300; // Reset health
 
+                try {
+                    Assets.Init(1);
+                    TileFactory tileFactory = new TileFactory();
+                    tileFactory.clearCache();
+                    gameMap = new GameMap("src/PaooGame/LEVEL1MAPV3.txt", tileFactory, 1);
+                } catch (IOException e) {
+                    System.err.println("Failed to load game map: " + e.getMessage());
+                    JOptionPane.showMessageDialog(wnd.getWndFrame(), "Failed to load game map", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+
+                resetEntitiesForLevel(currentLevel);
                 // Properly initialize canvas
                 wnd.hideMenu();
                 wnd.GetCanvas().createBufferStrategy(3); // Ensure buffer strategy exists
@@ -425,15 +507,13 @@ public class Game implements Runnable
         try {
             Assets.Init(level);
             TileFactory tileFactory = new TileFactory();
-            gameMap = new GameMap(filename, tileFactory,currentLevel);
-            // Resetează inamicii pentru noul nivel (dacă este necesar)
-            for(Enemy e : Eagles){
-                e.kill();
-            }
-            FogList.clear();
-            Eagles.clear();
-            // Adaugă inamicii pentru nivelul 2 (dacă este necesar)
-            // Exemplu: Eagles.add(new Enemy(...));
+            tileFactory.clearCache();
+            gameMap = null;
+            gameMap = new GameMap(filename, tileFactory, level);
+            currentLevel = level;
+            resetEntitiesForLevel(level);
+            System.out.println("Loaded level: " + level + " with map: " + filename);
+            wnd.GetCanvas().repaint();
         } catch (IOException e) {
             System.err.println("Failed to load game map: " + e.getMessage());
             JOptionPane.showMessageDialog(wnd.GetCanvas(), "Failed to load game map", "Error", JOptionPane.ERROR_MESSAGE);

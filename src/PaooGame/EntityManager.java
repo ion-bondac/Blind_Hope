@@ -9,8 +9,16 @@ import java.util.List;
 public class EntityManager {
     private List<Entity> entities = new ArrayList<>();
 
+    public EntityManager() {
+        entities = new ArrayList<>();
+    }
+
     public void addEntity(Entity e) {
         entities.add(e);
+    }
+
+    public void clearEntities() {
+        entities.clear();
     }
 
     public void updateAll(GameMap gameMap) {
