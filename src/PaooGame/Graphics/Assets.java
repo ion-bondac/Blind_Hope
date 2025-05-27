@@ -45,7 +45,7 @@ public class Assets
         System.out.println("Clearing tileMap for level: " + level);
 
         try {
-            String spriteSheetPath = level == 2 ? "/textures/LEVEL2_MAP.png" : "/textures/LEVEL1_MAP.png";
+            String spriteSheetPath = level == 2 ? "/textures/LEVEL2_MAP.png" : (level == 3 ? "/textures/LEVEL3_MAP.png" : "/textures/LEVEL1_MAP.png");
             BufferedImage spriteSheetImage = ImageLoader.LoadImage(spriteSheetPath);
             if (spriteSheetImage == null) {
                 throw new IOException("Sprite sheet image is null for path: " + spriteSheetPath);

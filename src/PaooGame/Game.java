@@ -551,11 +551,19 @@ public class Game implements Runnable
             // Verifică dacă jucătorul a atins cactusul (tile-ul cu ID-ul 9)
             int playerTileX = Mihai.getX() / Mihai.getSize();
             int playerTileY = Mihai.getY() / Mihai.getSize();
-            if (gameMap.isCactus(playerTileX, playerTileY) && currentLevel == 1) {
-                currentLevel = 2;
-                loadLevel("src/PaooGame/LEVEL2MAP.txt", 2); // Încarcă nivelul 2
-                Mihai.NextLevelRespawn(200, 400); // Respawn la poziția inițială pentru nivelul 2
-                Mihai.health = 300;
+            if (gameMap.isCactus(playerTileX, playerTileY)) {
+                if(currentLevel == 1){
+                    loadLevel("src/PaooGame/LEVEL2MAP.txt", 2); // Încarcă nivelul 2
+                    Mihai.NextLevelRespawn(200, 400); // Respawn la poziția inițială pentru nivelul 2
+                    currentLevel = 2;
+                    Mihai.health = 300;
+                }
+                else if(currentLevel ==2){
+                    loadLevel("src/PaooGame/Level3MAP.txt", 3); // Încarcă nivelul 2
+                    Mihai.NextLevelRespawn(200, 400); // Respawn la poziția inițială pentru nivelul 2
+                    currentLevel = 3;
+                    Mihai.health = 300;
+                }
             }
             // Update camera position
             camera.update(Mihai);

@@ -44,9 +44,9 @@ public class GameMap {
                 cloud3 = ImageIO.read(new File("res/textures/Level1/lvl1-cloud3.png"));
             } else if (level == 2) {
                 background = ImageIO.read(new File("res/textures/Level2/LEVEL2BG.png"));
-//                cloud1 = ImageIO.read(new File("res/textures/Level2/lvl2-cloud1.png"));
-//                cloud2 = ImageIO.read(new File("res/textures/Level2/lvl2-cloud2.png"));
-//                cloud3 = ImageIO.read(new File("res/textures/Level2/lvl2-cloud3.png"));
+            }else if (level == 3) {
+                background = ImageIO.read(new File("res/textures/Level3/LEVEL3BG.png"));
+
             }
         } catch (IOException e) {
             e.printStackTrace();
