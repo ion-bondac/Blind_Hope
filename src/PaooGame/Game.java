@@ -633,14 +633,16 @@ public class Game implements Runnable
                 if (Mihai.getX() % Mihai.getSize() > 8 &&
                         !gameMap.isWalkable(Mihai.getX() / Mihai.getSize() + 1,
                                 Mihai.getY() / Mihai.getSize() + 1)) {
-                    PlayerX += 32;
+                    PlayerX += 32 - Mihai.getX() % Mihai.getSize();
                 }
 
                 if (!gameMap.isWalkable(PlayerX / Mihai.getSize(),
                         Mihai.getY() / Mihai.getSize() + 1)) {
-                    Mihai.onGround = true;
-                    Mihai.move(0, -Mihai.getY() % Mihai.getSize(), gameMap);
-                    Mihai.gravity = 0;
+                    if(Mihai.gravity>=0){
+                        Mihai.onGround = true;
+                        Mihai.move(0, -Mihai.getY() % Mihai.getSize(), gameMap);
+                        Mihai.gravity = 0;
+                    }
                 } else {
                     Mihai.onGround = false;
                 }

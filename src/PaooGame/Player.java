@@ -136,11 +136,29 @@ public class Player extends Entity {
         int tileY = newY / size;
 
         if(dx > 0){
-            tileX += 1;
+            if(newX % size > 8){
+                tileX += 1;
+            }
         }
+        else{
+            if(dy<0){
+                if(newX % size > 16){
+                    if(map.isWalkable(tileX, tileY)){
+                        tileX += 1;
+                    }
+                }
+            }
+        }
+
         if (map.isWalkable(tileX, tileY)) {
             x = newX;
             y = newY;
+        }
+        else{
+            if(dy<0){
+                gravity = 0;
+                onGround = true;
+            }
         }
 //        if (map.isWalkable(x/size, y/size + 1)){
 //            onGround = false;
