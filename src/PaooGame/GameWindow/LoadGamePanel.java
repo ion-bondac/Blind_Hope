@@ -105,14 +105,14 @@ public class LoadGamePanel extends JPanel {
             remove(scrollPane);
         }
 
-        // Create table data
-        String[] columns = {"Session ID", "X Position", "Y Position", "Save Date"};
+        // Create table data with only ID, Name, Level, and Save Date
+        String[] columns = {"Session ID", "Name", "Level", "Save Date"};
         Object[][] data = new Object[sessions.size()][4];
         for (int i = 0; i < sessions.size(); i++) {
             GameSession session = sessions.get(i);
             data[i][0] = session.getSessionId();
-            data[i][1] = session.getPlayerX();
-            data[i][2] = session.getPlayerY();
+            data[i][1] = session.getPlayerName();
+            data[i][2] = session.getLevel();
             data[i][3] = session.getSaveDate().toString();
         }
 

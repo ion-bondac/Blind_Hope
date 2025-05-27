@@ -14,7 +14,7 @@ public class NameInputDialog extends JPanel {
     private JButton cancelButton;
     private JButton startButton;
     private BufferedImage[] backgroundLayers; // Array to hold the four background layers
-    private final String PLACEHOLDER_TEXT = "Default = Esperis"; // Placeholder text
+    private final String PLACEHOLDER_TEXT = "Esperis"; // Placeholder text
     private final Color PLACEHOLDER_COLOR = new Color(255, 255, 255, 128); // Semi-transparent white
     private final Color NORMAL_COLOR = Color.WHITE; // Full-opacity white
 
@@ -41,7 +41,7 @@ public class NameInputDialog extends JPanel {
 
         // Title
         JLabel titleLabel = new JLabel("Enter Your Name", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 16)); // Reduced font size
+        titleLabel.setFont(new Font("Medula one", Font.BOLD, 22)); // Reduced font size
         titleLabel.setForeground(Color.WHITE);
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -52,10 +52,10 @@ public class NameInputDialog extends JPanel {
         // Name input field
         nameField = new JTextField();
 //        nameField.setText("Esperis");
-        nameField.setFont(new Font("Arial", Font.PLAIN, 16)); // Reduced font size
+        nameField.setFont(new Font("Medula One", Font.PLAIN, 20)); // Reduced font size
         nameField.setHorizontalAlignment(JTextField.CENTER);
         nameField.setPreferredSize(new Dimension(60, 40)); // Reduced size
-        nameField.setBackground(Color.BLACK);
+        nameField.setBackground(new Color(27,32,42));
 //        nameField.setForeground(Color.WHITE);
         // Set initial placeholder state
         nameField.setText(PLACEHOLDER_TEXT);
@@ -90,8 +90,8 @@ public class NameInputDialog extends JPanel {
 
         // Cancel button (pink text)
         cancelButton = new JButton("Cancel");
-        cancelButton.setFont(new Font("Arial", Font.BOLD, 14)); // Reduced font size
-        cancelButton.setForeground(new Color(255, 105, 180)); // Pink
+        cancelButton.setFont(new Font("Medula One", Font.BOLD, 20)); // Reduced font size
+        cancelButton.setForeground(new Color(242, 181, 175)); // Pink
         cancelButton.setContentAreaFilled(false);
         cancelButton.setBorderPainted(false);
         cancelButton.setFocusPainted(false);
@@ -101,12 +101,12 @@ public class NameInputDialog extends JPanel {
 
         // Start Game button (green text)
         startButton = new JButton("Start Game");
-        startButton.setFont(new Font("Arial", Font.BOLD, 14)); // Reduced font size
-        startButton.setForeground(new Color(50, 205, 50)); // Green
+        startButton.setFont(new Font("Medula one", Font.BOLD, 20)); // Reduced font size
+        startButton.setForeground(new Color(195, 240, 168)); // Green
         startButton.setContentAreaFilled(false);
         startButton.setBorderPainted(false);
         startButton.setFocusPainted(false);
-        startButton.setPreferredSize(new Dimension(110, 25)); // Reduced size
+        startButton.setPreferredSize(new Dimension(150, 25)); // Reduced size
         startButton.addActionListener(startListener);
         buttonPanel.add(startButton);
 
@@ -136,7 +136,7 @@ public class NameInputDialog extends JPanel {
         int x = (getWidth() - boxWidth) / 2;
         int y = (getHeight() - boxHeight) / 2;
 
-        g2.setColor(new Color(20, 30, 50, 255)); // Dark blue
+        g2.setColor(new Color(35, 47, 69, 255)); // Dark blue
         g2.fillRoundRect(x, y, boxWidth, boxHeight, 20, 20);
 
         g2.setColor(Color.WHITE);

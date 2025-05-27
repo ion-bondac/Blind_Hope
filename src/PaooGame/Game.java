@@ -147,7 +147,7 @@ public class Game implements Runnable
 
     private void saveGameSession() {
         try {
-            dbManager.saveSession(Mihai.getX(), Mihai.getY(), currentLevel, Mihai.health);
+            dbManager.saveSession(playerName,Mihai.getX(), Mihai.getY(), currentLevel, Mihai.health);
             JOptionPane.showMessageDialog(wnd.getWndFrame(), "Game session saved!", "Success", JOptionPane.INFORMATION_MESSAGE);
         } catch (RuntimeException e) {
             JOptionPane.showMessageDialog(wnd.getWndFrame(), "Failed to save session: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
