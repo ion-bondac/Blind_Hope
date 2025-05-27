@@ -240,7 +240,7 @@ public class Game implements Runnable
         TileFactory tileFactory = new TileFactory();
         tileFactory.clearCache();
         setupMenuButtons();
-        SoundPlayer.playLoopingSound("/sounds/menuMusic.wav", 1.0f);
+        SoundPlayer.playLoopingSound("/sounds/menuMusic.wav");
 //        try {
 //            if (currentLevel == 1) {
 //                gameMap = new GameMap("src/PaooGame/LEVEL1MAP.txt", tileFactory,1);

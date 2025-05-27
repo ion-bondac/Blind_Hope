@@ -9,6 +9,7 @@ import java.util.Map;
 public class SoundPlayer {
     private static final Map<String, Clip> activeClips = new HashMap<>();
     private static float volume = 1.0f; // Default volume (100%)
+    private static Clip backgroundClip;
 
     public static void playSound(String fileName) {
         try {
@@ -36,8 +37,7 @@ public class SoundPlayer {
         }
     }
 
-    private static Clip backgroundClip;
-    public static void playLoopingSound(String fileName, float volume) {
+    public static void playLoopingSound(String fileName) {
         try {
             URL soundURL = SoundPlayer.class.getResource(fileName);
             if (soundURL == null) {
@@ -48,38 +48,49 @@ public class SoundPlayer {
             backgroundClip = AudioSystem.getClip();
             backgroundClip.open(audioStream);
 
-            // Setarea volumului (0.0f = mut, 1.0f = maxim)
-            FloatControl gainControl = (FloatControl) backgroundClip.getControl(FloatControl.Type.MASTER_GAIN);
-            float min = gainControl.getMinimum(); // de obicei ~ -80.0f
-            float max = gainControl.getMaximum(); // de obicei ~ 6.0f
-            float gain = min + (max - min) * volume; // Interpolare liniară
-            gainControl.setValue(gain);
+            // Apply global volume control if supported
+            if (backgroundClip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
+                FloatControl gainControl = (FloatControl) backgroundClip.getControl(FloatControl.Type.MASTER_GAIN);
+                float range = gainControl.getMaximum() - gainControl.getMinimum();
+                float gain = (range * volume) + gainControl.getMinimum();
+                gainControl.setValue(gain);
+            }
 
             backgroundClip.loop(Clip.LOOP_CONTINUOUSLY); // Loop forever
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
             e.printStackTrace();
         }
     }
+
     public static void stopBackgroundSound() {
         if (backgroundClip != null && backgroundClip.isRunning()) {
             backgroundClip.stop();
             backgroundClip.close();
+            backgroundClip = null; // Clear reference after stopping
         }
     }
 
-public static void setVolume(float newVolume) {
-    volume = newVolume; // newVolume should be between 0.0 (silent) and 1.0 (full volume)
+    public static void setVolume(float newVolume) {
+        volume = Math.max(0.0f, Math.min(newVolume, 1.0f)); // Clamp volume between 0.0 and 1.0
 
-    // Update volume for all active clips
-    for (Clip clip : activeClips.values()) {
-        if (clip != null && clip.isOpen() && clip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
-            FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+        // Update volume for all active clips
+        for (Clip clip : activeClips.values()) {
+            if (clip != null && clip.isOpen() && clip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
+                FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+                float range = gainControl.getMaximum() - gainControl.getMinimum();
+                float gain = (range * volume) + gainControl.getMinimum();
+                gainControl.setValue(gain);
+            }
+        }
+
+        // Update volume for background clip
+        if (backgroundClip != null && backgroundClip.isOpen() && backgroundClip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
+            FloatControl gainControl = (FloatControl) backgroundClip.getControl(FloatControl.Type.MASTER_GAIN);
             float range = gainControl.getMaximum() - gainControl.getMinimum();
             float gain = (range * volume) + gainControl.getMinimum();
             gainControl.setValue(gain);
         }
     }
-}
 
 public static float getVolume() {
     return volume;
