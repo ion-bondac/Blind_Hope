@@ -37,7 +37,7 @@ public class SoundPlayer {
     }
 
     private static Clip backgroundClip;
-    public static void playLoopingSound(String fileName) {
+    public static void playLoopingSound(String fileName, float volume) {
         try {
             URL soundURL = SoundPlayer.class.getResource(fileName);
             if (soundURL == null) {
@@ -47,6 +47,14 @@ public class SoundPlayer {
             AudioInputStream audioStream = AudioSystem.getAudioInputStream(soundURL);
             backgroundClip = AudioSystem.getClip();
             backgroundClip.open(audioStream);
+
+            // Setarea volumului (0.0f = mut, 1.0f = maxim)
+            FloatControl gainControl = (FloatControl) backgroundClip.getControl(FloatControl.Type.MASTER_GAIN);
+            float min = gainControl.getMinimum(); // de obicei ~ -80.0f
+            float max = gainControl.getMaximum(); // de obicei ~ 6.0f
+            float gain = min + (max - min) * volume; // Interpolare liniară
+            gainControl.setValue(gain);
+
             backgroundClip.loop(Clip.LOOP_CONTINUOUSLY); // Loop forever
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
             e.printStackTrace();
