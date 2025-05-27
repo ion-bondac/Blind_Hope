@@ -4,14 +4,16 @@ import java.sql.Timestamp;
 
 public class GameSession {
     private int sessionId;
+    private String playerName;
     private int playerX;
     private int playerY;
     private int level;
     private int health;
     private Timestamp saveDate;
 
-    public GameSession(int sessionId, int playerX, int playerY, int level, int health, Timestamp saveDate) {
+    public GameSession(int sessionId, String playerName, int playerX, int playerY, int level, int health, Timestamp saveDate) {
         this.sessionId = sessionId;
+        this.playerName = playerName;
         this.playerX = playerX;
         this.playerY = playerY;
         this.level = level;
@@ -20,6 +22,7 @@ public class GameSession {
     }
 
     public int getSessionId() { return sessionId; }
+    public String getPlayerName() { return playerName; }
     public int getPlayerX() { return playerX; }
     public int getPlayerY() { return playerY; }
     public int getLevel() { return level; }
