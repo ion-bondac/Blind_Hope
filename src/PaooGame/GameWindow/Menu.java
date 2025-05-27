@@ -178,10 +178,17 @@ public class Menu extends JPanel {
         Graphics2D g2d = (Graphics2D) g;
 
         // Draw background layers
+        int index = 0;
         for (BufferedImage layer : backgroundLayers) {
             if (layer != null) {
-                g2d.drawImage(layer, 0, 0, getWidth(), getHeight(), null);
+                if(index == 1){
+                    g2d.drawImage(layer, -100, 30, getWidth(), getHeight(), null);
+                }
+                else{
+                    g2d.drawImage(layer, 0, 0, getWidth(), getHeight(), null);
+                }
             }
+            index++;
         }
 
         // Draw settings button in bottom right

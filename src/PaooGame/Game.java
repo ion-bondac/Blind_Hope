@@ -236,20 +236,21 @@ public class Game implements Runnable
         TileFactory tileFactory = new TileFactory();
         tileFactory.clearCache();
         setupMenuButtons();
-        try {
-            if (currentLevel == 1) {
-                gameMap = new GameMap("src/PaooGame/LEVEL1MAP.txt", tileFactory,1);
-            } else if (currentLevel == 2){
-                gameMap = new GameMap("src/PaooGame/LEVEL2MAP.txt", tileFactory,2);
-            }
-            else{
-                gameMap = new GameMap("src/PaooGame/Level3MAP.txt", tileFactory,2);
-            }
-            } catch (IOException e) {
-            System.err.println("Failed to load game map: " + e.getMessage());
-            JOptionPane.showMessageDialog(wnd.GetCanvas(), "Failed to load game map", "Error", JOptionPane.ERROR_MESSAGE);
-            System.exit(1);
-        }
+        SoundPlayer.playLoopingSound("/sounds/menuMusic.wav");
+//        try {
+//            if (currentLevel == 1) {
+//                gameMap = new GameMap("src/PaooGame/LEVEL1MAP.txt", tileFactory,1);
+//            } else if (currentLevel == 2){
+//                gameMap = new GameMap("src/PaooGame/LEVEL2MAP.txt", tileFactory,2);
+//            }
+//            else{
+//                gameMap = new GameMap("src/PaooGame/Level3MAP.txt", tileFactory,3);
+//            }
+//            } catch (IOException e) {
+//            System.err.println("Failed to load game map: " + e.getMessage());
+//            JOptionPane.showMessageDialog(wnd.GetCanvas(), "Failed to load game map", "Error", JOptionPane.ERROR_MESSAGE);
+//            System.exit(1);
+//        }
 
         resetEntitiesForLevel(currentLevel);
         isPaused = false; // Reset pause state
@@ -333,6 +334,8 @@ public class Game implements Runnable
         wnd.getMenu().addActionListenerToButton("New Game", e -> {
             System.out.println("New Game button clicked");
             handleButtonAction("New Game");
+//            SoundPlayer.stopBackgroundSound();
+//            SoundPlayer.playLoopingSound("/sounds/level1Music.wav");
         });
         wnd.getMenu().addActionListenerToButton("Load Game", e -> {
             System.out.println("Load Game button clicked");
@@ -366,11 +369,17 @@ public class Game implements Runnable
                 gameMap = null; // Force reinitialization
                 if (selectedSession.getLevel() == 1) {
                     gameMap = new GameMap("src/PaooGame/LEVEL1MAP.txt", tileFactory, 1);
+//                    SoundPlayer.stopBackgroundSound();
+//                    SoundPlayer.playLoopingSound("/sounds/level1Music.wav");
                 }  else if (selectedSession.getLevel() == 2){
                     gameMap = new GameMap("src/PaooGame/LEVEL2MAP.txt", tileFactory,2);
+//                    SoundPlayer.stopBackgroundSound();
+//                    SoundPlayer.playLoopingSound("/sounds/level2Music.wav");
                 }
                 else{
-                    gameMap = new GameMap("src/PaooGame/Level3MAP.txt", tileFactory,2);
+                    gameMap = new GameMap("src/PaooGame/Level3MAP.txt", tileFactory,3);
+//                    SoundPlayer.stopBackgroundSound();
+//                    SoundPlayer.playLoopingSound("/sounds/level3Music.wav");
                 }
 //                Assets.Init(selectedSession.getLevel());
             } catch (IOException e) {
@@ -384,6 +393,7 @@ public class Game implements Runnable
                 currentLevel = selectedSession.getLevel();
                 resetEntitiesForLevel(currentLevel);
                 camera.update(Mihai); // Ensure camera follows player
+//                SoundPlayer.stopBackgroundSound();
                 wnd.hideMenu();
                 hidePauseMenu();
                 System.out.println("Loaded session: x=" + selectedSession.getPlayerX() + ", y=" + selectedSession.getPlayerY() +

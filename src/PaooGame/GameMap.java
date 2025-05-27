@@ -31,6 +31,7 @@ public class GameMap {
     private int[] cloudsY;
     private int delay = 0;
     private int level;
+    public SoundPlayer MapSound;
 
     public GameMap(String filename, TileFactory factory,int level) throws IOException {
         this.tileFactory = factory;
@@ -80,6 +81,15 @@ public class GameMap {
                 150,
                 0
         };
+        MapSound.stopBackgroundSound();
+        if(level == 1){
+            MapSound.playLoopingSound("/sounds/level1Music.wav");
+        } else if (level == 2) {
+            MapSound.playLoopingSound("/sounds/level2Music.wav");
+        }
+        else{
+            MapSound.playLoopingSound("/sounds/level3Music.wav");
+        }
     }
     public boolean isWalkable(int x, int y){
         return mapTiles[y][x].walkable;
