@@ -384,7 +384,7 @@ public class Game implements Runnable
             Assets.Init(1);
             TileFactory tileFactory = new TileFactory();
             tileFactory.clearCache();
-            gameMap = new GameMap("src/PaooGame/LEVEL1MAPV3.txt", tileFactory, 1);
+            gameMap = new GameMap("src/PaooGame/Level1Map.txt", tileFactory, 1);
         } catch (IOException e) {
             System.err.println("Failed to load game map: " + e.getMessage());
             JOptionPane.showMessageDialog(wnd.getWndFrame(), "Failed to load game map", "Error", JOptionPane.ERROR_MESSAGE);

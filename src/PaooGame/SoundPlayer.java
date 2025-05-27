@@ -58,23 +58,22 @@ public class SoundPlayer {
             backgroundClip.close();
         }
     }
-}
 
-    public static void setVolume(float newVolume) {
-        volume = newVolume; // newVolume should be between 0.0 (silent) and 1.0 (full volume)
+public static void setVolume(float newVolume) {
+    volume = newVolume; // newVolume should be between 0.0 (silent) and 1.0 (full volume)
 
-        // Update volume for all active clips
-        for (Clip clip : activeClips.values()) {
-            if (clip != null && clip.isOpen() && clip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
-                FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-                float range = gainControl.getMaximum() - gainControl.getMinimum();
-                float gain = (range * volume) + gainControl.getMinimum();
-                gainControl.setValue(gain);
-            }
+    // Update volume for all active clips
+    for (Clip clip : activeClips.values()) {
+        if (clip != null && clip.isOpen() && clip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
+            FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+            float range = gainControl.getMaximum() - gainControl.getMinimum();
+            float gain = (range * volume) + gainControl.getMinimum();
+            gainControl.setValue(gain);
         }
     }
+}
 
-    public static float getVolume() {
-        return volume;
-    }
+public static float getVolume() {
+    return volume;
+}
 }
