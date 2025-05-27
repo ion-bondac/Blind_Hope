@@ -66,17 +66,18 @@ public class Game implements Runnable
     private BlindOverlay overlay = new BlindOverlay(Mihai);
     private int tileSize = 32;
 
-    private ArrayList<Fog> FogList = new ArrayList<>(
-            Arrays.asList(
-                    new Fog(Mihai,21, 24),
-                    new Fog(Mihai,23, 23),
-                    new Fog(Mihai,33, 24),
-                    new Fog(Mihai,44, 26),
-                    new Fog(Mihai,70, 28)
+//    private ArrayList<Fog> FogList = new ArrayList<>(
+//            Arrays.asList(
+//                    new Fog(Mihai,21, 24),
+//                    new Fog(Mihai,23, 23),
+//                    new Fog(Mihai,33, 24),
+//                    new Fog(Mihai,44, 26),
+//                    new Fog(Mihai,70, 28)
+//
+//            )
+//    );
 
-            )
-    );
-
+    private ArrayList<Fog> FogList = new ArrayList<>();
 
     private int currentLevel = 1;
 //    private ArrayList<Enemy> Eagles = new ArrayList<Enemy>(
@@ -186,7 +187,16 @@ public class Game implements Runnable
                     )
             );
         } else if (level == 2) {
-            FogList = new ArrayList<>(); // No fog in Level 2, adjust as needed
+            FogList = new ArrayList<>(
+                    Arrays.asList(
+                            new Fog(Mihai, 25, 10),
+                            new Fog(Mihai, 33, 14),
+                            new Fog(Mihai, 40, 14),
+                            new Fog(Mihai, 48, 16),
+                            new Fog(Mihai, 63, 12),
+                            new Fog(Mihai, 75, 17)
+                    )
+            );
             EnemyList = new ArrayList<>(
                     Arrays.asList(
                         new Enemy(17*32,16*32, Mihai, "Gnome", true),
@@ -201,6 +211,19 @@ public class Game implements Runnable
                     )
             ); // Add Level 2 enemies if needed, e.g.:
 
+        } else if (level==3) {
+            FogList = new ArrayList<>(
+                    Arrays.asList(
+                            new Fog(Mihai, 21, 14),
+                            new Fog(Mihai, 23, 11),
+                            new Fog(Mihai, 27, 9),
+                            new Fog(Mihai, 32, 11),
+                            new Fog(Mihai, 47, 5),
+                            new Fog(Mihai, 57, 8),
+                            new Fog(Mihai, 71, 10),
+                            new Fog(Mihai, 80, 17)
+                    )
+            );
         }
 
         for (Enemy e : EnemyList) {
@@ -215,10 +238,14 @@ public class Game implements Runnable
         setupMenuButtons();
         try {
             if (currentLevel == 1) {
-                gameMap = new GameMap("src/PaooGame/LEVEL1MAPV3.txt", tileFactory,1);
-            } else {
+                gameMap = new GameMap("src/PaooGame/LEVEL1MAP.txt", tileFactory,1);
+            } else if (currentLevel == 2){
                 gameMap = new GameMap("src/PaooGame/LEVEL2MAP.txt", tileFactory,2);
-            }        } catch (IOException e) {
+            }
+            else{
+                gameMap = new GameMap("src/PaooGame/Level3MAP.txt", tileFactory,2);
+            }
+            } catch (IOException e) {
             System.err.println("Failed to load game map: " + e.getMessage());
             JOptionPane.showMessageDialog(wnd.GetCanvas(), "Failed to load game map", "Error", JOptionPane.ERROR_MESSAGE);
             System.exit(1);
@@ -328,7 +355,7 @@ public class Game implements Runnable
         }
 
         LoadGamePanel loadPanel = new LoadGamePanel(sessions, selectedSession -> {
-            if (selectedSession.getLevel() < 1 || selectedSession.getLevel() > 2) {
+            if (selectedSession.getLevel() < 1 || selectedSession.getLevel() > 3) {
                 JOptionPane.showMessageDialog(wnd.getWndFrame(), "Invalid level in saved session!", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
@@ -338,9 +365,12 @@ public class Game implements Runnable
                 tileFactory.clearCache();
                 gameMap = null; // Force reinitialization
                 if (selectedSession.getLevel() == 1) {
-                    gameMap = new GameMap("src/PaooGame/LEVEL1MAPV3.txt", tileFactory, 1);
-                } else {
-                    gameMap = new GameMap("src/PaooGame/LEVEL2MAP.txt", tileFactory, 2);
+                    gameMap = new GameMap("src/PaooGame/LEVEL1MAP.txt", tileFactory, 1);
+                }  else if (selectedSession.getLevel() == 2){
+                    gameMap = new GameMap("src/PaooGame/LEVEL2MAP.txt", tileFactory,2);
+                }
+                else{
+                    gameMap = new GameMap("src/PaooGame/Level3MAP.txt", tileFactory,2);
                 }
 //                Assets.Init(selectedSession.getLevel());
             } catch (IOException e) {
@@ -391,7 +421,7 @@ public class Game implements Runnable
                     Assets.Init(1);
                     TileFactory tileFactory = new TileFactory();
                     tileFactory.clearCache();
-                    gameMap = new GameMap("src/PaooGame/LEVEL1MAPV3.txt", tileFactory, 1);
+                    gameMap = new GameMap("src/PaooGame/LEVEL1MAP.txt", tileFactory, 1);
                 } catch (IOException e) {
                     System.err.println("Failed to load game map: " + e.getMessage());
                     JOptionPane.showMessageDialog(wnd.getWndFrame(), "Failed to load game map", "Error", JOptionPane.ERROR_MESSAGE);
