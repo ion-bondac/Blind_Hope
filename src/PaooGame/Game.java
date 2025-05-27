@@ -4,6 +4,7 @@ import PaooGame.Database.DatabaseManager;
 import PaooGame.Database.GameSession;
 import PaooGame.GameWindow.GameWindow;
 import PaooGame.GameWindow.LoadGamePanel; // Add for LoadGamePanel
+import PaooGame.GameWindow.NameInputDialog;
 import PaooGame.GameWindow.PauseMenu;
 import PaooGame.Graphics.Assets;
 import PaooGame.Graphics.BlindOverlay;
@@ -13,6 +14,8 @@ import PaooGame.Tiles.Tile;
 import PaooGame.Tiles.TileFactory;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferStrategy;
 import java.io.IOException;
@@ -65,6 +68,7 @@ public class Game implements Runnable
     private HealthBar healthBar = new HealthBar(Mihai);
     private BlindOverlay overlay = new BlindOverlay(Mihai);
     private int tileSize = 32;
+    private String playerName;
 
 //    private ArrayList<Fog> FogList = new ArrayList<>(
 //            Arrays.asList(
@@ -146,7 +150,7 @@ public class Game implements Runnable
 
     private void saveGameSession() {
         try {
-            dbManager.saveSession(Mihai.getX(), Mihai.getY(), currentLevel, Mihai.health);
+            dbManager.saveSession(playerName,Mihai.getX(), Mihai.getY(), currentLevel, Mihai.health);
             JOptionPane.showMessageDialog(wnd.getWndFrame(), "Game session saved!", "Success", JOptionPane.INFORMATION_MESSAGE);
         } catch (RuntimeException e) {
             JOptionPane.showMessageDialog(wnd.getWndFrame(), "Failed to save session: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -321,6 +325,74 @@ public class Game implements Runnable
 
     }
 
+    private void showNameInputDialog() {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                // Create action listeners
+                ActionListener startListener = new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        NameInputDialog dialog = (NameInputDialog) ((JButton) e.getSource()).getParent().getParent();
+                        String enteredName = dialog.getPlayerName();
+                        if (!enteredName.isEmpty()) {
+                            playerName = enteredName;
+                            startNewGame();
+                            wnd.getWndFrame().getContentPane().removeAll();
+                            wnd.getWndFrame().add(wnd.GetCanvas(), BorderLayout.CENTER);
+                            wnd.getWndFrame().revalidate();
+                            wnd.getWndFrame().repaint();
+                            wnd.GetCanvas().createBufferStrategy(3);
+                            wnd.GetCanvas().requestFocusInWindow();
+                            System.out.println("New Game started for player: " + playerName);
+                        } else {
+                            JOptionPane.showMessageDialog(wnd.getWndFrame(), "Please enter your name!", "Warning", JOptionPane.WARNING_MESSAGE);
+                        }
+                    }
+                };
+
+                ActionListener cancelListener = new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        wnd.getWndFrame().getContentPane().removeAll();
+                        wnd.getWndFrame().add(wnd.getMenu(), BorderLayout.CENTER);
+                        wnd.getWndFrame().revalidate();
+                        wnd.getWndFrame().repaint();
+                    }
+                };
+
+                // Create and display the dialog
+                NameInputDialog dialog = new NameInputDialog(wnd.getWndFrame(), startListener, cancelListener);
+                wnd.getWndFrame().getContentPane().removeAll();
+                wnd.getWndFrame().add(dialog, BorderLayout.CENTER);
+                wnd.getWndFrame().revalidate();
+                wnd.getWndFrame().repaint();
+                dialog.requestFocusInWindow();
+            }
+        });
+    }
+
+    private void startNewGame() {
+        Mihai.respawn(200, 200);
+        camera.update(Mihai);
+        isPaused = false;
+        pauseMenu = null;
+        currentLevel = 1;
+        Mihai.health = 300;
+
+        try {
+            Assets.Init(1);
+            TileFactory tileFactory = new TileFactory();
+            tileFactory.clearCache();
+            gameMap = new GameMap("src/PaooGame/Level1Map.txt", tileFactory, 1);
+        } catch (IOException e) {
+            System.err.println("Failed to load game map: " + e.getMessage());
+            JOptionPane.showMessageDialog(wnd.getWndFrame(), "Failed to load game map", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        resetEntitiesForLevel(currentLevel);
+        wnd.hideMenu();
+    }
 
     /*! \fn private void init()
     \brief  Metoda construieste fereastra jocului, initializeaza aseturile, listenerul de tastatura etc.
@@ -331,22 +403,32 @@ public class Game implements Runnable
  */
 
     private void setupMenuButtons() {
-        wnd.getMenu().addActionListenerToButton("New Game", e -> {
-            System.out.println("New Game button clicked");
-            handleButtonAction("New Game");
-//            SoundPlayer.stopBackgroundSound();
-//            SoundPlayer.playLoopingSound("/sounds/level1Music.wav");
+        wnd.getMenu().addActionListenerToButton("New Game", new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("New Game button clicked");
+                showNameInputDialog();
+            }
         });
-        wnd.getMenu().addActionListenerToButton("Load Game", e -> {
-            System.out.println("Load Game button clicked");
-            handleButtonAction("Load Game");
+        wnd.getMenu().addActionListenerToButton("Load Game", new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Load Game button clicked");
+                handleButtonAction("Load Game");
+            }
         });
-        wnd.getMenu().addActionListenerToButton("Exit", e -> {
-            System.out.println("Exit button clicked");
-            handleButtonAction("Exit");
+        wnd.getMenu().addActionListenerToButton("Exit", new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Exit button clicked");
+                handleButtonAction("Exit");
+            }
         });
-        wnd.getMenu().addSettingsActionListener(e -> {
-            System.out.println("Settings button clicked");
+        wnd.getMenu().addSettingsActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Settings button clicked");
+            }
         });
     }
 
@@ -418,33 +500,33 @@ public class Game implements Runnable
     private void handleButtonAction(String buttonText) {
         System.out.println("Handling button: " + buttonText + ", isPaused: " + isPaused);
         switch (buttonText) {
-            case "New Game":
-                // Reset game state
-                Mihai.respawn(200, 200);
-                camera.update(Mihai); // Reset camera position
-                isPaused = false;
-                pauseMenu = null;
-                currentLevel = 1; // Reset to level 1
-                Mihai.health = 300; // Reset health
-
-                try {
-                    Assets.Init(1);
-                    TileFactory tileFactory = new TileFactory();
-                    tileFactory.clearCache();
-                    gameMap = new GameMap("src/PaooGame/LEVEL1MAP.txt", tileFactory, 1);
-                } catch (IOException e) {
-                    System.err.println("Failed to load game map: " + e.getMessage());
-                    JOptionPane.showMessageDialog(wnd.getWndFrame(), "Failed to load game map", "Error", JOptionPane.ERROR_MESSAGE);
-                }
-
-                resetEntitiesForLevel(currentLevel);
-                // Properly initialize canvas
-                wnd.hideMenu();
-                wnd.GetCanvas().createBufferStrategy(3); // Ensure buffer strategy exists
-                wnd.GetCanvas().requestFocusInWindow(); // Ensure canvas has focus
-
-                System.out.println("New Game started, canvas focus: " + wnd.GetCanvas().hasFocus());
-                break;
+//            case "New Game":
+//                // Reset game state
+//                Mihai.respawn(200, 200);
+//                camera.update(Mihai); // Reset camera position
+//                isPaused = false;
+//                pauseMenu = null;
+//                currentLevel = 1; // Reset to level 1
+//                Mihai.health = 300; // Reset health
+//
+//                try {
+//                    Assets.Init(1);
+//                    TileFactory tileFactory = new TileFactory();
+//                    tileFactory.clearCache();
+//                    gameMap = new GameMap("src/PaooGame/LEVEL1MAPV3.txt", tileFactory, 1);
+//                } catch (IOException e) {
+//                    System.err.println("Failed to load game map: " + e.getMessage());
+//                    JOptionPane.showMessageDialog(wnd.getWndFrame(), "Failed to load game map", "Error", JOptionPane.ERROR_MESSAGE);
+//                }
+//
+//                resetEntitiesForLevel(currentLevel);
+//                // Properly initialize canvas
+//                wnd.hideMenu();
+//                wnd.GetCanvas().createBufferStrategy(3); // Ensure buffer strategy exists
+//                wnd.GetCanvas().requestFocusInWindow(); // Ensure canvas has focus
+//
+//                System.out.println("New Game started, canvas focus: " + wnd.GetCanvas().hasFocus());
+//                break;
             case "Load Game":
                 loadGameSession();
                 break;
