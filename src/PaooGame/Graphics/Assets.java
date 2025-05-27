@@ -30,6 +30,8 @@ public class Assets
     public static BufferedImage flower;
     public static BufferedImage empty;
     public static BufferedImage floor;
+    public static BufferedImage ceiling1;
+    public static BufferedImage ceiling2;
     public static SpriteSheet sheet = new SpriteSheet(ImageLoader.LoadImage("/textures/LEVEL1_MAP.png"));
 
 
@@ -74,6 +76,8 @@ public class Assets
             flower = sheet.crop(3, 1);
             empty = sheet.crop(4, 1);
             floor = sheet.crop(5, 1);
+            ceiling1 = sheet.crop(7, 0);
+            ceiling2 = sheet.crop(2, 0);
 
             tileMap.put("0", block);
             tileMap.put("1", sandTop);
@@ -89,6 +93,8 @@ public class Assets
             tileMap.put("11", flower);
             tileMap.put("-1", empty);
             tileMap.put("56", floor);
+            tileMap.put("14", ceiling1);
+            tileMap.put("15", ceiling2);
 
             System.out.println("Populated tileMap with " + tileMap.size() + " tiles for level: " + level);
             for (String key : tileMap.keySet()) {

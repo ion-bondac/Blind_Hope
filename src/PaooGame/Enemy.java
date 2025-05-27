@@ -14,6 +14,7 @@ public class Enemy extends Entity {
     private boolean movingRight;
     private String type;
     private BufferedImage spriteSheet;
+    private int range;
 //    private boolean waitingToTurn = false;
 //    private int turnDelay = 3; // număr de frame-uri de pauză (poți ajusta)
 //    private int turnDelayCounter = 0;
@@ -22,6 +23,11 @@ public class Enemy extends Entity {
     int flyFrameIndex;
     int flyFrameDelay = 5; // număr de update-uri între schimbările de frame
     int flyFrameTick = 0;
+
+
+    //GNOMES
+
+    BufferedImage staticGnome;
 
     public boolean isHurt = false;
     public int hurtDelay= 0;
@@ -35,7 +41,6 @@ public class Enemy extends Entity {
         Random rand = new Random();
         this.x = x + rand.nextInt(80);
         this.y = y;
-        this.speed = 2;
         this.health = 100;
         this.width = 32;
         this.height = 32;
@@ -44,17 +49,36 @@ public class Enemy extends Entity {
         this.type = type;
         this.movingRight = right;
 
-        try{
-            spriteSheet = ImageIO.read(Objects.requireNonNull(getClass().getResource("/sprites/EagleSpritesheet.png")));
-            for(int i = 0; i < flyFrames.length; i++) {
-                flyFrames[i] = spriteSheet.getSubimage(i * width, 0, width, height);
+        if(type.equals("Eagle")){
+            this.speed = 2;
+            this.range = 80;
+            try{
+                spriteSheet = ImageIO.read(Objects.requireNonNull(getClass().getResource("/sprites/EagleSpritesheet.png")));
+                for(int i = 0; i < flyFrames.length; i++) {
+                    flyFrames[i] = spriteSheet.getSubimage(i * width, 0, width, height);
+                }
+                for(int i = 0; i < hurtFrames.length; i++) {
+                    hurtFrames[i] = spriteSheet.getSubimage(i * width, height, width, height);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            for(int i = 0; i < hurtFrames.length; i++) {
-                hurtFrames[i] = spriteSheet.getSubimage(i * width, height, width, height);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+        else{
+            this.range = 50;
+            this.speed=2;
+            try{
+                spriteSheet = ImageIO.read(Objects.requireNonNull(getClass().getResource("/sprites/gnomespritesheet.png")));
+                staticGnome = spriteSheet.getSubimage(0, 0, width, height);
+                for(int i = 0; i < hurtFrames.length; i++) {
+                    hurtFrames[i] = spriteSheet.getSubimage(i * width, height, width, height);
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
     @Override
@@ -83,12 +107,12 @@ public class Enemy extends Entity {
         else {
                 if (movingRight) {
                     x += speed;
-                    if (x >= startX + 80){
+                    if (x >= startX + range){
                         movingRight = false;
                     }
                 } else {
                     x -= speed;
-                    if (x <= startX - 80)
+                    if (x <= startX - range)
                         movingRight = true;
                 }
                 ;
@@ -181,8 +205,29 @@ public class Enemy extends Entity {
                         null
                 );
             }
-        }
-        else{
+        } else if (type.equals("Gnome")) {
+            if(!isChasing){
+                if(isHurt){
+                    frameToDraw = hurtFrames[hurtFrameIndex];
+                }
+                else{
+                    frameToDraw =staticGnome;
+                }
+            }
+            if (movingRight) {
+                g.drawImage(frameToDraw,
+                        x- camera.getX(), y- camera.getY(),
+                        -width, height,
+                        null
+                );
+            } else {
+                g.drawImage(frameToDraw,
+                        x- camera.getX(), y- camera.getY(),
+                        width, height, //FLIP
+                        null
+                );
+            }
+        } else{
             g.setColor(Color.RED);
             g.fillRect(x- camera.getX(), y- camera.getY(), width, height);
         }

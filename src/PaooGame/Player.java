@@ -13,6 +13,7 @@ public class Player extends Entity {
     public boolean attacking = false;
     public boolean isMoving = false;
     public boolean facingRight = true;
+    public boolean isSliding = false;
     public int attackCooldown = 0;
     public int maxAttackCooldown = 40;
     public boolean hurt = false;
@@ -24,6 +25,9 @@ public class Player extends Entity {
     private BufferedImage standing;
     private BufferedImage standingBlindfolded;
     private BufferedImage spriteSheet;
+
+    private BufferedImage sliding;
+    private BufferedImage slidingBlindfolded;
 
     BufferedImage[] walkFrames = new BufferedImage[6];
     int walkFrameIndex = 0;
@@ -94,6 +98,8 @@ public class Player extends Entity {
             spriteSheet = ImageIO.read(getClass().getResource("/sprites/Esperis_Spritesheet.png"));
             standing = spriteSheet.getSubimage(0,0,size,size);
             standingBlindfolded = spriteSheet.getSubimage(size,0,size,size);
+            sliding = spriteSheet.getSubimage(2*size,0,size,size);
+            slidingBlindfolded = spriteSheet.getSubimage(3*size,0,size,size);
             for(int i = 0; i < walkFrames.length; i++) {
                 walkFrames[i] = spriteSheet.getSubimage(i * size, size, size, size);
                 blindWalkFrames[i] = spriteSheet.getSubimage(i*size, 7*size, size, size);
@@ -283,11 +289,24 @@ public void render(Graphics g, Camera camera) {
 
             }
             else if(isMoving){
-                if(blindfolded){
-                    frameToDraw = blindWalkFrames[walkFrameIndex];
+                if(isSliding){
+                    if(blindfolded){
+                        frameToDraw = slidingBlindfolded;
+                    }
+                    else{
+                        frameToDraw = sliding;
+                    }
+                    if(attackCooldown < 30){
+                        isSliding = false;
+                    }
                 }
                 else{
-                    frameToDraw = walkFrames[walkFrameIndex];
+                    if(blindfolded){
+                        frameToDraw = blindWalkFrames[walkFrameIndex];
+                    }
+                    else{
+                        frameToDraw = walkFrames[walkFrameIndex];
+                    }
                 }
             }
             else if (!onGround) {
@@ -325,6 +344,16 @@ public void render(Graphics g, Camera camera) {
                 }
                 frameToDraw = blindfoldFrames[blindfoldFrames.length -  blindfoldFrameIndex - 1];
 
+            } else if (isSliding) {
+                if(blindfolded){
+                    frameToDraw = slidingBlindfolded;
+                }
+                else{
+                    frameToDraw = sliding;
+                }
+                if(attackCooldown < 30){
+                    isSliding = false;
+                }
             } else{
                 if(blindfolded){
                     frameToDraw = standingBlindfolded;

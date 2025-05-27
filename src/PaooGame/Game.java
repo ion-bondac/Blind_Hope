@@ -82,20 +82,22 @@ public class Game implements Runnable
 //    private ArrayList<Enemy> Eagles = new ArrayList<Enemy>(
 //            new Enemy(22*tileSize,14*tileSize, Mihai, "Eagle");
 //    );
-    private ArrayList<Enemy> Eagles = new ArrayList<>(
-            Arrays.asList(
-                    new Enemy(22 * tileSize, 14 * tileSize, Mihai, "Eagle", true),
-                    new Enemy(30 * tileSize, 12 * tileSize, Mihai, "Eagle", false),
-                    new Enemy(41 * tileSize, 14 * tileSize, Mihai, "Eagle", false),
-                    new Enemy(45 * tileSize, 17 * tileSize, Mihai, "Eagle", true),
-                    new Enemy(55 * tileSize, 20 * tileSize, Mihai, "Eagle", true),
-                    new Enemy(63 * tileSize, 24 * tileSize, Mihai, "Eagle", false),
-//                    new Enemy(73 * tileSize, 29 * tileSize, Mihai, "Eagle", false),
-                    new Enemy(80 * tileSize, 25 * tileSize, Mihai, "Eagle", false),
-//                    new Enemy(84 * tileSize, 23 * tileSize, Mihai, "Eagle", false),
-                    new Enemy(86 * tileSize, 22 * tileSize, Mihai, "Eagle", false)
-            )
-    );
+//    private ArrayList<Enemy> Eagles = new ArrayList<>(
+//            Arrays.asList(
+//                    new Enemy(22 * tileSize, 14 * tileSize, Mihai, "Eagle", true),
+//                    new Enemy(30 * tileSize, 12 * tileSize, Mihai, "Eagle", false),
+//                    new Enemy(41 * tileSize, 14 * tileSize, Mihai, "Eagle", false),
+//                    new Enemy(45 * tileSize, 17 * tileSize, Mihai, "Eagle", true),
+//                    new Enemy(55 * tileSize, 20 * tileSize, Mihai, "Eagle", true),
+//                    new Enemy(63 * tileSize, 24 * tileSize, Mihai, "Eagle", false),
+////                    new Enemy(73 * tileSize, 29 * tileSize, Mihai, "Eagle", false),
+//                    new Enemy(80 * tileSize, 25 * tileSize, Mihai, "Eagle", false),
+////                    new Enemy(84 * tileSize, 23 * tileSize, Mihai, "Eagle", false),
+//                    new Enemy(86 * tileSize, 22 * tileSize, Mihai, "Eagle", false)
+//            )
+//    );
+    private ArrayList<Enemy> EnemyList = new ArrayList<>();
+
 
     private Camera camera = new Camera(800,480);
     EntityManager entityManager = new EntityManager();
@@ -152,11 +154,11 @@ public class Game implements Runnable
 
     private void resetEntitiesForLevel(int level) {
         // Clear existing entities
-        for (Enemy e : Eagles) {
+        for (Enemy e : EnemyList) {
             e.kill();
         }
         FogList.clear();
-        Eagles.clear();
+        EnemyList.clear();
         entityManager.clearEntities();
         entityManager.addEntity(Mihai);
 
@@ -171,7 +173,7 @@ public class Game implements Runnable
                             new Fog(Mihai, 70, 28)
                     )
             );
-            Eagles = new ArrayList<>(
+            EnemyList = new ArrayList<>(
                     Arrays.asList(
                             new Enemy(22 * tileSize, 14 * tileSize, Mihai, "Eagle", true),
                             new Enemy(30 * tileSize, 12 * tileSize, Mihai, "Eagle", false),
@@ -185,11 +187,23 @@ public class Game implements Runnable
             );
         } else if (level == 2) {
             FogList = new ArrayList<>(); // No fog in Level 2, adjust as needed
-            Eagles = new ArrayList<>(); // Add Level 2 enemies if needed, e.g.:
-            // Eagles.add(new Enemy(10 * tileSize, 10 * tileSize, Mihai, "Eagle", true));
+            EnemyList = new ArrayList<>(
+                    Arrays.asList(
+                        new Enemy(17*32,16*32, Mihai, "Gnome", true),
+                        new Enemy(17*32,22*32, Mihai, "Gnome", true),
+                        new Enemy(33*32,21*32, Mihai, "Gnome", true),
+                        new Enemy(33*32,21*32, Mihai, "Gnome", false),
+                        new Enemy(40*32,22*32, Mihai, "Gnome", false),
+                        new Enemy(65*32,17*32, Mihai, "Gnome", false),
+                        new Enemy(82*32,16*32, Mihai, "Gnome", true),
+                        new Enemy(88*32,14*32, Mihai, "Gnome", true),
+                        new Enemy(88*32,14*32, Mihai, "Gnome", false)
+                    )
+            ); // Add Level 2 enemies if needed, e.g.:
+
         }
 
-        for (Enemy e : Eagles) {
+        for (Enemy e : EnemyList) {
             entityManager.addEntity(e);
         }
     }
@@ -630,6 +644,18 @@ public class Game implements Runnable
                         Mihai.removeBlindfold = true;
                     } else {
                         Mihai.equipBlindfold = true;
+                    }
+                }
+            }
+            if (wnd.keys[7]) {
+                if(Mihai.onGround && Mihai.attackCooldown == 0){
+                    Mihai.isSliding = true;
+                    Mihai.attackCooldown = Mihai.maxAttackCooldown;
+                    if(Mihai.facingRight){
+                        Mihai.move(40, 0, gameMap);
+                    }
+                    else{
+                        Mihai.move(-40,0,gameMap);
                     }
                 }
             }
