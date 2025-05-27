@@ -119,10 +119,11 @@ public class GameMap {
         }
     }
 
-public void render(Graphics g, Camera camera) {
+public void render(Graphics g, Camera camera, Player target) {
     int tileSize = 32;
     int screenWidth = camera.getScreenWidth();  // Add this to Camera class
     int screenHeight = camera.getScreenHeight(); // Add this to Camera class
+
 
 
     if (background != null) {
@@ -152,6 +153,14 @@ public void render(Graphics g, Camera camera) {
     int startY = Math.max(0, camera.getY() / tileSize);
     int endX = Math.min(mapTiles[0].length, (camera.getX() + screenWidth) / tileSize + 1);
     int endY = Math.min(mapTiles.length, (camera.getY() + screenHeight) / tileSize + 1);
+
+
+    if(target.blindfolded){
+        startX = Math.max(0, (target.getX() - 300) /tileSize);
+        endX = Math.min(mapTiles[0].length,(target.getX() + 300) /tileSize);
+        startY = Math.max(0,(target.getY() - 200) /tileSize);
+        endY = Math.min(mapTiles.length,(target.getY() + 200) /tileSize);
+    }
 
     // Render only visible tiles
     for (int y = startY; y < endY; y++) {
