@@ -83,12 +83,12 @@ public class GameMap {
         };
         MapSound.stopBackgroundSound();
         if(level == 1){
-            MapSound.playLoopingSound("/sounds/level1Music.wav");
+            MapSound.playLoopingSound("/sounds/level1Music.wav", 0.8f);
         } else if (level == 2) {
-            MapSound.playLoopingSound("/sounds/level2Music.wav");
+            MapSound.playLoopingSound("/sounds/level2Music.wav", 0.8f);
         }
         else{
-            MapSound.playLoopingSound("/sounds/level3Music.wav");
+            MapSound.playLoopingSound("/sounds/level3Music.wav", 0.8f);
         }
     }
     public boolean isWalkable(int x, int y){

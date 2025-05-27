@@ -236,7 +236,7 @@ public class Game implements Runnable
         TileFactory tileFactory = new TileFactory();
         tileFactory.clearCache();
         setupMenuButtons();
-        SoundPlayer.playLoopingSound("/sounds/menuMusic.wav");
+        SoundPlayer.playLoopingSound("/sounds/menuMusic.wav", 1.0f);
 //        try {
 //            if (currentLevel == 1) {
 //                gameMap = new GameMap("src/PaooGame/LEVEL1MAP.txt", tileFactory,1);
@@ -677,6 +677,7 @@ public class Game implements Runnable
                     else{
                         Mihai.move(-10,0,gameMap);
                     }
+                    SoundPlayer.playSound("/sounds/attack.wav");
                 }
             }
             if (wnd.keys[6]) {
@@ -687,6 +688,7 @@ public class Game implements Runnable
                     } else {
                         Mihai.equipBlindfold = true;
                     }
+                    SoundPlayer.playSound("/sounds/blindfold.wav");
                 }
             }
             if (wnd.keys[7]) {
@@ -699,6 +701,7 @@ public class Game implements Runnable
                     else{
                         Mihai.move(-40,0,gameMap);
                     }
+                    SoundPlayer.playSound("/sounds/slide.wav");
                 }
             }
         }
