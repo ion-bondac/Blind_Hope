@@ -150,7 +150,7 @@ public class Game implements Runnable
 
     private void saveGameSession() {
         try {
-            dbManager.saveSession(playerName,Mihai.getX(), Mihai.getY(), currentLevel, Mihai.health);
+            dbManager.saveSession(playerName,Mihai.getX(), Mihai.getY(), currentLevel, Mihai.health, Mihai.getScore());
             JOptionPane.showMessageDialog(wnd.getWndFrame(), "Game session saved!", "Success", JOptionPane.INFORMATION_MESSAGE);
         } catch (RuntimeException e) {
             JOptionPane.showMessageDialog(wnd.getWndFrame(), "Failed to save session: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -379,7 +379,7 @@ public class Game implements Runnable
         pauseMenu = null;
         currentLevel = 1;
         Mihai.health = 300;
-
+        Mihai.score = 0;
         try {
             Assets.Init(1);
             TileFactory tileFactory = new TileFactory();
@@ -472,6 +472,7 @@ public class Game implements Runnable
             if (gameMap.isWalkable(selectedSession.getPlayerX() / Mihai.getSize(), selectedSession.getPlayerY() / Mihai.getSize())) {
                 Mihai.respawn(selectedSession.getPlayerX(), selectedSession.getPlayerY());
                 Mihai.health = selectedSession.getHealth();
+                Mihai.score = selectedSession.getScore();
                 currentLevel = selectedSession.getLevel();
                 resetEntitiesForLevel(currentLevel);
                 camera.update(Mihai); // Ensure camera follows player

@@ -30,36 +30,40 @@ public class DatabaseManager {
                 "player_y INTEGER NOT NULL," +
                 "level INTEGER NOT NULL," +
                 "health INTEGER NOT NULL," +
+                "score INTEGER NOT NULL DEFAULT 0," + // Add score column
                 "save_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
                 ")";
+
         try (Connection conn = connect();
              Statement stmt = conn.createStatement()) {
+            // Create table if it doesn't exist
             stmt.execute(sql);
-            // Check if player_name column exists and add it if missing
+
+            // Check if score column exists and add it if missing
             DatabaseMetaData meta = conn.getMetaData();
-            ResultSet columns = meta.getColumns(null, null, "game_sessions", "player_name");
+            ResultSet columns = meta.getColumns(null, null, "game_sessions", "score");
             if (!columns.next()) {
-                String alterSql = "ALTER TABLE game_sessions ADD COLUMN player_name VARCHAR(50) NOT NULL DEFAULT 'Unknown'";
+                String alterSql = "ALTER TABLE game_sessions ADD COLUMN score INTEGER NOT NULL DEFAULT 0";
                 try (Statement alterStmt = conn.createStatement()) {
                     alterStmt.execute(alterSql);
-                    System.out.println("Added player_name column to game_sessions table");
+                    System.out.println("Added score column to game_sessions table");
                 }
             }
-            System.out.println("Table game_sessions created or already exists");
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to create table: " + e.getMessage(), e);
+            throw new RuntimeException("Failed to create/alter table: " + e.getMessage(), e);
         }
     }
 
-    public void saveSession(String playerName, int playerX, int playerY, int level, int health) {
-        String sql = "INSERT INTO game_sessions (player_name, player_x, player_y, level, health) VALUES (?, ?, ?, ?, ?)";
+    public void saveSession(String playerName, int playerX, int playerY, int level, int health,int score) {
+        String sql = "INSERT INTO game_sessions (player_name, player_x, player_y, level, health, score) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, playerName);
             pstmt.setInt(2, playerX);
             pstmt.setInt(3, playerY);
             pstmt.setInt(4, level);
             pstmt.setInt(5, health);
+            pstmt.setInt(6, score);
             int rowsAffected = pstmt.executeUpdate();
             System.out.println("Session saved successfully for " + playerName + ". Rows affected: " + rowsAffected);
         } catch (SQLException e) {
@@ -69,7 +73,7 @@ public class DatabaseManager {
 
     public List<GameSession> loadAllSessions() {
         List<GameSession> sessions = new ArrayList<>();
-        String sql = "SELECT session_id, player_name, player_x, player_y, level, health, save_date FROM game_sessions ORDER BY save_date DESC";
+        String sql = "SELECT session_id, player_name, player_x, player_y, level, health, score, save_date FROM game_sessions ORDER BY save_date DESC";
         try (Connection conn = connect();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
@@ -81,6 +85,7 @@ public class DatabaseManager {
                         rs.getInt("player_y"),
                         rs.getInt("level"),
                         rs.getInt("health"),
+                        rs.getInt("score"),
                         rs.getTimestamp("save_date")
                 ));
             }

@@ -87,6 +87,8 @@ public class Player extends Entity {
     int blindDeathFrameDelay = 5; // număr de update-uri între schimbările de frame
     int blindDeathFrameTick = 0;
 
+    public int score = 0;
+
     public Player(int x, int y) {
         this.x = x;
         this.y = y;
@@ -127,6 +129,9 @@ public class Player extends Entity {
             e.printStackTrace();
         }
     }
+
+    public void addScore(int score){this.score += score;}
+    public int getScore(){return score;}
 
     public void move(int dx, int dy, GameMap map) {
 
