@@ -13,6 +13,8 @@ public class PauseMenu extends JPanel {
     private Rectangle settingsBounds;
     private boolean settingsHovered = false;
     private BufferedImage settingsIconImage;
+    private final BufferedImage[] backgroundLayers = new BufferedImage[3];
+
 
     public PauseMenu(Runnable saveAction, Runnable loadAction, Runnable exitAction, Runnable resumeAction) {
         setLayout(new GridBagLayout());
@@ -68,6 +70,8 @@ public class PauseMenu extends JPanel {
 
         // Setup settings icon interaction
         setupSettingsInteraction();
+
+        loadBackgroundImages();
     }
 
     private JButton createMenuButton(String text) {
@@ -124,6 +128,19 @@ public class PauseMenu extends JPanel {
         return button;
     }
 
+    private void loadBackgroundImages() {
+        try {
+            backgroundLayers[0] = ImageIO.read(getClass().getResource("/menu/1.png"));
+//            backgroundLayers[1] = ImageIO.read(getClass().getResource("/menu/2.png"));
+            backgroundLayers[1] = ImageIO.read(getClass().getResource("/menu/3.png"));
+            backgroundLayers[2] = ImageIO.read(getClass().getResource("/menu/4.png"));
+//            backgroundLayers[4] = ImageIO.read(getClass().getResource("/menu/menu_logo.png"));
+//            settingsIconImage = ImageIO.read(getClass().getResource("/menu/settings.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void openSettingsWindow() {
         SwingUtilities.invokeLater(() -> {
             System.out.println("Opening Settings window from PauseMenu");
@@ -158,6 +175,13 @@ public class PauseMenu extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
+
+        // Draw background layers
+        for (BufferedImage layer : backgroundLayers) {
+            if (layer != null) {
+                g2d.drawImage(layer, 0, 0, getWidth(), getHeight(), null);
+            }
+        }
 
         // Draw settings icon in bottom right
         int buttonSize = 50;
