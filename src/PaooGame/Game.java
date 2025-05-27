@@ -710,7 +710,7 @@ public class Game implements Runnable
 
 
             if (gameMap != null) {
-                gameMap.render(g, camera);
+                gameMap.render(g, camera, Mihai);
             }
 //            Mihai.render(g, camera);
             entityManager.renderAll(g,camera);

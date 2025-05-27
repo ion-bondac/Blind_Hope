@@ -24,7 +24,7 @@ public class BlindOverlay {
 
     public void render(Graphics g, Camera camera){
         if(target.blindfolded){
-            g.drawImage(overlay, 0, 0, 800, 480, null);
+            g.drawImage(overlay, target.getX() - 850 - camera.getX(), target.getY() - 450 - camera.getY(), 1700, 900, null);
         }
 
     }
