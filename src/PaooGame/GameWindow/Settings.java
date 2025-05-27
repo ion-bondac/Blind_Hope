@@ -1,5 +1,7 @@
 package PaooGame.GameWindow;
 
+import PaooGame.SoundPlayer;
+
 import javax.swing.*;
 import javax.sound.sampled.*;
 import java.awt.*;
@@ -42,12 +44,25 @@ public class Settings extends JFrame {
         JLabel musicVolumeLabel = new JLabel("Music Volume");
         musicVolumeLabel.setFont(new Font("Arial", Font.BOLD, 16));
         musicVolumeLabel.setForeground(Color.WHITE);
-        musicVolumeSlider = new JSlider(1, 4, 2); // Range 1-4
+//        musicVolumeSlider = new JSlider(1, 4, 2); // Range 1-4
+//        musicVolumeSlider.setBackground(new Color(35, 47, 69));
+//        musicVolumeSlider.setForeground(Color.WHITE);
+//        musicVolumeSlider.setMajorTickSpacing(1);
+//        musicVolumeSlider.setPaintTicks(true);
+//        musicVolumeSlider.setPaintLabels(true);
+        musicVolumeSlider = new JSlider(0, 100, (int)(SoundPlayer.getVolume() * 100)); // Range 0-100%
         musicVolumeSlider.setBackground(new Color(35, 47, 69));
         musicVolumeSlider.setForeground(Color.WHITE);
-        musicVolumeSlider.setMajorTickSpacing(1);
+        musicVolumeSlider.setMajorTickSpacing(25);
         musicVolumeSlider.setPaintTicks(true);
         musicVolumeSlider.setPaintLabels(true);
+
+// Adjust sound volume when slider changes
+        musicVolumeSlider.addChangeListener(e -> {
+            int sliderValue = musicVolumeSlider.getValue();
+            float volume = sliderValue / 100.0f; // Convert to 0.0-1.0 range
+            SoundPlayer.setVolume(volume);
+        });
         // Set initial slider value based on current system volume
         if (masterGainControl != null) {
             float currentGain = masterGainControl.getValue();
@@ -138,4 +153,5 @@ public class Settings extends JFrame {
         }
         return null;
     }
+
 }
