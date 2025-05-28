@@ -331,14 +331,22 @@ public class Game implements Runnable
     private void showStoryPanel() {
         SwingUtilities.invokeLater(() -> {
             List<String> initialStory = Arrays.asList(
-                    "Într-un trecut îndepărtat, pe planeta Caligo, o primejdie nemaivăzută amenință viața locuitorilor." ,
-                    "O ceață densă și otrăvitoare s-a răspândit peste întinderile planetei, punând în pericol pe oricine se apropie.",
-                    " Contactul cu acest nor toxic le afectează ochii, doborând pe cei care îndrăznesc să înainteze fără protecție." ,
-                    "Însă cel mai grav este că regina planetei a fost afectată, iar viața ei este în mare pericol." ,
-                    "Iar tu, " + playerName + "poți fi eroul care va salva acestă planetă." ,
-                    " Eu, Gnaritas, te voi îndruma pe calea ta. Pentru început trebuie să găsești floarea unui cactus bătrân de 400 ani.",
-                    "Pentru început trebuie să știi că poți să te miști cu tastele a,d ; Să sari cu w ; Să faci slide cu s ; Vei ataca cu tasta space." ,
-                    "Cel mai important, nu uita să echipezi eșarfa cu tasta q când încerci să intri în ceață."
+//                    "Într-un trecut îndepărtat, pe planeta Caligo, o primejdie nemaivăzută amenință viața locuitorilor.",
+//                    "O ceață densă și otrăvitoare s-a răspândit peste întinderile planetei, punând în pericol pe oricine se apropie.",
+//                    "Contactul cu acest nor toxic le afectează ochii, doborând pe cei care îndrăznesc să înainteze fără protecție." ,
+//                    "Însă cel mai grav este că regina planetei a fost afectată, iar viața ei este în mare pericol.",
+//                    "Iar tu, " + playerName + " poți fi eroul care va salva acestă planetă.",
+//                    "Eu, Gnaritas, te voi îndruma pe calea ta. Pentru început trebuie să găsești floarea unui cactus bătrân de 400 ani.",
+//                    "Poți să te miști cu tastele A, D, să sari cu W , să faci slide cu S. Vei ataca cu tasta SPACE.",
+//                    "Cel mai important, nu uita să echipezi eșarfa cu tasta Q când încerci să intri în ceață."
+                    "In a distant past, on the planet Caligo, an unprecedented danger threatened the lives of its inhabitants.",
+                    "A dense and poisonous fog spread across the planet's lands, endangering anyone who came near.",
+                    "Contact with this toxic cloud harms the eyes, bringing down those who dare to move forward without protection.",
+                    "But worst of all, the queen of the planet has been affected, and her life is in great danger.",
+                    "And you, " + playerName + ", could be the hero who saves this planet.",
+                    "I am Gnaritas, and I will guide you on your path. To begin, you must find the flower of a 400-year-old cactus.",
+                    "You can move using the A and D keys, jump with W, slide with S, and attack using the SPACE key.",
+                    "Most importantly, don’t forget to equip the scarf with the Q key when trying to enter the fog."
             );
             ActionListener continueListener = e -> {
                 canvasReady = false; // Reset canvas readiness
@@ -450,7 +458,7 @@ public class Game implements Runnable
             Assets.Init(level);
             TileFactory tileFactory = new TileFactory();
             tileFactory.clearCache();
-            gameMap = new GameMap(filename, tileFactory, level);
+            gameMap = new GameMap(filename, tileFactory, level, finalBoss);
             currentLevel = level;
             resetEntitiesForLevel(level);
             Mihai.NextLevelRespawn(200, 400); // Respawn at fixed position
@@ -494,27 +502,36 @@ public class Game implements Runnable
         switch (level) {
             case 1:
                 return Arrays.asList(
-                        "Felicitări cu completarea nivelului 1!, urmează să cauți ciuperca magică, din Pădurea Umbrelor",
-                        "Totuși fii atent...",
-                        "Drumul spre această comoară este păzit de Frăția Gnomilor, o grupare de războinici mici, dar extrem de agili, care protejează ciuperca cu orice preț."
+//                        "Felicitări cu completarea nivelului 1!, urmează să cauți ciuperca magică, din Pădurea Umbrelor",
+//                        "Totuși fii atent...",
+//                        "Drumul spre această comoară este păzit de Frăția Gnomilor, o grupare de războinici mici, dar extrem de agili, care protejează ciuperca cu orice preț."
+                        "Congratulations on completing Level 1! Next, you must search for the magic mushroom from the Shadow Forest.",
+                        "Still, be careful...",
+                        "The path to this treasure is guarded by the Brotherhood of Gnomes—a group of small but extremely agile warriors who will protect the mushroom at any cost."
                 );
             case 2:
                 return Arrays.asList(
-                        "Felicitări cu completarea nivelului 2!, în timp ce mergeai prin pădure ai gasit un arc magic, cred că vei avea nevoie de el în lupta următoare",
-                        "Pentru a schimba arma , apăsați pe tasta x, iar atacul pe space.",
-                        "Pentru a căpăta ultimul ingredient, tu, " + playerName + ", trebuie să îl învingi pe Lord Saxarion."
+//                        "Felicitări cu completarea nivelului 2!, în timp ce mergeai prin pădure ai gasit un arc magic, cred că vei avea nevoie de el în lupta următoare",
+//                        "Pentru a schimba arma , apăsați pe tasta x, iar atacul pe space.",
+//                        "Pentru a căpăta ultimul ingredient, tu, " + playerName + ", trebuie să îl învingi pe Lord Saxarion."
+                        "Congratulations on completing Level 2! While walking through the forest, you found a magic bow—I believe you'll need it in the upcoming battle.",
+                        "To switch weapons, press the X key, and use SPACE to attack.",
+                        "To obtain the final ingredient, you, " + playerName + ", must defeat Lord Saxarion."
                 );
             case 3:
                 return Arrays.asList(
                 );
             case 4: // Final story after Level 3
                 return Arrays.asList(
-                        "Felicitări , ai colectat toate ingredientele pentru potion.",
-                        "Ai invins fortele intunecate si ai adus salvarea pentru regină.",
-                        "Eroul " + playerName + " va fi amintit pentru totdeauna!"
+//                        "Felicitări , ai colectat toate ingredientele pentru potion.",
+//                        "Ai invins fortele intunecate si ai adus salvarea pentru regină.",
+//                        "Eroul " + playerName + " va fi amintit pentru totdeauna!"
+                        "Congratulations, you have collected all the ingredients for the potion.",
+                        "You have defeated the dark forces and brought salvation to the queen.",
+                        "The hero " + playerName + " will be remembered forever!"
                 );
             default:
-                return Arrays.asList("Bun venit in aventura ta!");
+                return Arrays.asList("Welcome to your adventure!");
         }
     }
 
