@@ -33,13 +33,14 @@ public class Arrow {
             x -= 4;
         }
 
-        if(x/32==boss.getX()/32 && (y/32 == boss.getY()/32 || y/32 == boss.getY()/32 +1 )){
+        if((x+16)/32==boss.getX()/32 && (y/32 == boss.getY()/32 || y/32 == boss.getY()/32 +1 )){
             boss.Damage(10);
+            boss.isHurt = true;
             active = false;
         }
 
 
-        if (x < startX - 100 || x > startX + 100) {
+        if (x < startX - 140 || x > startX + 140) {
             active = false;
         }
     }

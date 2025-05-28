@@ -135,13 +135,11 @@ public class Enemy extends Entity {
 //            }
 //
 //        }
-
         if(cooldown > 0){
             cooldown--;
         }
 
         if(isChasing){
-            // Simple chase logic
             if(running){
                 runFrameTick++;
                 if (runFrameTick >= runFrameDelay) {
@@ -151,6 +149,7 @@ public class Enemy extends Entity {
             }
             if (target.getX() >= x + 32){
                 if(cooldown == 0) {
+                    isHurt = false;
                     if (x < startX + range) {
                         x += speed;
                         running = true;
@@ -175,6 +174,15 @@ public class Enemy extends Entity {
                 }
             else{
                 running = false;
+            }
+            if(isHurt){
+                if(target.facingRight){
+                    x=startX+range;
+                }
+                else{
+                    x=startX-range;
+                }
+                isHurt = false;
             }
 
 
@@ -238,12 +246,7 @@ public class Enemy extends Entity {
                     if(health <30){
                         speed -=1;
                     }
-                    if(target.facingRight){
-                        x+=92;
-                    }
-                    else{
-                        x-=92;
-                    }
+
                     if(health == 0){
 //                    isHurt = false;
                         this.active = false;
