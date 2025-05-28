@@ -10,6 +10,7 @@ import java.awt.*;
 //import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.Objects;
 
 /*! \class GameWindow
     \brief Implementeaza notiunea de fereastra a jocului.
@@ -119,6 +120,8 @@ public class GameWindow implements KeyListener
         wndFrame.setLayout(new BorderLayout());
         wndFrame.setFocusable(true);
         wndFrame.requestFocusInWindow();
+        Image icon = new ImageIcon(Objects.requireNonNull(getClass().getResource("/menu/icon.png"))).getImage();
+        wndFrame.setIconImage(icon);
         menu = new Menu();
         wndFrame.add(menu,BorderLayout.CENTER);
         wndFrame.setVisible(true);
