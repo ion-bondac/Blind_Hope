@@ -470,6 +470,7 @@ public class Game implements Runnable
                 return;
             }
             if (gameMap.isWalkable(selectedSession.getPlayerX() / Mihai.getSize(), selectedSession.getPlayerY() / Mihai.getSize())) {
+                playerName = selectedSession.getPlayerName();
                 Mihai.respawn(selectedSession.getPlayerX(), selectedSession.getPlayerY());
                 Mihai.health = selectedSession.getHealth();
                 Mihai.score = selectedSession.getScore();

@@ -57,7 +57,7 @@ public class DatabaseManager {
     public void saveSession(String playerName, int playerX, int playerY, int level, int health,int score) {
         String sql = "INSERT INTO game_sessions (player_name, player_x, player_y, level, health, score) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = connect();
-            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, playerName);
             pstmt.setInt(2, playerX);
             pstmt.setInt(3, playerY);
