@@ -213,7 +213,7 @@ public class Game implements Runnable
                         new Enemy(88*32,14*32, Mihai, "Gnome", true),
                         new Enemy(88*32,14*32, Mihai, "Gnome", false)
                     )
-            ); // Add Level 2 enemies if needed, e.g.:
+            );
 
         } else if (level==3) {
             FogList = new ArrayList<>(
@@ -226,6 +226,12 @@ public class Game implements Runnable
                             new Fog(Mihai, 57, 8),
                             new Fog(Mihai, 71, 10),
                             new Fog(Mihai, 80, 17)
+                    )
+            );
+            EnemyList = new ArrayList<>(
+                    Arrays.asList(
+//                            new Enemy(78*32,30*32, Mihai, "Lord", true)
+                            new Enemy(5*32,21*32, Mihai, "Lord", true)
                     )
             );
         }
@@ -788,6 +794,19 @@ public class Game implements Runnable
                     SoundPlayer.playSound("/sounds/slide.wav");
                 }
             }
+            if (wnd.keys[8]) {
+                if(currentLevel == 3){
+                    if(!Mihai.attacking && Mihai.attackCooldown == 0){
+                        Mihai.attackCooldown = 20;
+                        if(Mihai.weapon.equals("bow")){
+                            Mihai.weapon = "sword";
+                        }
+                        else{
+                            Mihai.weapon = "bow";
+                        }
+                    }
+                }
+            }
         }
 
         Mihai.updateWalkAnimation(Mihai.isMoving);
@@ -804,7 +823,7 @@ public class Game implements Runnable
         if(Mihai.health <= 0){
             Mihai.dead = true;
         }
-        entityManager.updateAll(gameMap);
+        entityManager.updateAll(gameMap, EnemyList.get(0));
         for(Fog f : FogList){
             f.update(gameMap);
         }

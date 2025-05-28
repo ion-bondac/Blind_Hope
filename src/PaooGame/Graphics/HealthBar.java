@@ -15,6 +15,7 @@ public class HealthBar {
     BufferedImage healthbar;
     BufferedImage heart;
     BufferedImage sword;
+    BufferedImage bow;
     BufferedImage blindfold;
     private Player target;
     private Font scoreFont;
@@ -24,6 +25,7 @@ public class HealthBar {
             heart = ImageIO.read(new File("res/menu/heart.png"));
             healthbar = ImageIO.read(new File("res/menu/healthbar.png"));
             sword = ImageIO.read(new File("res/menu/sword.png"));
+            bow = ImageIO.read(new File("res/menu/bow.png"));
             blindfold = ImageIO.read(new File("res/menu/blindfold.png"));
 
             scoreFont = new Font("Arial", Font.BOLD, 20);
@@ -41,7 +43,12 @@ public class HealthBar {
 
     public void render(Graphics g, Camera camera){
         g.drawImage(healthbar, 20, 20, null);
-        g.drawImage(sword, 40, 45, null);
+        if(target.weapon.equals("bow")){
+            g.drawImage(bow, 40, 45, null);
+        }
+        else{
+            g.drawImage(sword, 40, 45, null);
+        }
         g.drawImage(blindfold, 80, 45, null);
         for(int i=1; i<=target.getHealth()/100; i++){
             if(heart != null){
