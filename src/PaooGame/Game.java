@@ -10,7 +10,6 @@ import PaooGame.Graphics.HealthBar;
 import PaooGame.Tiles.TileFactory;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferStrategy;
 import java.io.IOException;
@@ -68,16 +67,6 @@ public class Game implements Runnable
 
     public Enemy finalBoss = new Enemy(78*32,30*32, Mihai, "Lord", true);
 
-//    private ArrayList<Fog> FogList = new ArrayList<>(
-//            Arrays.asList(
-//                    new Fog(Mihai,21, 24),
-//                    new Fog(Mihai,23, 23),
-//                    new Fog(Mihai,33, 24),
-//                    new Fog(Mihai,44, 26),
-//                    new Fog(Mihai,70, 28)
-//
-//            )
-//    );
 
     private ArrayList<Fog> FogList = new ArrayList<>();
 
@@ -214,7 +203,6 @@ public class Game implements Runnable
             );
             EnemyList = new ArrayList<>(
                     Arrays.asList(
-//                            new Enemy(78*32,30*32, Mihai, "Lord", true)
                             finalBoss
                     )
             );
@@ -337,14 +325,6 @@ public class Game implements Runnable
     private void showStoryPanel() {
         SwingUtilities.invokeLater(() -> {
             List<String> initialStory = Arrays.asList(
-//                    "Într-un trecut îndepărtat, pe planeta Caligo, o primejdie nemaivăzută amenință viața locuitorilor.",
-//                    "O ceață densă și otrăvitoare s-a răspândit peste întinderile planetei, punând în pericol pe oricine se apropie.",
-//                    "Contactul cu acest nor toxic le afectează ochii, doborând pe cei care îndrăznesc să înainteze fără protecție." ,
-//                    "Însă cel mai grav este că regina planetei a fost afectată, iar viața ei este în mare pericol.",
-//                    "Iar tu, " + playerName + " poți fi eroul care va salva acestă planetă.",
-//                    "Eu, Gnaritas, te voi îndruma pe calea ta. Pentru început trebuie să găsești floarea unui cactus bătrân de 400 ani.",
-//                    "Poți să te miști cu tastele A, D, să sari cu W , să faci slide cu S. Vei ataca cu tasta SPACE.",
-//                    "Cel mai important, nu uita să echipezi eșarfa cu tasta Q când încerci să intri în ceață."
                     "In a distant past, on the planet Caligo, an unprecedented danger threatened the lives of its inhabitants.",
                     "A dense and poisonous fog spread across the planet's lands, endangering anyone who came near.",
                     "Contact with this toxic cloud harms the eyes, bringing down those who dare to move forward without protection.",
@@ -395,7 +375,7 @@ public class Game implements Runnable
         ActionListener continueListener; // Declare continueListener at method scope
         if (level == 4) { // Final story after Level 3
             continueListener = e -> {
-                System.exit(0); // Exit the application after final story
+                System.exit(0); // Exit the game after final text
             };
         } else {
             continueListener = e -> {
@@ -498,18 +478,12 @@ public class Game implements Runnable
         switch (level) {
             case 1:
                 return Arrays.asList(
-//                        "Felicitări cu completarea nivelului 1!, urmează să cauți ciuperca magică, din Pădurea Umbrelor",
-//                        "Totuși fii atent...",
-//                        "Drumul spre această comoară este păzit de Frăția Gnomilor, o grupare de războinici mici, dar extrem de agili, care protejează ciuperca cu orice preț."
                         "Congratulations on completing Level 1! Next, you must search for the magic mushroom from the Shadow Forest.",
                         "Still, be careful...",
                         "The path to this treasure is guarded by the Brotherhood of Gnomes—a group of small but extremely agile warriors who will protect the mushroom at any cost."
                 );
             case 2:
                 return Arrays.asList(
-//                        "Felicitări cu completarea nivelului 2!, în timp ce mergeai prin pădure ai gasit un arc magic, cred că vei avea nevoie de el în lupta următoare",
-//                        "Pentru a schimba arma , apăsați pe tasta x, iar atacul pe space.",
-//                        "Pentru a căpăta ultimul ingredient, tu, " + playerName + ", trebuie să îl învingi pe Lord Saxarion."
                         "Congratulations on completing Level 2! While walking through the forest, you found a magic bow—I believe you'll need it in the upcoming battle.",
                         "To switch weapons, press the X key, and use SPACE to attack.",
                         "To obtain the final ingredient, you, " + playerName + ", must defeat Lord Saxarion."
@@ -519,12 +493,10 @@ public class Game implements Runnable
                 );
             case 4: // Final story after Level 3
                 return Arrays.asList(
-//                        "Felicitări , ai colectat toate ingredientele pentru potion.",
-//                        "Ai invins fortele intunecate si ai adus salvarea pentru regină.",
-//                        "Eroul " + playerName + " va fi amintit pentru totdeauna!"
                         "Congratulations, you have collected all the ingredients for the potion.",
                         "You have defeated the dark forces and brought salvation to the queen.",
-                        "The hero " + playerName + " will be remembered forever!"
+                        "The hero " + playerName + " will be remembered forever!",
+                        "You have gained " + Mihai.getScore() + " points."
                 );
             default:
                 return Arrays.asList("Welcome to your adventure!");
@@ -817,7 +789,6 @@ public class Game implements Runnable
                 isPaused = true;
             } else {
                 hidePauseMenu();
-//                isPaused = false;
             }
             wnd.keys[4] = false; // Prevent repeated toggling
             return; // Skip other updates this frame

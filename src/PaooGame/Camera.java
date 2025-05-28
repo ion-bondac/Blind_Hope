@@ -9,13 +9,6 @@ public class Camera {
         this.screenHeight = screenHeight;
     }
 
-//    public void update(Player player) {
-//        this.x = player.getX() - screenWidth / 2 + 16;
-//        this.y = player.getY() - screenHeight / 2 + 16;
-//        if (x < 0) x = 0;
-//        if (y < 0) y = 0;
-//    }
-
     public void update(Player player) {
         int targetX = player.getX() - screenWidth / 2 + 16;
         int targetY = player.getY() - screenHeight / 2 + 16;

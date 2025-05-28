@@ -2,10 +2,7 @@ package PaooGame.Graphics;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
-
-import static java.lang.System.exit;
 
 /*! \class public class ImageLoader
     \brief Clasa ce contine o metoda statica pentru incarcarea unei imagini in memorie.

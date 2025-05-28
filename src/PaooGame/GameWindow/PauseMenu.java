@@ -3,7 +3,6 @@ package PaooGame.GameWindow;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -131,11 +130,8 @@ public class PauseMenu extends JPanel {
     private void loadBackgroundImages() {
         try {
             backgroundLayers[0] = ImageIO.read(getClass().getResource("/menu/1.png"));
-//            backgroundLayers[1] = ImageIO.read(getClass().getResource("/menu/2.png"));
             backgroundLayers[1] = ImageIO.read(getClass().getResource("/menu/3.png"));
             backgroundLayers[2] = ImageIO.read(getClass().getResource("/menu/4.png"));
-//            backgroundLayers[4] = ImageIO.read(getClass().getResource("/menu/menu_logo.png"));
-//            settingsIconImage = ImageIO.read(getClass().getResource("/menu/settings.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -51,12 +51,11 @@ public class NameInputDialog extends JPanel {
 
         // Name input field
         nameField = new JTextField();
-//        nameField.setText("Esperis");
         nameField.setFont(new Font("Medula One", Font.PLAIN, 20)); // Reduced font size
         nameField.setHorizontalAlignment(JTextField.CENTER);
         nameField.setPreferredSize(new Dimension(60, 40)); // Reduced size
         nameField.setBackground(new Color(27,32,42));
-//        nameField.setForeground(Color.WHITE);
+
         // Set initial placeholder state
         nameField.setText(PLACEHOLDER_TEXT);
         nameField.setForeground(PLACEHOLDER_COLOR);
@@ -122,14 +121,14 @@ public class NameInputDialog extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        // Draw each background layer in order (bottom to top)
+        // Draw each background layer in order
         for (int i = 0; i < backgroundLayers.length; i++) {
             if (backgroundLayers[i] != null) {
                 g.drawImage(backgroundLayers[i], 0, 0, getWidth(), getHeight(), this);
             }
         }
 
-        // Draw the dialog box (half the panel's width and height, centered)
+        // Draw the dialog box
         Graphics2D g2 = (Graphics2D) g.create();
         int boxWidth = getWidth() / 2;  // Half the panel width
         int boxHeight = getHeight() / 2; // Half the panel height

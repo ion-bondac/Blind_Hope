@@ -35,12 +35,6 @@ public class HealthBar {
         target = player;
     }
 
-//    public void Update(){
-//        for(int i=1; i<=target.getHealth()/100; i++){
-//
-//        }
-//    }
-
     public void render(Graphics g, Camera camera){
         g.drawImage(healthbar, 20, 20, null);
         if(target.weapon.equals("bow")){

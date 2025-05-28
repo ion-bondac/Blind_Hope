@@ -1,13 +1,10 @@
 package PaooGame;
 
-import PaooGame.GameWindow.GameWindow;
-import PaooGame.Graphics.Assets;
 import PaooGame.Tiles.Tile;
 import PaooGame.Tiles.TileFactory;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -115,14 +112,6 @@ public class GameMap {
         }
     }
 
-//    public void render(Graphics g) {
-//        for (int y = 0; y < mapTiles.length; y++) {
-//            for (int x = 0; x < mapTiles[y].length; x++) {
-//                mapTiles[y][x].draw(g, x * 32, y * 32); // Assuming 32x32 tiles
-//            }
-//        }
-//    }
-
     public void update(){
         delay++;
         if(delay % 15 == 0){
@@ -157,9 +146,6 @@ public void render(Graphics g, Camera camera, Player target) {
     g.drawImage(cloud1, cloudsX[9]-camera.getX()/5, cloudsY[9]-camera.getY()/5, null);
     g.drawImage(cloud2, cloudsX[10]-camera.getX()/5, cloudsY[10]-camera.getY()/5, null);
 
-
-//    g.drawImage(rocks,0, 50, null);
-//    g.drawImage(rocks2, 0-camera.getX()/2, -camera.getY()/3, null);
 
     // Calculate visible tile range
     int startX = Math.max(0, camera.getX() / tileSize);

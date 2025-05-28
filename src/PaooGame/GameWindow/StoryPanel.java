@@ -55,15 +55,15 @@ public class StoryPanel extends JPanel {
         // 1 (slowest) -> 2000ms, 2 -> 1500ms, 3 -> 1000ms, 4 (fastest) -> 500ms
         switch (speed) {
             case 1:
-                return 5000;
+                return 7000;
             case 2:
-                return 3000;
+                return 5000;
             case 3:
-                return 2000;
+                return 3000;
             case 4:
                 return 1000;
             default:
-                return 5000; // Default to 1000ms if invalid
+                return 7000; // Default to 1000ms if invalid
         }
     }
 
@@ -77,7 +77,7 @@ public class StoryPanel extends JPanel {
         storyLabel = new JLabel("", SwingConstants.LEFT);
         storyLabel.setFont(new Font("Medula One", Font.PLAIN, 18));
         storyLabel.setForeground(Color.WHITE);
-        storyLabel.setBorder(BorderFactory.createEmptyBorder(0, TEXT_INDENT, 0, 0)); // Indentare la stânga
+        storyLabel.setBorder(BorderFactory.createEmptyBorder(0, TEXT_INDENT, 0, 15)); // Indentare la stânga
 
         // Use HTML for proper text wrapping and alignment
         if (!sentences.isEmpty()) {

@@ -1,7 +1,6 @@
 package PaooGame.Graphics;
 
 import PaooGame.Camera;
-import PaooGame.Game;
 import PaooGame.GameMap;
 import PaooGame.Player;
 

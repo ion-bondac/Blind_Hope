@@ -125,7 +125,7 @@ public class Settings extends JFrame {
             // Save settings
             textSpeed = textSpeedSlider.getValue();
             skipText = skipTextCheckBox.isSelected();
-            dispose(); // Close the window immediately
+            dispose();
         });
 
         mainPanel.add(contentPanel, BorderLayout.CENTER);

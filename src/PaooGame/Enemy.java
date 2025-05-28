@@ -17,9 +17,6 @@ public class Enemy extends Entity {
     private int range;
     private int cooldown = 0;
     private int maxCooldownd = 50;
-//    private boolean waitingToTurn = false;
-//    private int turnDelay = 3; // număr de frame-uri de pauză (poți ajusta)
-//    private int turnDelayCounter = 0;
 
     BufferedImage[] flyFrames = new BufferedImage[4];
     int flyFrameIndex;
@@ -125,16 +122,6 @@ public class Enemy extends Entity {
 
     @Override
     public void update(GameMap gameMap, Enemy boss) {
-
-//        if (waitingToTurn) {
-//            turnDelayCounter++;
-//            if (turnDelayCounter >= turnDelay) {
-//                waitingToTurn = false;
-//                turnDelayCounter = 0;
-//                movingRight = !movingRight;
-//            }
-//
-//        }
         if(cooldown > 0){
             cooldown--;
         }
@@ -184,12 +171,6 @@ public class Enemy extends Entity {
                 }
                 isHurt = false;
             }
-
-
-//            if (target.getY() > y) y += speed;
-//            else if (target.getY() < y) y -= speed;
-//            flyFrameIndex= 0;
-//            flyFrameTick = 0;
         }
         else {
                 if (movingRight) {
@@ -223,13 +204,6 @@ public class Enemy extends Entity {
                 }
 
         }
-
-
-//        if(x > target.getX()-target.getSize()  && x < target.getX() + target.getSize()){
-//            if(y > target.getY() + target.getSize() && y < target.getY() - target.getSize()){
-//                target.Damage(20);
-//            }
-//        }
         if(type.equals("Lord")){
             int offset;
             if(movingRight){
@@ -248,7 +222,6 @@ public class Enemy extends Entity {
                     }
 
                     if(health == 0){
-//                    isHurt = false;
                         this.active = false;
                     }
                 }
@@ -265,21 +238,18 @@ public class Enemy extends Entity {
                                 target.gravity=-10;
                                 target.move(0, target.gravity++, gameMap);
                                 x = target.getX() - 192;
-//                            movingRight = false;
                             }
                             else{
                                 target.move(-92, 0, gameMap);
                                 target.gravity=-10;
                                 target.move(0, target.gravity++, gameMap);
                                 x = target.getX() +192;
-//                            movingRight = true;
                             }
                         }
                     }
 
                 }
             }
-
         }
         else{
             int offset=0;
@@ -298,7 +268,6 @@ public class Enemy extends Entity {
                         x-=50;
                     }
                     if(health <= 0){
-//                    isHurt = false;
                         target.addScore(100);
                         this.active = false;
                     }
@@ -402,8 +371,6 @@ public class Enemy extends Entity {
                         null
                 );
             }
-//            g.setColor(Color.RED);
-//            g.fillRect(x- camera.getX(), y- camera.getY(), width, height);
         }
 
     }
@@ -425,5 +392,4 @@ public class Enemy extends Entity {
             active = false;
         }
     }
-
 }

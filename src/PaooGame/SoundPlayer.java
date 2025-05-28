@@ -22,7 +22,7 @@ public class SoundPlayer {
             Clip clip = AudioSystem.getClip();
             clip.open(audioStream);
 
-            // Apply volume control if supported
+            // Apply volume control
             if (clip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
                 FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
                 float range = gainControl.getMaximum() - gainControl.getMinimum();
@@ -48,7 +48,7 @@ public class SoundPlayer {
             backgroundClip = AudioSystem.getClip();
             backgroundClip.open(audioStream);
 
-            // Apply global volume control if supported
+            // Apply global volume control
             if (backgroundClip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
                 FloatControl gainControl = (FloatControl) backgroundClip.getControl(FloatControl.Type.MASTER_GAIN);
                 float range = gainControl.getMaximum() - gainControl.getMinimum();

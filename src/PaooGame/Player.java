@@ -1,7 +1,6 @@
 package PaooGame;
 import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -186,12 +185,6 @@ public class Player extends Entity {
                 onGround = true;
             }
         }
-//        if (map.isWalkable(x/size, y/size + 1)){
-//            onGround = false;
-//        }
-//        else{
-//            onGround = true;
-//        }
     }
 
     public void updateWalkAnimation(boolean moving) {
@@ -235,8 +228,6 @@ public class Player extends Entity {
 
 @Override
 public void update(GameMap gameMap, Enemy boss){
-//        System.out.println(health/100 + "vieti");
-    ;
     if (attackCooldown > 0) {
         attackCooldown--;
     }
