@@ -17,6 +17,7 @@ public class HealthBar {
     BufferedImage sword;
     BufferedImage blindfold;
     private Player target;
+    private Font scoreFont;
 
     public HealthBar(Player player){
         try {
@@ -24,6 +25,8 @@ public class HealthBar {
             healthbar = ImageIO.read(new File("res/menu/healthbar.png"));
             sword = ImageIO.read(new File("res/menu/sword.png"));
             blindfold = ImageIO.read(new File("res/menu/blindfold.png"));
+
+            scoreFont = new Font("Arial", Font.BOLD, 20);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -45,6 +48,22 @@ public class HealthBar {
                 g.drawImage(heart, i*40 + 100 , 45, null);
             }
         }
+        // Draw score
+        g.setFont(scoreFont);
+        g.setColor(Color.WHITE);
 
+        // Draw score at the top right (adjust position as needed)
+        String scoreText = "Score: " + target.getScore();
+        FontMetrics fm = g.getFontMetrics();
+        int scoreX = camera.getScreenWidth() - fm.stringWidth(scoreText) - 20; // 20px from right edge
+        g.drawString(scoreText, scoreX, 30);
+
+        // Optional: Add a small background for better visibility
+        g.setColor(new Color(0, 0, 0, 150)); // Semi-transparent black
+        g.fillRect(scoreX - 5, 10, fm.stringWidth(scoreText) + 10, 25);
+
+        // Redraw score text on top of the background
+        g.setColor(Color.WHITE);
+        g.drawString(scoreText, scoreX, 30);
     }
 }

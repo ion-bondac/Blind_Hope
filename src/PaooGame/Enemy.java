@@ -159,8 +159,9 @@ public class Enemy extends Entity {
                 else{
                     x-=50;
                 }
-                if(health == 0){
+                if(health <= 0){
 //                    isHurt = false;
+                    target.addScore(100);
                     this.active = false;
                 }
             }
