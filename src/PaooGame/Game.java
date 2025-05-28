@@ -148,7 +148,7 @@ public class Game implements Runnable
 
     private void saveGameSession() {
         try {
-            dbManager.saveSession(playerName,Mihai.getX(), Mihai.getY(), currentLevel, Mihai.health, Mihai.getScore());
+            dbManager.saveSession(playerName, Mihai.getX(), Mihai.getY(), currentLevel, Mihai.health, Mihai.getScore(), EnemyList);
             JOptionPane.showMessageDialog(wnd.getWndFrame(), "Game session saved!", "Success", JOptionPane.INFORMATION_MESSAGE);
         } catch (RuntimeException e) {
             JOptionPane.showMessageDialog(wnd.getWndFrame(), "Failed to save session: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -455,19 +455,11 @@ public class Game implements Runnable
                 gameMap = null; // Force reinitialization
                 if (selectedSession.getLevel() == 1) {
                     gameMap = new GameMap("src/PaooGame/LEVEL1MAP.txt", tileFactory, 1);
-//                    SoundPlayer.stopBackgroundSound();
-//                    SoundPlayer.playLoopingSound("/sounds/level1Music.wav");
-                }  else if (selectedSession.getLevel() == 2){
-                    gameMap = new GameMap("src/PaooGame/LEVEL2MAP.txt", tileFactory,2);
-//                    SoundPlayer.stopBackgroundSound();
-//                    SoundPlayer.playLoopingSound("/sounds/level2Music.wav");
+                } else if (selectedSession.getLevel() == 2) {
+                    gameMap = new GameMap("src/PaooGame/LEVEL2MAP.txt", tileFactory, 2);
+                } else {
+                    gameMap = new GameMap("src/PaooGame/Level3MAP.txt", tileFactory, 3);
                 }
-                else{
-                    gameMap = new GameMap("src/PaooGame/Level3MAP.txt", tileFactory,3);
-//                    SoundPlayer.stopBackgroundSound();
-//                    SoundPlayer.playLoopingSound("/sounds/level3Music.wav");
-                }
-//                Assets.Init(selectedSession.getLevel());
             } catch (IOException e) {
                 System.err.println("Failed to load game map: " + e.getMessage());
                 JOptionPane.showMessageDialog(wnd.getWndFrame(), "Failed to load game map", "Error", JOptionPane.ERROR_MESSAGE);
@@ -479,9 +471,17 @@ public class Game implements Runnable
                 Mihai.health = selectedSession.getHealth();
                 Mihai.score = selectedSession.getScore();
                 currentLevel = selectedSession.getLevel();
+
+                // Reset entities and load enemy states
                 resetEntitiesForLevel(currentLevel);
+                List<Boolean> enemyStates = dbManager.loadEnemyStates(selectedSession.getSessionId());
+                for (int i = 0; i < Math.min(enemyStates.size(), EnemyList.size()); i++) {
+                    if (!enemyStates.get(i)) {
+                        EnemyList.get(i).kill(); // Mark enemy as dead if is_active is false
+                    }
+                }
+
                 camera.update(Mihai); // Ensure camera follows player
-//                SoundPlayer.stopBackgroundSound();
                 wnd.hideMenu();
                 hidePauseMenu();
                 System.out.println("Loaded session: x=" + selectedSession.getPlayerX() + ", y=" + selectedSession.getPlayerY() +
