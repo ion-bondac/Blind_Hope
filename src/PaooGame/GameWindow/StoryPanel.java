@@ -55,15 +55,15 @@ public class StoryPanel extends JPanel {
         // 1 (slowest) -> 2000ms, 2 -> 1500ms, 3 -> 1000ms, 4 (fastest) -> 500ms
         switch (speed) {
             case 1:
-                return 2000;
+                return 5000;
             case 2:
-                return 1500;
+                return 3000;
             case 3:
-                return 1000;
+                return 2000;
             case 4:
-                return 500;
+                return 1000;
             default:
-                return 1000; // Default to 1000ms if invalid
+                return 5000; // Default to 1000ms if invalid
         }
     }
 
