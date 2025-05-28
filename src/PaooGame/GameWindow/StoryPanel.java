@@ -63,7 +63,7 @@ public class StoryPanel extends JPanel {
             case 4:
                 return 1000;
             default:
-                return 7000; // Default to 1000ms if invalid
+                return 7000;
         }
     }
 
