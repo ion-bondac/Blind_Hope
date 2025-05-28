@@ -10,6 +10,7 @@ import java.util.List;
 
 public class StoryPanel extends JPanel {
     private BufferedImage[] backgroundLayers;
+    private BufferedImage gnaritas;
     private JLabel storyLabel;
     private JButton continueButton;
     private List sentences;
@@ -36,6 +37,7 @@ public class StoryPanel extends JPanel {
             backgroundLayers[0] = ImageIO.read(getClass().getResource("/menu/1.png"));
             backgroundLayers[1] = ImageIO.read(getClass().getResource("/menu/3.png"));
             backgroundLayers[2] = ImageIO.read(getClass().getResource("/menu/4.png"));
+            gnaritas = ImageIO.read(getClass().getResource("/sprites/gnaritas.png"));
         } catch (IOException e) {
             e.printStackTrace();
             for (int i = 0; i < backgroundLayers.length; i++) {
@@ -145,6 +147,8 @@ public class StoryPanel extends JPanel {
                 g.drawImage(layer, 0, 0, getWidth(), getHeight(), this);
             }
         }
+
+        g.drawImage(gnaritas,50,140, 128,128,null);
 
         // Draw story box at bottom
         Graphics2D g2 = (Graphics2D) g.create();
