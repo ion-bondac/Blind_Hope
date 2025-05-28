@@ -12,15 +12,14 @@ public class StoryPanel extends JPanel {
     private BufferedImage[] backgroundLayers;
     private JLabel storyLabel;
     private JButton continueButton;
-    private List<String> sentences;
+    private List sentences;
     private int currentSentenceIndex = 0;
     private Timer textTimer;
     private final Color BOX_COLOR = new Color(35, 47, 69, 200);
     private final int BOX_HEIGHT = 150;
-    private final int TEXT_DELAY = 3000;
     private final int TEXT_INDENT = 30; // Indentare text
 
-    public StoryPanel(Frame parent, ActionListener continueListener, List<String> levelSentences) {
+    public StoryPanel(Frame parent, ActionListener continueListener, List levelSentences) {
         setOpaque(false);
         setLayout(new BorderLayout());
 
@@ -45,6 +44,27 @@ public class StoryPanel extends JPanel {
         }
     }
 
+    private int getTextDelay() {
+        if (Settings.isSkipText()) {
+            return 100; // Fast 100ms delay when skip text is enabled
+        }
+        int speed = Settings.getTextSpeed(); // Get text speed from Settings
+        // Map slider value (1-4) to delay in milliseconds
+        // 1 (slowest) -> 2000ms, 2 -> 1500ms, 3 -> 1000ms, 4 (fastest) -> 500ms
+        switch (speed) {
+            case 1:
+                return 2000;
+            case 2:
+                return 1500;
+            case 3:
+                return 1000;
+            case 4:
+                return 500;
+            default:
+                return 1000; // Default to 1000ms if invalid
+        }
+    }
+
     private void setupUI(ActionListener continueListener) {
         // Create the story box panel
         JPanel storyBoxPanel = new JPanel(new BorderLayout());
@@ -59,14 +79,13 @@ public class StoryPanel extends JPanel {
 
         // Use HTML for proper text wrapping and alignment
         if (!sentences.isEmpty()) {
-            storyLabel.setText("<html><div style='width:400px; padding-left:" + TEXT_INDENT + "px;'>" +
-                    sentences.get(0) + "</div></html>");
+            storyLabel.setText("<html>" + sentences.get(0) + "</html>");
         }
 
         storyBoxPanel.add(storyLabel, BorderLayout.CENTER);
 
         // Timer for displaying sentences
-        textTimer = new Timer(TEXT_DELAY, e -> showNextSentence());
+        textTimer = new Timer(getTextDelay(), e -> showNextSentence());
         textTimer.setRepeats(true);
         textTimer.start();
 
@@ -98,22 +117,21 @@ public class StoryPanel extends JPanel {
     private void showNextSentence() {
         currentSentenceIndex++;
         if (currentSentenceIndex < sentences.size()) {
-            storyLabel.setText("<html><div style='width:400px; padding-left:" + TEXT_INDENT + "px;'>" +
-                    sentences.get(currentSentenceIndex) + "</div></html>");
+            storyLabel.setText("<html>" + sentences.get(currentSentenceIndex) + "</html>");
         } else {
             textTimer.stop();
             continueButton.setEnabled(true);
         }
     }
 
-    public void setSentences(List<String> newSentences) {
+    public void setSentences(List newSentences) {
         this.sentences = newSentences;
         this.currentSentenceIndex = 0;
         if (!sentences.isEmpty()) {
-            storyLabel.setText("<html><div style='width:400px; padding-left:" + TEXT_INDENT + "px;'>" +
-                    sentences.get(0) + "</div></html>");
+            storyLabel.setText("<html>" + sentences.get(0) + "</html>");
         }
         continueButton.setEnabled(false);
+        textTimer.setDelay(getTextDelay()); // Update delay based on current settings
         textTimer.restart();
     }
 

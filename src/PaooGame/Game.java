@@ -225,6 +225,12 @@ public class Game implements Runnable
         }
     }
 
+    /*! \fn private void init()
+        \brief  Metoda construieste fereastra jocului, initializeaza aseturile, listenerul de tastatura etc.
+
+        Fereastra jocului va fi construita prin apelul functiei BuildGameWindow();
+        Sunt construite elementele grafice (assets): dale, player, elemente active si pasive.
+     */
     private void InitGame() throws IOException {
         Assets.Init(1);
         TileFactory tileFactory = new TileFactory();
@@ -335,9 +341,9 @@ public class Game implements Runnable
                     "O ceață densă și otrăvitoare s-a răspândit peste întinderile planetei, punând în pericol pe oricine se apropie.",
                     " Contactul cu acest nor toxic le afectează ochii, doborând pe cei care îndrăznesc să înainteze fără protecție." ,
                     "Însă cel mai grav este că regina planetei a fost afectată, iar viața ei este în mare pericol." ,
-                    "Iar tu, " + playerName + "poți fi eroul care va salva acestă planetă." ,
+                    "Iar tu, " + playerName + " poți fi eroul care va salva acestă planetă." ,
                     " Eu, Gnaritas, te voi îndruma pe calea ta. Pentru început trebuie să găsești floarea unui cactus bătrân de 400 ani.",
-                    "Pentru început trebuie să știi că poți să te miști cu tastele a,d ; Să sari cu w ; Să faci slide cu s ; Vei ataca cu tasta space." ,
+                    "Pentru început trebuie să știi că poți să te miști cu tastele a,d \n Să sari cu w \n Să faci slide cu s \n Vei ataca cu tasta space." ,
                     "Cel mai important, nu uita să echipezi eșarfa cu tasta q când încerci să intri în ceață."
             );
             ActionListener continueListener = e -> {
@@ -377,51 +383,42 @@ public class Game implements Runnable
     }
 
     private void showLevelStory(int level) {
-        SwingUtilities.invokeLater(() -> {
-            List<String> storySentences = getStoryForLevel(level);
-            ActionListener continueListener;
-            if (level == 4) { // Final story after Level 3
-                continueListener = e -> {
-                    canvasReady = false; // Reset canvas readiness
+        List<String> storySentences = getStoryForLevel(level);
+        ActionListener continueListener; // Declare continueListener at method scope
+        if (level == 4) { // Final story after Level 3
+            continueListener = e -> {
+                System.exit(0); // Exit the application after final story
+            };
+        } else {
+            continueListener = e -> {
+                canvasReady = false;
+                loadLevelForStory(level + 1);
+                SwingUtilities.invokeLater(() -> {
                     wnd.getWndFrame().getContentPane().removeAll();
-                    wnd.getWndFrame().add(wnd.getMenu(), BorderLayout.CENTER);
+                    wnd.getWndFrame().add(wnd.GetCanvas(), BorderLayout.CENTER);
                     wnd.getWndFrame().revalidate();
                     wnd.getWndFrame().repaint();
-                    showingStory = false;
-                    isPaused = false;
-                    storyPanel = null;
-                    currentLevel = 1; // Reset for new game
-                    System.out.println("Final story completed, returning to menu");
-                };
-            } else {
-                continueListener = e -> {
-                    canvasReady = false; // Reset canvas readiness
-                    loadLevelForStory(level + 1); // Load next level
-                    SwingUtilities.invokeLater(() -> {
-                        wnd.getWndFrame().getContentPane().removeAll();
-                        wnd.getWndFrame().add(wnd.GetCanvas(), BorderLayout.CENTER);
-                        wnd.getWndFrame().revalidate();
-                        wnd.getWndFrame().repaint();
-                        while (!wnd.GetCanvas().isDisplayable()) {
-                            try {
-                                Thread.sleep(10);
-                            } catch (InterruptedException ex) {
-                                ex.printStackTrace();
-                            }
+                    while (!wnd.GetCanvas().isDisplayable()) {
+                        try {
+                            Thread.sleep(10);
+                        } catch (InterruptedException ex) {
+                            ex.printStackTrace();
                         }
-                        wnd.GetCanvas().createBufferStrategy(3);
-                        wnd.GetCanvas().requestFocusInWindow();
-                        canvasReady = true; // Mark canvas as ready
-                        hideStory();
-                        System.out.println("Level " + level + " story continued, loaded level " + (level + 1));
-                    });
-                };
-            }
+                    }
+                    wnd.GetCanvas().createBufferStrategy(3);
+                    wnd.GetCanvas().requestFocusInWindow();
+                    canvasReady = true;
+                    hideStory();
+                    System.out.println("Level " + level + " story continued, loaded level " + (level + 1));
+                });
+            };
+        }
 
+        SwingUtilities.invokeLater(() -> {
             if (storyPanel == null) {
                 storyPanel = new StoryPanel(wnd.getWndFrame(), continueListener, storySentences);
                 wnd.getWndFrame().getContentPane().removeAll();
-                wnd.getWndFrame().add(storyPanel, BorderLayout.CENTER); // Corrected: Use storyPanel directly
+                wnd.getWndFrame().add(storyPanel, BorderLayout.CENTER);
             } else {
                 storyPanel.setSentences(storySentences);
             }
@@ -432,7 +429,6 @@ public class Game implements Runnable
             wnd.getWndFrame().revalidate();
             wnd.getWndFrame().repaint();
             storyPanel.requestFocusInWindow();
-            System.out.println("Showing story for level: " + level);
         });
     }
 
@@ -450,7 +446,7 @@ public class Game implements Runnable
             Assets.Init(level);
             TileFactory tileFactory = new TileFactory();
             tileFactory.clearCache();
-            gameMap = new GameMap(filename, tileFactory, level);
+            gameMap = new GameMap(filename, tileFactory, level,finalBoss);
             currentLevel = level;
             resetEntitiesForLevel(level);
             Mihai.NextLevelRespawn(200, 400); // Respawn at fixed position
@@ -502,7 +498,7 @@ public class Game implements Runnable
                 return Arrays.asList(
                         "Felicitări cu completarea nivelului 2!, în timp ce mergeai prin pădure ai gasit un arc magic, cred că vei avea nevoie de el în lupta următoare",
                         "Pentru a schimba arma , apăsați pe tasta x, iar atacul pe space.",
-                        "Pentru a căpăta ultimul ingredient, tu, " + playerName + ", trebuie să îl învingi pe Lord Saxarion."
+                        "Pentru a căpăta ultimul ingredient, tu, " + playerName + " , trebuie să îl învingi pe Lord Saxarion."
                 );
             case 3:
                 return Arrays.asList(
@@ -540,12 +536,6 @@ public class Game implements Runnable
         wnd.hideMenu();
     }
 
-    /*! \fn private void init()
-        \brief  Metoda construieste fereastra jocului, initializeaza aseturile, listenerul de tastatura etc.
-
-        Fereastra jocului va fi construita prin apelul functiei BuildGameWindow();
-        Sunt construite elementele grafice (assets): dale, player, elemente active si pasive.
-     */
     private void setupMenuButtons() {
         wnd.getMenu().addActionListenerToButton("New Game", e -> {
             System.out.println("New Game button clicked");
@@ -561,6 +551,10 @@ public class Game implements Runnable
         });
         wnd.getMenu().addSettingsActionListener(e -> {
             System.out.println("Settings button clicked");
+            SwingUtilities.invokeLater(() -> {
+                Settings settings = new Settings();
+                settings.setVisible(true);
+            });
         });
     }
 

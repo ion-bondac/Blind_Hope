@@ -11,6 +11,8 @@ public class Settings extends JFrame {
     private final JSlider musicVolumeSlider;
     private final JCheckBox skipTextCheckBox;
     private final JSlider textSpeedSlider;
+    private static int textSpeed = 1; // Static variable to store text speed (default to 1)
+    private static boolean skipText = false; // Static variable to store skip text state (default to false)
 
     public Settings() {
         setTitle("Game Settings");
@@ -44,12 +46,6 @@ public class Settings extends JFrame {
         JLabel musicVolumeLabel = new JLabel("Music Volume");
         musicVolumeLabel.setFont(new Font("Arial", Font.BOLD, 16));
         musicVolumeLabel.setForeground(Color.WHITE);
-//        musicVolumeSlider = new JSlider(1, 4, 2); // Range 1-4
-//        musicVolumeSlider.setBackground(new Color(35, 47, 69));
-//        musicVolumeSlider.setForeground(Color.WHITE);
-//        musicVolumeSlider.setMajorTickSpacing(1);
-//        musicVolumeSlider.setPaintTicks(true);
-//        musicVolumeSlider.setPaintLabels(true);
         musicVolumeSlider = new JSlider(0, 100, (int)(SoundPlayer.getVolume() * 100)); // Range 0-100%
         musicVolumeSlider.setBackground(new Color(35, 47, 69));
         musicVolumeSlider.setForeground(Color.WHITE);
@@ -57,28 +53,29 @@ public class Settings extends JFrame {
         musicVolumeSlider.setPaintTicks(true);
         musicVolumeSlider.setPaintLabels(true);
 
-// Adjust sound volume when slider changes
+        // Adjust sound volume when slider changes
         musicVolumeSlider.addChangeListener(e -> {
             int sliderValue = musicVolumeSlider.getValue();
             float volume = sliderValue / 100.0f; // Convert to 0.0-1.0 range
             SoundPlayer.setVolume(volume);
         });
+
         // Set initial slider value based on current system volume
         if (masterGainControl != null) {
             float currentGain = masterGainControl.getValue();
             float minGain = masterGainControl.getMinimum();
             float maxGain = masterGainControl.getMaximum();
-            int sliderValue = (int) (((currentGain - minGain) / (maxGain - minGain)) * 3) + 1;
+            int sliderValue = (int) (((currentGain - minGain) / (maxGain - minGain)) * 100);
             musicVolumeSlider.setValue(sliderValue);
         }
+
         // Adjust system volume when slider changes
         musicVolumeSlider.addChangeListener(e -> {
             if (masterGainControl != null) {
                 int sliderValue = musicVolumeSlider.getValue();
                 float minGain = masterGainControl.getMinimum();
                 float maxGain = masterGainControl.getMaximum();
-                // Map slider value (1-4) to gain range (minGain to maxGain)
-                float newGain = minGain + ((sliderValue - 1) / 3.0f) * (maxGain - minGain);
+                float newGain = minGain + (sliderValue / 100.0f) * (maxGain - minGain);
                 masterGainControl.setValue(newGain);
             }
         });
@@ -94,6 +91,7 @@ public class Settings extends JFrame {
         skipTextLabel.setForeground(Color.WHITE);
         skipTextCheckBox = new JCheckBox();
         skipTextCheckBox.setBackground(new Color(35, 47, 69));
+        skipTextCheckBox.setSelected(skipText); // Initialize with current skipText state
         skipTextPanel.add(skipTextLabel, BorderLayout.WEST);
         skipTextPanel.add(skipTextCheckBox, BorderLayout.CENTER);
         skipTextPanel.setBackground(new Color(35, 47, 69));
@@ -104,7 +102,7 @@ public class Settings extends JFrame {
         JLabel textSpeedLabel = new JLabel("Text Speed");
         textSpeedLabel.setFont(new Font("Arial", Font.BOLD, 16));
         textSpeedLabel.setForeground(Color.WHITE);
-        textSpeedSlider = new JSlider(1, 4, 1); // Range 1-4
+        textSpeedSlider = new JSlider(1, 4, textSpeed); // Range 1-4, initialized with current textSpeed
         textSpeedSlider.setBackground(new Color(35, 47, 69));
         textSpeedSlider.setForeground(Color.WHITE);
         textSpeedSlider.setMajorTickSpacing(1);
@@ -124,9 +122,10 @@ public class Settings extends JFrame {
                 saveButton.getBorder()
         ));
         saveButton.addActionListener(e -> {
-            // Save settings logic here (you can access values with musicVolumeSlider.getValue(), etc.)
-            JOptionPane.showMessageDialog(this, "Settings saved!", "Success", JOptionPane.INFORMATION_MESSAGE);
-            dispose();
+            // Save settings
+            textSpeed = textSpeedSlider.getValue();
+            skipText = skipTextCheckBox.isSelected();
+            dispose(); // Close the window immediately
         });
 
         mainPanel.add(contentPanel, BorderLayout.CENTER);
@@ -154,4 +153,13 @@ public class Settings extends JFrame {
         return null;
     }
 
+    // Getter for text speed
+    public static int getTextSpeed() {
+        return textSpeed;
+    }
+
+    // Getter for skip text
+    public static boolean isSkipText() {
+        return skipText;
+    }
 }

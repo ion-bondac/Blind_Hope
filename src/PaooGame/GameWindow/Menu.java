@@ -28,7 +28,6 @@ public class Menu extends JPanel {
         loadBackgroundImages();
         setupMenuButtons();
         setupSettingsInteraction();
-//        createSettingsPanel();
     }
 
     private void loadBackgroundImages() {

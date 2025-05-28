@@ -1,7 +1,5 @@
 package PaooGame;
 
-//import PaooGame.GameWindow.GameWindow;
-
 import java.io.IOException;
 
 public class Main
