@@ -10,13 +10,11 @@ import PaooGame.Graphics.Assets;
 import PaooGame.Graphics.BlindOverlay;
 import PaooGame.Graphics.Fog;
 import PaooGame.Graphics.HealthBar;
-import PaooGame.Tiles.Tile;
 import PaooGame.Tiles.TileFactory;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
 import java.awt.image.BufferStrategy;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -64,10 +62,10 @@ public class Game implements Runnable
     private BufferStrategy  bs;         /*!< Referinta catre un mecanism cu care se organizeaza memoria complexa pentru un canvas.*/
     private GameMap gameMap;
     private Graphics        g;          /*!< Referinta catre un context grafic.*/
-    private Player Mihai = new Player(200,200);
-    private HealthBar healthBar = new HealthBar(Mihai);
-    private BlindOverlay overlay = new BlindOverlay(Mihai);
-    private int tileSize = 32;
+    private final Player Mihai = new Player(200,200);
+    private final HealthBar healthBar = new HealthBar(Mihai);
+    private final BlindOverlay overlay = new BlindOverlay(Mihai);
+    private final int tileSize = 32;
     private String playerName;
 
 //    private ArrayList<Fog> FogList = new ArrayList<>(

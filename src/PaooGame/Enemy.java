@@ -8,13 +8,13 @@ import java.util.Objects;
 import java.util.Random;
 
 public class Enemy extends Entity {
-    private Player target;
+    private final Player target;
     public boolean isChasing = false;
     public int startX;
     private boolean movingRight;
-    private String type;
+    private final String type;
     private BufferedImage spriteSheet;
-    private int range;
+    private final int range;
 //    private boolean waitingToTurn = false;
 //    private int turnDelay = 3; // număr de frame-uri de pauză (poți ajusta)
 //    private int turnDelayCounter = 0;
@@ -115,7 +115,6 @@ public class Enemy extends Entity {
                     if (x <= startX - range)
                         movingRight = true;
                 }
-                ;
                 if(isHurt){
                     hurtDelay++;
                     hurtFrameTick++;
