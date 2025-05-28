@@ -68,6 +68,8 @@ public class Game implements Runnable
     private final int tileSize = 32;
     private String playerName;
 
+    public Enemy finalBoss = new Enemy(78*32,30*32, Mihai, "Lord", true);
+
 //    private ArrayList<Fog> FogList = new ArrayList<>(
 //            Arrays.asList(
 //                    new Fog(Mihai,21, 24),
@@ -229,7 +231,7 @@ public class Game implements Runnable
             EnemyList = new ArrayList<>(
                     Arrays.asList(
 //                            new Enemy(78*32,30*32, Mihai, "Lord", true)
-                            new Enemy(5*32,21*32, Mihai, "Lord", true)
+                            finalBoss
                     )
             );
         }
@@ -388,7 +390,7 @@ public class Game implements Runnable
             Assets.Init(1);
             TileFactory tileFactory = new TileFactory();
             tileFactory.clearCache();
-            gameMap = new GameMap("src/PaooGame/Level1Map.txt", tileFactory, 1);
+            gameMap = new GameMap("src/PaooGame/Level1Map.txt", tileFactory, 1, null);
         } catch (IOException e) {
             System.err.println("Failed to load game map: " + e.getMessage());
             JOptionPane.showMessageDialog(wnd.getWndFrame(), "Failed to load game map", "Error", JOptionPane.ERROR_MESSAGE);
@@ -454,11 +456,11 @@ public class Game implements Runnable
                 tileFactory.clearCache();
                 gameMap = null; // Force reinitialization
                 if (selectedSession.getLevel() == 1) {
-                    gameMap = new GameMap("src/PaooGame/LEVEL1MAP.txt", tileFactory, 1);
+                    gameMap = new GameMap("src/PaooGame/LEVEL1MAP.txt", tileFactory, 1, null);
                 } else if (selectedSession.getLevel() == 2) {
-                    gameMap = new GameMap("src/PaooGame/LEVEL2MAP.txt", tileFactory, 2);
+                    gameMap = new GameMap("src/PaooGame/LEVEL2MAP.txt", tileFactory, 2, null);
                 } else {
-                    gameMap = new GameMap("src/PaooGame/Level3MAP.txt", tileFactory, 3);
+                    gameMap = new GameMap("src/PaooGame/Level3MAP.txt", tileFactory, 3, finalBoss);
                 }
             } catch (IOException e) {
                 System.err.println("Failed to load game map: " + e.getMessage());
@@ -651,7 +653,12 @@ public class Game implements Runnable
             TileFactory tileFactory = new TileFactory();
             tileFactory.clearCache();
             gameMap = null;
-            gameMap = new GameMap(filename, tileFactory, level);
+            if(level == 3){
+                gameMap = new GameMap(filename, tileFactory, level, finalBoss);
+            }
+            else{
+                gameMap = new GameMap(filename, tileFactory, level, null);
+            }
             currentLevel = level;
             resetEntitiesForLevel(level);
             System.out.println("Loaded level: " + level + " with map: " + filename);
@@ -821,7 +828,7 @@ public class Game implements Runnable
         if(Mihai.health <= 0){
             Mihai.dead = true;
         }
-        entityManager.updateAll(gameMap, EnemyList.get(0));
+        entityManager.updateAll(gameMap, finalBoss);
         for(Fog f : FogList){
             f.update(gameMap);
         }

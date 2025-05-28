@@ -32,10 +32,12 @@ public class GameMap {
     private int delay = 0;
     private int level;
     public SoundPlayer MapSound;
+    public Enemy finalBoss;
 
-    public GameMap(String filename, TileFactory factory,int level) throws IOException {
+    public GameMap(String filename, TileFactory factory,int level, Enemy boss) throws IOException {
         this.tileFactory = factory;
         loadMapFromFile(filename);
+        this.level = level;
 
         try {
             if (level == 1) {
@@ -90,6 +92,7 @@ public class GameMap {
         else{
             MapSound.playLoopingSound("/sounds/level3Music.wav");
         }
+        finalBoss = boss;
     }
     public boolean isWalkable(int x, int y){
         return mapTiles[y][x].walkable;
@@ -175,10 +178,15 @@ public void render(Graphics g, Camera camera, Player target) {
     // Render only visible tiles
     for (int y = startY; y < endY; y++) {
         for (int x = startX; x < endX; x++) {
-            mapTiles[y][x].draw(g,
-                    x * tileSize - camera.getX(),
-                    y * tileSize - camera.getY()
-            );
+                if (mapTiles[y][x].getType().equals("11")) {
+                    if (level == 3 && finalBoss.isActive()) {
+                        continue;
+                    }
+                }
+                mapTiles[y][x].draw(g,
+                        x * tileSize - camera.getX(),
+                        y * tileSize - camera.getY()
+                );
         }
     }
 }
