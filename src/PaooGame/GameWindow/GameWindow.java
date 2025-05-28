@@ -96,6 +96,8 @@ public class GameWindow implements KeyListener
                 break;
             case 83: keys[7] = true; // slide S
                 break;
+            case 88: keys[8] = true; // switch weapon TAB
+                break;
         }
 //        System.out.println("You pressed key char: " + e.getKeyChar());
 //        System.out.println("You pressed key code: " + e.getKeyCode());
@@ -118,6 +120,8 @@ public class GameWindow implements KeyListener
             case 81: keys[6] = false; // blindfold Q
                 break;
             case 83: keys[7] = false; // slide S
+                break;
+            case 88: keys[8] = false; // switch weapon TAB
                 break;
         }
     }
