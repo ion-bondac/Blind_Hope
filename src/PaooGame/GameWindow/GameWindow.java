@@ -21,14 +21,10 @@ import java.awt.event.KeyListener;
 public class GameWindow implements KeyListener
 {
     private JFrame  wndFrame;       /*!< fereastra principala a jocului*/
-    //private JFrame menuFrame;
-//    private JPanel menuPanel;
-//    private JPanel settingsIcon;
     private Menu menu;
     private String  wndTitle;       /*!< titlul ferestrei*/
     private int     wndWidth;       /*!< latimea ferestrei in pixeli*/
     private int     wndHeight;      /*!< inaltimea ferestrei in pixeli*/
-//    private boolean menuVisible;
     private Canvas  canvas;         /*!< "panza/tablou" in care se poate desena*/
     public boolean[] keys = new boolean[10];
     /*! \fn GameWindow(String title, int width, int height)
@@ -47,9 +43,6 @@ public class GameWindow implements KeyListener
         wndTitle    = title;    /*!< Retine titlul ferestrei.*/
         wndWidth    = width;    /*!< Retine latimea ferestrei.*/
         wndHeight   = height;   /*!< Retine inaltimea ferestrei.*/
-        //wndFrame    = null;     /*!< Fereastra nu este construita.*/
-//        menuVisible = true;
-
         canvas = new Canvas();
         canvas.setPreferredSize(new Dimension(wndWidth,wndHeight));
         canvas.setMaximumSize(new Dimension(wndWidth,wndHeight));
@@ -62,20 +55,7 @@ public class GameWindow implements KeyListener
     }
 
     @Override
-    public void keyTyped(KeyEvent e) {
-        //keyTyped = Invoked when a key is typed. Uses KeyChar, char output
-//        switch(e.getKeyChar()) {
-//            case 'a': label.setLocation(label.getX()-10, label.getY());
-//                break;
-//            case 'w': label.setLocation(label.getX(), label.getY()-10);
-//                break;
-//            case 's': label.setLocation(label.getX(), label.getY()+10);
-//                break;
-//            case 'd': label.setLocation(label.getX()+10, label.getY());
-//                break;
-//        }
-
-    }
+    public void keyTyped(KeyEvent e) {}
 
     @Override
     public void keyPressed(KeyEvent e) {
@@ -97,8 +77,6 @@ public class GameWindow implements KeyListener
             case 83: keys[7] = true; // slide S
                 break;
         }
-//        System.out.println("You pressed key char: " + e.getKeyChar());
-//        System.out.println("You pressed key code: " + e.getKeyCode());
     }
 
     @Override
@@ -137,8 +115,6 @@ public class GameWindow implements KeyListener
         wndFrame.setLayout(new BorderLayout());
         wndFrame.setFocusable(true);
         wndFrame.requestFocusInWindow();
-//        wndFrame.addKeyListener(this);
-
         menu = new Menu();
         wndFrame.add(menu,BorderLayout.CENTER);
         wndFrame.setVisible(true);
@@ -202,9 +178,5 @@ public class GameWindow implements KeyListener
 
     public JFrame getWndFrame(){return wndFrame;}
 
-//    public JPanel getMenuPanel()
-//    {
-//        return menuPanel;
-//    }
 }
 

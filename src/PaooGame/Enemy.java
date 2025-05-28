@@ -15,9 +15,6 @@ public class Enemy extends Entity {
     private String type;
     private BufferedImage spriteSheet;
     private int range;
-//    private boolean waitingToTurn = false;
-//    private int turnDelay = 3; // număr de frame-uri de pauză (poți ajusta)
-//    private int turnDelayCounter = 0;
 
     BufferedImage[] flyFrames = new BufferedImage[4];
     int flyFrameIndex;
@@ -84,16 +81,6 @@ public class Enemy extends Entity {
     @Override
     public void update(GameMap gameMap) {
 
-//        if (waitingToTurn) {
-//            turnDelayCounter++;
-//            if (turnDelayCounter >= turnDelay) {
-//                waitingToTurn = false;
-//                turnDelayCounter = 0;
-//                movingRight = !movingRight;
-//            }
-//
-//        }
-
         if(isChasing){
             // Simple chase logic
             if (target.getX() > x) x += speed;
@@ -138,12 +125,6 @@ public class Enemy extends Entity {
 
         }
 
-
-//        if(x > target.getX()-target.getSize()  && x < target.getX() + target.getSize()){
-//            if(y > target.getY() + target.getSize() && y < target.getY() - target.getSize()){
-//                target.Damage(20);
-//            }
-//        }
         int offset=0;
         if(movingRight){
             offset = -32;
@@ -160,7 +141,6 @@ public class Enemy extends Entity {
                     x-=50;
                 }
                 if(health <= 0){
-//                    isHurt = false;
                     target.addScore(100);
                     this.active = false;
                 }
@@ -178,7 +158,6 @@ public class Enemy extends Entity {
                 }
             }
         }
-
     }
 
     @Override
