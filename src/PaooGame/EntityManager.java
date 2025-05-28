@@ -21,10 +21,10 @@ public class EntityManager {
         entities.clear();
     }
 
-    public void updateAll(GameMap gameMap) {
+    public void updateAll(GameMap gameMap, Enemy boss) {
         for (Entity e : entities) {
             if (e.isActive()) {
-                e.update(gameMap);
+                e.update(gameMap, boss);
             }
         }
     }
