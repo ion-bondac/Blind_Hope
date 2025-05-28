@@ -45,12 +45,6 @@ public class TileFactory {
     }
 
     private BufferedImage loadTexture(String type) {
-//        try {
-//            return Assets.grass;
-//        } catch (IOException e) {
-//            System.err.println("Failed to load texture: " + type);
-//            return null;
-//        }
         BufferedImage img = Assets.tileMap.get(type);
         if (img == null) {
             System.err.println("Unknown tile type: " + type);
