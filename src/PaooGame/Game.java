@@ -17,40 +17,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/*! \class Game
-    \brief Clasa principala a intregului proiect. Implementeaza Game - Loop (Update -> Draw)
-
-                ------------
-                |           |
-                |     ------------
-    60 times/s  |     |  Update  |  -->{ actualizeaza variabile, stari, pozitii ale elementelor grafice etc.
-        =       |     ------------
-     16.7 ms    |           |
-                |     ------------
-                |     |   Draw   |  -->{ deseneaza totul pe ecran
-                |     ------------
-                |           |
-                -------------
-
-    Implementeaza interfata Runnable:
-
-        public interface Runnable {
-            public void run();
-        }
-
-    Interfata este utilizata pentru a crea un nou fir de executie avand ca argument clasa Game.
-    Clasa Game trebuie sa aiba definita metoda "public void run()", metoda ce va fi apelata
-    in noul thread(fir de executie). Mai multe explicatii veti primi la curs.
-
-    In mod obisnuit aceasta clasa trebuie sa contina urmatoarele:
-        - public Game();            //constructor
-        - private void init();      //metoda privata de initializare
-        - private void update();    //metoda privata de actualizare a elementelor jocului
-        - private void draw();      //metoda privata de desenare a tablei de joc
-        - public run();             //metoda publica ce va fi apelata de noul fir de executie
-        - public synchronized void start(); //metoda publica de pornire a jocului
-        - public synchronized void stop()   //metoda publica de oprire a jocului
- */
 public class Game implements Runnable
 {
     private final GameWindow wnd;        /*!< Fereastra in care se va desena tabla jocului*/
@@ -84,32 +50,6 @@ public class Game implements Runnable
     private boolean showingStory = false;
     private boolean canvasReady; // Track canvas readiness
 
-    /// Sunt cateva tipuri de "complex buffer strategies", scopul fiind acela de a elimina fenomenul de
-    /// flickering (palpaire) a ferestrei.
-    /// Modul in care va fi implementata aceasta strategie in cadrul proiectului curent va fi triplu buffer-at
-
-    ///                         |------------------------------------------------>|
-    ///                         |                                                 |
-    ///                 ****************          *****************        ***************
-    ///                 *              *   Show   *               *        *             *
-    /// [  ] <---- * Front Buffer *  <------ * Middle Buffer * <----- * Back Buffer * <---- Draw()
-    ///                 *              *          *               *        *             *
-    ///                 ****************          *****************        ***************
-
-
-
-//    private Tile tile; /*!< variabila membra temporara. Este folosita in aceasta etapa doar pentru a desena ceva pe ecran.*/
-
-    /*! \fn public Game(String title, int width, int height)
-        \brief Constructor de initializare al clasei Game.
-
-        Acest constructor primeste ca parametri titlul ferestrei, latimea si inaltimea
-        acesteia avand in vedere ca fereastra va fi construita/creata in cadrul clasei Game.
-
-        \param title Titlul ferestrei.
-        \param width Latimea ferestrei in pixeli.
-        \param height Inaltimea ferestrei in pixeli.
-     */
     public Game(String title, int width, int height) throws IOException {
         /// Obiectul GameWindow este creat insa fereastra nu este construita
         /// Acest lucru va fi realizat in metoda init() prin apelul
