@@ -4,6 +4,9 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+
 
 public class Player extends Entity {
     private int x, y; // position in tiles
@@ -22,6 +25,9 @@ public class Player extends Entity {
     public boolean equipBlindfold = false;
     public boolean removeBlindfold = false;
     public int gravity = 0;
+    public String weapon;
+    public ArrayList<Arrow> arrows = new ArrayList<>();
+    public boolean arrowFired = false;
     private BufferedImage standing;
     private BufferedImage standingBlindfolded;
     private BufferedImage spriteSheet;
@@ -43,6 +49,11 @@ public class Player extends Entity {
     int attackFrameIndex = 0;
     int attackFrameDelay = 7; // număr de update-uri între schimbările de frame
     int attackFrameTick = 0;
+
+    BufferedImage[] bowFrames = new BufferedImage[6];
+    int bowFrameIndex = 0;
+    int bowFrameDelay = 7; // număr de update-uri între schimbările de frame
+    int bowFrameTick = 0;
 
     BufferedImage[] hurtFrames = new BufferedImage[4];
     int hurtFrameIndex = 0;
@@ -77,6 +88,11 @@ public class Player extends Entity {
     int blindAttackFrameDelay = 7; // număr de update-uri între schimbările de frame
     int blindAttackFrameTick = 0;
 
+    BufferedImage[] blindBowFrames = new BufferedImage[6];
+    int blindBowFrameIndex = 0;
+    int blindBowFrameDelay = 7; // număr de update-uri între schimbările de frame
+    int blindBowFrameTick = 0;
+
     BufferedImage[] blindHurtFrames = new BufferedImage[4];
     int blindHurtFrameIndex = 0;
     int blindHurtFrameDelay = 5; // număr de update-uri între schimbările de frame
@@ -96,6 +112,7 @@ public class Player extends Entity {
         this.health = 300;
         this.width = 32;
         this.height = 32;
+        this.weapon = "sword";
         try{
             spriteSheet = ImageIO.read(getClass().getResource("/sprites/Esperis_Spritesheet.png"));
             standing = spriteSheet.getSubimage(0,0,size,size);
@@ -124,6 +141,10 @@ public class Player extends Entity {
             }
             for(int i = 0; i < blindfoldFrames.length; i++){
                 blindfoldFrames[i] = spriteSheet.getSubimage(i*size, 6*size, size, size);
+            }
+            for(int i = 0; i < bowFrames.length; i++){
+                bowFrames[i] = spriteSheet.getSubimage(i*size, 12*size, size, size);
+                blindBowFrames[i] = spriteSheet.getSubimage(i*size, 13*size, size, size);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -213,17 +234,29 @@ public class Player extends Entity {
     }
 
 @Override
-public void update(GameMap gameMap){
+public void update(GameMap gameMap, Enemy boss){
 //        System.out.println(health/100 + "vieti");
     ;
     if (attackCooldown > 0) {
         attackCooldown--;
+    }
+    Iterator<Arrow> iter = arrows.iterator();
+    while (iter.hasNext()) {
+        Arrow arrow = iter.next();
+        if (arrow.active) {
+            arrow.update(boss);
+        } else {
+            iter.remove(); // curăță săgețile inactive
+        }
     }
 }
 
 @Override
 public void render(Graphics g, Camera camera) {
         BufferedImage frameToDraw;
+        for (Arrow arrow : arrows) {
+            arrow.render(g, camera);
+        }
         if (spriteSheet != null) {
             if(dead){
                 if(blindfolded){
@@ -295,7 +328,12 @@ public void render(Graphics g, Camera camera) {
                         blindAttackFrameIndex = 0;
                         attacking = false;
                     }
-                    frameToDraw = blindAttackFrames[blindAttackFrameIndex];
+                    if(weapon.equals("bow")){
+                        frameToDraw = blindBowFrames[blindAttackFrameIndex];
+                    }
+                    else{
+                        frameToDraw = blindAttackFrames[blindAttackFrameIndex];
+                    }
                 }
                 else{
                     attackFrameTick++;
@@ -306,8 +344,18 @@ public void render(Graphics g, Camera camera) {
                     if (attackFrameIndex >= attackFrames.length) {
                         attackFrameIndex = 0;
                         attacking = false;
+                        arrowFired = false;
                     }
-                    frameToDraw = attackFrames[attackFrameIndex];
+                    if(weapon.equals("bow")){
+                        frameToDraw = bowFrames[attackFrameIndex];
+                        if (attackFrameIndex == 2 && !arrowFired) {
+                            arrows.add(new Arrow(getX(), getY()+8, facingRight));
+                            arrowFired = true;
+                        }
+                    }
+                    else{
+                        frameToDraw = attackFrames[attackFrameIndex];
+                    }
                 }
 
             }

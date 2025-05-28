@@ -15,6 +15,8 @@ public class Enemy extends Entity {
     private String type;
     private BufferedImage spriteSheet;
     private int range;
+    private int cooldown = 0;
+    private int maxCooldownd = 50;
 //    private boolean waitingToTurn = false;
 //    private int turnDelay = 3; // număr de frame-uri de pauză (poți ajusta)
 //    private int turnDelayCounter = 0;
@@ -23,6 +25,7 @@ public class Enemy extends Entity {
     int flyFrameIndex;
     int flyFrameDelay = 5; // număr de update-uri între schimbările de frame
     int flyFrameTick = 0;
+
 
 
     //GNOMES
@@ -37,13 +40,29 @@ public class Enemy extends Entity {
     int hurtFrameTick = 0;
 
 
+    //LORD
+
+    BufferedImage staticLord;
+
+    private boolean attacking = false;
+    BufferedImage[] attackFrames = new BufferedImage[8];
+    int attackFrameIndex = 0;
+    int attackFrameDelay = 3; // număr de update-uri între schimbările de frame
+    int attackFrameTick = 0;
+
+    private boolean running = false;
+
+    BufferedImage[] runFrames = new BufferedImage[8];
+    int runFrameIndex;
+    int runFrameDelay = 7; // număr de update-uri între schimbările de frame
+    int runFrameTick = 0;
+
+
     public Enemy(int x, int y, Player target, String type, boolean right) {
         Random rand = new Random();
         this.x = x + rand.nextInt(80);
         this.y = y;
         this.health = 100;
-        this.width = 32;
-        this.height = 32;
         this.target = target;
         this.startX = x;
         this.type = type;
@@ -52,6 +71,8 @@ public class Enemy extends Entity {
         if(type.equals("Eagle")){
             this.speed = 2;
             this.range = 80;
+            this.width = 32;
+            this.height = 32;
             try{
                 spriteSheet = ImageIO.read(Objects.requireNonNull(getClass().getResource("/sprites/EagleSpritesheet.png")));
                 for(int i = 0; i < flyFrames.length; i++) {
@@ -64,9 +85,11 @@ public class Enemy extends Entity {
                 e.printStackTrace();
             }
         }
-        else{
+        else if (type.equals("Gnome")){
             this.range = 50;
             this.speed=2;
+            this.width = 32;
+            this.height = 32;
             try{
                 spriteSheet = ImageIO.read(Objects.requireNonNull(getClass().getResource("/sprites/gnomespritesheet.png")));
                 staticGnome = spriteSheet.getSubimage(0, 0, width, height);
@@ -78,11 +101,30 @@ public class Enemy extends Entity {
                 e.printStackTrace();
             }
         }
+        else{
+            this.range=80;
+            this.speed=2;
+            this.width = 64;
+            this.height = 64;
+            this.isChasing = true;
+            try{
+                spriteSheet = ImageIO.read(Objects.requireNonNull(getClass().getResource("/sprites/lordSpritesheet.png")));
+                staticLord = spriteSheet.getSubimage(0, 0, width, height);
+                for(int i = 0; i < attackFrames.length; i++) {
+                    attackFrames[i] = spriteSheet.getSubimage(i * width, height, width, height);
+                }
+                for(int i = 0; i < runFrames.length; i++) {
+                    runFrames[i] = spriteSheet.getSubimage(i * width, 2*height, width, height);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
     }
 
     @Override
-    public void update(GameMap gameMap) {
+    public void update(GameMap gameMap, Enemy boss) {
 
 //        if (waitingToTurn) {
 //            turnDelayCounter++;
@@ -94,15 +136,52 @@ public class Enemy extends Entity {
 //
 //        }
 
+        if(cooldown > 0){
+            cooldown--;
+        }
+
         if(isChasing){
             // Simple chase logic
-            if (target.getX() > x) x += speed;
-            else if (target.getX() < x) x -= speed;
+            if(running){
+                runFrameTick++;
+                if (runFrameTick >= runFrameDelay) {
+                    runFrameTick = 0;
+                    runFrameIndex = (runFrameIndex + 1) % runFrames.length;
+                }
+            }
+            if (target.getX() >= x + 32){
+                if(cooldown == 0) {
+                    if (x < startX + range) {
+                        x += speed;
+                        running = true;
+                    }
+                    else{
+                        running = false;
+                    }
+                }
+                    movingRight = false;
+                }
+            else if (target.getX() < x - 32){
+                if(cooldown == 0) {
+                    if (x > startX - range) {
+                        x -= speed;
+                        running = true;
+                    }
+                    else{
+                        running = false;
+                    }
+                }
+                    movingRight = true;
+                }
+            else{
+                running = false;
+            }
 
-            if (target.getY() > y) y += speed;
-            else if (target.getY() < y) y -= speed;
-            flyFrameIndex= 0;
-            flyFrameTick = 0;
+
+//            if (target.getY() > y) y += speed;
+//            else if (target.getY() < y) y -= speed;
+//            flyFrameIndex= 0;
+//            flyFrameTick = 0;
         }
         else {
                 if (movingRight) {
@@ -144,40 +223,100 @@ public class Enemy extends Entity {
 //                target.Damage(20);
 //            }
 //        }
-        int offset=0;
-        if(movingRight){
-            offset = -32;
-        }
-        if((x+offset)/32 == target.getX()/32 && y/32 == target.getY()/32){
-            if(target.attacking){
-                isHurt = true;
-                health -=50;
-                speed -=1;
-                if(target.facingRight){
-                    x+=50;
-                }
-                else{
-                    x-=50;
-                }
-                if(health <= 0){
-//                    isHurt = false;
-                    target.addScore(100);
-                    this.active = false;
-                }
+        if(type.equals("Lord")){
+            int offset;
+            if(movingRight){
+                offset = -1;
             }
             else{
-                target.Damage(100);
-                target.attackCooldown = 0;
-                if(movingRight){
-                    x-=60;
-                    target.move(32, 0, gameMap);
+                offset = 1;
+            }
+
+            if((x/32 + offset == (target.getX())/32 || x/32 == (target.getX())/32 ) && (y/32 == target.getY()/32 || y/32 + 1 == target.getY()/32)){
+                if(target.attacking){
+                    isHurt = true;
+                    health -=20;
+                    if(health <30){
+                        speed -=1;
+                    }
+                    if(target.facingRight){
+                        x+=92;
+                    }
+                    else{
+                        x-=92;
+                    }
+                    if(health == 0){
+//                    isHurt = false;
+                        this.active = false;
+                    }
                 }
                 else{
-                    x+=60;
-                    target.move(-32, 0, gameMap);
+                    if(!target.hurt){
+                        attacking = true;
+                        cooldown = maxCooldownd;
+                        target.Damage(100);
+
+                        if(attackFrameIndex >= 7){
+                            target.attackCooldown = 0;
+                            if(movingRight){
+                                target.move(92, 0, gameMap);
+                                target.gravity=-10;
+                                target.move(0, target.gravity++, gameMap);
+                                x = target.getX() - 192;
+//                            movingRight = false;
+                            }
+                            else{
+                                target.move(-92, 0, gameMap);
+                                target.gravity=-10;
+                                target.move(0, target.gravity++, gameMap);
+                                x = target.getX() +192;
+//                            movingRight = true;
+                            }
+                        }
+                    }
+
+                }
+            }
+
+        }
+        else{
+            int offset=0;
+            if(movingRight){
+                offset = -32;
+            }
+            if((x+offset)/32 == target.getX()/32 && y/32 == target.getY()/32){
+                if(target.attacking){
+                    isHurt = true;
+                    health -=50;
+                    speed -=1;
+                    if(target.facingRight){
+                        x+=50;
+                    }
+                    else{
+                        x-=50;
+                    }
+                    if(health == 0){
+//                    isHurt = false;
+                        this.active = false;
+                    }
+                }
+                else{
+                    target.Damage(100);
+                    target.attackCooldown = 0;
+                    if(movingRight){
+                        x-=60;
+                        movingRight = true;
+                        target.move(32, 0, gameMap);
+                    }
+                    else{
+                        x+=60;
+                        movingRight = false;
+                        target.move(-32, 0, gameMap);
+                    }
                 }
             }
         }
+
 
     }
 
@@ -229,8 +368,39 @@ public class Enemy extends Entity {
                 );
             }
         } else{
-            g.setColor(Color.RED);
-            g.fillRect(x- camera.getX(), y- camera.getY(), width, height);
+            if(attacking){
+                attackFrameTick++;
+                if (attackFrameTick >= attackFrameDelay) {
+                    attackFrameTick = 0;
+                    attackFrameIndex++;
+                }
+                if (attackFrameIndex >= attackFrames.length) {
+                    attackFrameIndex = 0;
+                    attacking = false;
+                }
+                frameToDraw = attackFrames[attackFrameIndex];
+            }
+            else if(running){
+                frameToDraw = runFrames[runFrameIndex];
+            }
+            else{
+                frameToDraw = staticLord;
+            }
+            if (movingRight) {
+                g.drawImage(frameToDraw,
+                        x- camera.getX(), y- camera.getY(),
+                        -width, height,
+                        null
+                );
+            } else {
+                g.drawImage(frameToDraw,
+                        x- camera.getX(), y- camera.getY(),
+                        width, height, //FLIP
+                        null
+                );
+            }
+//            g.setColor(Color.RED);
+//            g.fillRect(x- camera.getX(), y- camera.getY(), width, height);
         }
 
     }
@@ -238,4 +408,19 @@ public class Enemy extends Entity {
     public void kill(){
         this.active = false;
     }
+
+    public int getX(){
+        return x;
+    }
+    public int getY(){
+        return y;
+    }
+
+    public void Damage(int x){
+        health-=x;
+        if(health <= 0){
+            active = false;
+        }
+    }
+
 }
